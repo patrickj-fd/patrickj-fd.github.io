@@ -1,4 +1,4 @@
-## Welcome to GitHub Pages
+## Welcome to my logs
 
 You can use the [editor on GitHub](https://github.com/patrickj-fd/patrickj-fd.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
