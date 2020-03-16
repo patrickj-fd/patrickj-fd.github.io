@@ -12,7 +12,8 @@ wget 其 release 版本，如 0.32.0
 ## 配置
 ### 配置server端（公网IP的主机）
 
-vi frps.ini
+- vi frps.ini
+
 ```
 [common]
 bind_port = 37000
@@ -25,13 +26,15 @@ bind_port = 37000
 bind_port 是与客户端通讯用的内部服务端口
 
 - 启动：
+
 ```
 frps -c frps.ini
 ```
 
 ### 配置client端（内网需要被访问的主机）
 
-vi frpc.ini
+- vi frpc.ini
+
 ```
 [common]
 # frp server internet ip
@@ -60,6 +63,7 @@ remote_port = 35002
 - remote_port ：为该端口对应的公网访问映射端口，这个端口被server开放出去的
 
 - 启动：
+
 ```
 frpc -c frpc.init
 ```
