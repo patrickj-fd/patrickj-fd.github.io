@@ -58,9 +58,9 @@ remote_port = 35002
 如上所示
 - [common] 指定server的ip和port
 - [ssh]和[web] 分别配置了两个可以被通过公网访问的方式
-其中：
-- local_port  ：为内网主机开放的服务端口
-- remote_port ：为该端口对应的公网访问映射端口，这个端口被server开放出去的
+  其中：
+  - local_port  ：为内网主机开放的服务端口
+  - remote_port ：为该端口对应的公网访问映射端口，这个端口被server开放出去的
 
 - 启动：
 
