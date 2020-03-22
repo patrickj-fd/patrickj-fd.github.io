@@ -17,4 +17,17 @@ dpkg -l |grep ^rc|awk '{print $2}' |sudo xargs dpkg -P		# 清理dpkg的列表中
 # 慎用！！！它会在你不知情的情况下，一股脑删除很多“它认为”你不再使用的软件! 
 apt-get autoremove
 ```
+# apt 安装软件
+允许apt使用HTTPS安装软件
+```
+sudo apt-get install \
+     apt-transport-https \
+     ca-certificates \
+     curl \
+     gnupg-agent \
+     software-properties-common
+```
 
+# 安装Nvidia显卡
+> https://www.cnblogs.com/2sheep2simple/p/10787371.html  
+> https://www.cnblogs.com/cenariusxz/p/10841099.html 实测有效！  
