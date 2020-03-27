@@ -1,0 +1,148 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>mkimg-python-base</title>
+		<link href="/_assit/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="/_assit/toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="/_assit/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	<div>
+		<div style='width:25%;'>
+			<div><a href="/index.html">首页</a><br></div>
+			<div>
+				<ul id="tree" class="ztree" style='width:100%'>
+
+				</ul>
+			</div>
+		</div>
+		<div id='readme' style='width:70%;margin-left:20%;'>
+			<article class='markdown-body'>
+				<h1 id="-python-">构建python的基础镜像</h1>
+<p>基于ubuntu 18.04，构建的python 3.6版</p>
+<pre><code>IMAGE_NAME=py-base
+IMAGE_TAG=3.6
+
+Dockerfile_Name=Dockerfile.$IMAGE_NAME.$IMAGE_TAG
+
+# ---------------- Dockerfile START ----------------
+cat &gt; $Dockerfile_Name &lt;&lt;EOF
+FROM ubuntu:18.04
+
+# ensure local python is preferred over distribution python
+ENV PATH /usr/local/bin:\$PATH
+
+# http://bugs.python.org/issue19846
+ENV LANG C.UTF-8
+
+# ENV LD_LIBRARY_PATH /usr/local/nvidia/lib64
+
+# 如果使用https，那么，下面的apt-get要加上： -o Acquire::https::mirrors.tuna.tsinghua.edu.cn::Verify-Peer=false
+RUN    echo &#39;deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse&#39; &gt; /etc/apt/sources.list \
+    &amp;&amp; echo &#39;deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse&#39; &gt;&gt; /etc/apt/sources.list \
+    &amp;&amp; echo &#39;deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse&#39; &gt;&gt; /etc/apt/sources.list \
+    &amp;&amp; echo &#39;deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restricted universe multiverse&#39; &gt;&gt; /etc/apt/sources.list
+
+# extra dependencies (over what buildpack-deps already includes)
+RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends \
+            python3.6 python3-pip python3-setuptools \
+    &amp;&amp; apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+# RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir numpy keras==2.3.1 pandas
+# RUN pip3 install --no-cache-dir git+https://www.github.com/bojone/bert4keras.git
+
+RUN mkdir /opt/hrscode
+
+EOF
+# ---------------- Dockerfile END  ----------------
+
+docker build -f $Dockerfile_Name -t $IMAGE_NAME:$IMAGE_TAG .
+docker image ls
+
+echo 
+echo &quot;--------------------------------------&quot;
+echo &quot;New image is : ( $IMAGE_NAME:$IMAGE_TAG )&quot;
+echo &quot;--------------------------------------&quot;
+echo 
+
+# 进入容器执行操作
+# docker container run --rm -it -v /hyren/python/app/xxx:/opt/hrscode $IMAGE_NAME:$IMAGE_TAG bash
+
+# 用容器执行命令
+# docker container run --rm -v /hyren/python/app/test:/opt/hrscode py:test python3 /opt/hrscode/hello.py
+
+# 【错误】：Temporary failure resolving &#39;mirrors.myhuaweicloud.com&#39;
+# 【解决】：重启 docker 即可。 systemctl restart docker 
+
+</code></pre>
+			</article>
+		</div>
+	</div>
+  </body>
+</html>
+<script type="text/javascript" src="/_assit/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/_assit/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/_assit/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/_assit/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>

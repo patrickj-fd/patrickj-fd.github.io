@@ -1,0 +1,133 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>jupyter</title>
+		<link href="/_assit/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="/_assit/toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="/_assit/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	<div>
+		<div style='width:25%;'>
+			<div><a href="/index.html">首页</a><br></div>
+			<div>
+				<ul id="tree" class="ztree" style='width:100%'>
+
+				</ul>
+			</div>
+		</div>
+		<div id='readme' style='width:70%;margin-left:20%;'>
+			<article class='markdown-body'>
+				<h1 id="jupyter-lab-themes">Jupyter lab themes</h1>
+<p>给浏览器安装 Stylus 插件，直接定制CSS，不需要去费劲寻找themes</p>
+<pre><code>a {color: #2456A4 !important;}
+strong {color:#6392BF;}
+em {color: #A9312A; font-style: normal !important;}
+table {font-size: 90% !important;}
+
+#jp-main-dock-panel {background-color: #f9f9f9;}
+.jp-RenderedHTMLCommon {font-family: &quot;Yuanti SC&quot;; font-size: 100%;}
+.jp-Notebook {background-color: #fbfafa;}
+.CodeMirror, .jp-RenderedHTMLCommon pre {font-size: 90%;}
+.jp-RenderedHTMLCommon pre {
+    padding: 10px 25px;
+    background-color: #fafafa;
+    border-left: 4px solid #dadada;
+    border-radius: 10px;
+}
+
+.jp-RenderedHTMLCommon pre code {
+    background-color: #fafafa;
+}
+
+.jp-RenderedHTMLCommon h1 code,
+.jp-RenderedHTMLCommon h2 code,
+.jp-RenderedHTMLCommon h3 code,
+.jp-RenderedHTMLCommon h4 code,
+.jp-RenderedHTMLCommon p code,
+.jp-RenderedHTMLCommon li code,
+.jp-RenderedHTMLCommon blockquote p code,
+.jp-RenderedHTMLCommon blockquote li code,
+.jp-RenderedHTMLCommon td code {
+    background-color: #f6f6f6;
+    font-size: 90%;
+    color:#2e2e2e;
+    padding: 4px 4px;
+    margin: 0 8px;
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
+</code></pre><p>以上是对JupyterLab Light 这个 Theme进行的定制修改。<br>特别定制了 strong 和 em 两个元素的显示，让它们以不同的颜色展示；又因为中文并不适合斜体展示，所以，把 em 的 font-style 设定为 normal</p>
+<p>也可以编辑Jupypter Lab主题，需要更改variables.css。位于：<br>jupyterlab/packages/[THEME NAME]/style/</p>
+
+			</article>
+		</div>
+	</div>
+  </body>
+</html>
+<script type="text/javascript" src="/_assit/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/_assit/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/_assit/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/_assit/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>

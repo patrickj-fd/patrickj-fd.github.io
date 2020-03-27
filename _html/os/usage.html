@@ -1,0 +1,118 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>usage</title>
+		<link href="/_assit/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="/_assit/toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="/_assit/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	<div>
+		<div style='width:25%;'>
+			<div><a href="/index.html">首页</a><br></div>
+			<div>
+				<ul id="tree" class="ztree" style='width:100%'>
+
+				</ul>
+			</div>
+		</div>
+		<div id='readme' style='width:70%;margin-left:20%;'>
+			<article class='markdown-body'>
+				<h1 id="-">查看已经安装的软件</h1>
+<pre><code>dpkg -l | grep softname
+</code></pre><p>list状态:  </p>
+<ul>
+<li>期望状态=未知(u)/安装(i)/删除(r)/清除(p)/保持(h)</li>
+<li>当前状态=未(n)/已安装(i)/仅存配置(c)/仅解压缩(U)/配置失败(F)/不完全安装(H)</li>
+</ul>
+<h1 id="-">彻底卸载软件</h1>
+<pre><code>apt --purge remove &lt;package&gt;            # 删除软件及其配置文件
+dpkg -l |grep ^rc|awk &#39;{print $2}&#39; |sudo xargs dpkg -P        # 清理dpkg的列表中有“rc”状态的软件包
+
+# 删除为了满足依赖而安装的，但现在不再需要的软件包（包括已安装包），保留配置文件
+# 慎用！！！它会在你不知情的情况下，一股脑删除很多“它认为”你不再使用的软件! 
+apt-get autoremove
+</code></pre><h1 id="apt-">apt 安装软件</h1>
+<p>允许apt使用HTTPS安装软件</p>
+<pre><code>sudo apt-get install \
+     apt-transport-https \
+     ca-certificates \
+     curl \
+     gnupg-agent \
+     software-properties-common
+</code></pre><h1 id="-nvidia-">安装Nvidia显卡</h1>
+<blockquote>
+<p><a href="https://www.cnblogs.com/2sheep2simple/p/10787371.html">https://www.cnblogs.com/2sheep2simple/p/10787371.html</a><br><a href="https://www.cnblogs.com/cenariusxz/p/10841099.html">https://www.cnblogs.com/cenariusxz/p/10841099.html</a> 实测有效！  </p>
+</blockquote>
+
+			</article>
+		</div>
+	</div>
+  </body>
+</html>
+<script type="text/javascript" src="/_assit/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/_assit/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/_assit/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/_assit/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>

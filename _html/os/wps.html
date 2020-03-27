@@ -1,0 +1,119 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>wps</title>
+		<link href="/_assit/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="/_assit/toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="/_assit/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	<div>
+		<div style='width:25%;'>
+			<div><a href="/index.html">首页</a><br></div>
+			<div>
+				<ul id="tree" class="ztree" style='width:100%'>
+
+				</ul>
+			</div>
+		</div>
+		<div id='readme' style='width:70%;margin-left:20%;'>
+			<article class='markdown-body'>
+				<p>Windows平台下，“宋体”、“微软雅黑”、“Courier New(编程字体)”用的比较多，看的也习惯了。那如何在 Ubuntu下也安装这些字体呢？</p>
+<p>操作步骤如下：</p>
+<p>第一步：从 Windows 7 系统下字体文件夹（C:\Windows\Fonts） ，拷贝如下文件到当前Ubuntu用户目录 ～/123</p>
+<p>宋体：simsunb.ttf 和 simsun.ttc</p>
+<p>微软雅黑：msyhbd.ttf</p>
+<p>Courier New：courbd.ttf、courbi.ttf、couri.ttf 和 cour.ttf</p>
+<p>WPS Office 所需字体：wingding.ttf、webdings.ttf、symbol.ttf、WINGDNG3.TTF、WINGDNG2.TTF、MTExtra.ttf</p>
+<p>第二步：新建字体存放目录 windows-font
+1
+sudo mkdir /usr/share/fonts/truetype/windows-font</p>
+<p>第三步：拷贝字体到wiondow-font目录下
+1
+sudo cp /home/php-note/123/* /usr/share/fonts/truetype/windows-font</p>
+<p>第四步：修改权限，并更新字体缓存
+1
+sudo chmod -R 777 /usr/share/fonts/truetype/windows-font
+2
+cd /usr/share/fonts/truetype/windows-font
+3
+sudo mkfontscale
+4
+sudo mkfontdir
+5
+sudo fc-cache -fv</p>
+<p>第五步：重启下系统吧！
+1
+sudo reboot</p>
+
+			</article>
+		</div>
+	</div>
+  </body>
+</html>
+<script type="text/javascript" src="/_assit/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/_assit/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/_assit/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/_assit/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>
