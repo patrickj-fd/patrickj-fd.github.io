@@ -21,8 +21,22 @@ sudo docker container exec -it 容器名 bash
 
 ```
 
+## 创建数据卷容器
+```
+docker container run -v /data1/dataset:/RawDataset:ro --name DataVolumn ubuntu:18.04 /bin/bash
+# 这个容器的状态是"Exited"
+```
+所有用这个数据卷的容器，根目录都会被挂载上一个只读目录：RawDataset
+
+
 ## 查看容器
 ```
+# 按照容器名字查找容器
+docker container ls -a --filter name=DataVolumn
+
+# 按照容器状态查找容器
+docker container ls -a --filter status=exited
+
 # 所有退出的容器
 docker container ls -a --filter status=exited
 docker container ls -a | grep "Exited"
