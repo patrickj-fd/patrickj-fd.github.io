@@ -2,6 +2,8 @@
 [首 页](https://patrickj-fd.github.io/index)
 ---
 
+[VS Code使用](vscode)
+
 # Ubuntu
 - [安装字体](fonts)
 - [常用软件](soft)
