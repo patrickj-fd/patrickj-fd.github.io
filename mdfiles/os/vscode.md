@@ -1,5 +1,5 @@
----
 [首 页](https://patrickj-fd.github.io/index)
+
 ---
 
 # 安装
@@ -133,3 +133,7 @@ code pathName/fileName
 4. 打开远程连接窗口
    把鼠标放在上一步配置的远程连接条目上，点击Connect to Host in New Window，然后就会在新的窗口打开我们想要的远程连接。
 5. 配置免密登录
+
+---
+
+[首 页](https://patrickj-fd.github.io/index)

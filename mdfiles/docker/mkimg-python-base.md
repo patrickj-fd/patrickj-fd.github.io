@@ -1,3 +1,7 @@
+[首 页](https://patrickj-fd.github.io/index)
+
+---
+
 # 构建python的基础镜像
 
 
@@ -59,3 +63,7 @@ echo
 # 【解决】：重启 docker 即可。 systemctl restart docker 
 
 ```
+
+---
+
+[首 页](https://patrickj-fd.github.io/index)

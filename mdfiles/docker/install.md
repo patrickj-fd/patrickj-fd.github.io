@@ -1,3 +1,7 @@
+[首 页](https://patrickj-fd.github.io/index)
+
+---
+
 # 联网安装
 ## 1. 卸载旧版本docker
 ```
@@ -56,6 +60,7 @@ sudo systemctl restart docker
 sudo docker container run --rm --gpus all nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 nvidia-smi
 ```
 
-```
-```
+---
+
+[首 页](https://patrickj-fd.github.io/index)
 

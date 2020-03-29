@@ -1,4 +1,7 @@
+[首 页](https://patrickj-fd.github.io/index)
+
 ---
+
 # 从服务更新本地
 ## 强制使用服务器覆盖本地
 ```
@@ -95,6 +98,10 @@ git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Crese
 git init
 git add README.md
 git commit -m "first commit"
-git remote add origin git@github.com:账号/仓库.git
+git remote add origin 自己git库的地址
 git push -u origin master
 ```
+
+---
+
+[首 页](https://patrickj-fd.github.io/index)

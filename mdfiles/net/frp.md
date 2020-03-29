@@ -1,5 +1,8 @@
+[首 页](https://patrickj-fd.github.io/index)
 
-# 使用Frp+公网IP主机实现内网穿透
+---
+
+# Frp+公网IP主机实现内网穿透
 
 软件官网：https://github.com/fatedier/frp
 
@@ -80,5 +83,6 @@ http://139.9.126.19:35002
 如果每个主机都连向同一个frps，那么，各个主机上的frpc.ini中的配置名字不能重复。  
 比如都叫[ssh]是不行的，要分开起名字。
 
+---
 
-
+[首 页](https://patrickj-fd.github.io/index)

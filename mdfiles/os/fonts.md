@@ -1,3 +1,7 @@
+[首 页](https://patrickj-fd.github.io/index)
+
+---
+
 - 安装文泉驿字体
 ```
 sudo apt-get install -y fonts-wqy-zenhei fonts-wqy-microhei xfonts-wqy
@@ -29,5 +33,6 @@ sudo fc-cache -f -v
 
 打开gnome-tweak-tool，选择字体选项卡，然后就可以替换字体了
 
+---
 
-
+[首 页](https://patrickj-fd.github.io/index)

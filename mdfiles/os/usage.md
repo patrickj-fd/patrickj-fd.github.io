@@ -1,5 +1,8 @@
+[首 页](https://patrickj-fd.github.io/index)
 
-# 查看已经安装的软件
+---
+
+# 查看已安装软件
 ```
 dpkg -l | grep softname
 ```
@@ -31,3 +34,7 @@ sudo apt-get install \
 # 安装Nvidia显卡
 > https://www.cnblogs.com/2sheep2simple/p/10787371.html  
 > https://www.cnblogs.com/cenariusxz/p/10841099.html 实测有效！  
+
+---
+
+[首 页](https://patrickj-fd.github.io/index)

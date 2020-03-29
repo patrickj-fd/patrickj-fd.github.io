@@ -1,3 +1,6 @@
+[首 页](https://patrickj-fd.github.io/index)
+
+---
 
 1. 建立程序目录my_package存放自己py文件，并且在同级目录创建__init__.py
 2. 在my_package同级目录下面建立setup.py文件
@@ -23,3 +26,7 @@ setup(
 3. 构建模块：python3 setup.py build。完成后会多出来一个build目录
 4. 生成发布压缩包：python3 setup.py sdist。完成后会生成一个gz压缩文件
 5. 解压该文件，执行：python3 setup.py install，即完成安装到自己的Python目录下面。
+
+---
+
+[首 页](https://patrickj-fd.github.io/index)

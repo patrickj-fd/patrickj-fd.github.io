@@ -1,5 +1,5 @@
----
 [首 页](https://patrickj-fd.github.io/index)
+
 ---
 
 [VS Code使用](vscode)
@@ -11,4 +11,5 @@
 - [WPS安装](wps)
 
 ---
+
 [首 页](https://patrickj-fd.github.io)

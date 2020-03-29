@@ -1,4 +1,9 @@
-# 构建jupyter基础镜像，依赖于python基础镜像
+[首 页](https://patrickj-fd.github.io/index)
+
+---
+
+# 构建jupyter基础镜像
+（依赖于python基础镜像）
 ```
 set -e
 
@@ -87,3 +92,6 @@ sudo docker container rm $CAR_APP_NAME
 
 ```
 
+---
+
+[首 页](https://patrickj-fd.github.io/index)

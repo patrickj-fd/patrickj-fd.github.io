@@ -1,3 +1,7 @@
+[首 页](https://patrickj-fd.github.io/index)
+
+---
+
 # 代码执行的GPU报错
 ## OOM
 ```
@@ -29,4 +33,6 @@ docker container stop [container name]
 ```
 至此，解决问题。（如果是系统中的某个程序，直接kill掉就可以了）
 
+---
 
+[首 页](https://patrickj-fd.github.io/index)

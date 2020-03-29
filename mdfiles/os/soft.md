@@ -1,3 +1,6 @@
+[首 页](https://patrickj-fd.github.io/index)
+
+---
 
 # SimpleScreenRecorder  
 免费而轻量级的屏幕录制工具
@@ -28,5 +31,6 @@ Android 模拟器
 # Franz  
 即时消息客户端，它将聊天和信息服务结合到了一个应用中.支持了 Facebook Messenger、WhatsApp、Telegram、微信、Google Hangouts、 Skype。
 
+---
 
-
+[首 页](https://patrickj-fd.github.io/index)

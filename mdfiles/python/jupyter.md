@@ -1,3 +1,6 @@
+[首 页](https://patrickj-fd.github.io/index)
+
+---
 
 # Jupyter lab themes
 给浏览器安装 Stylus 插件，直接定制CSS，不需要去费劲寻找themes
@@ -45,3 +48,7 @@ table {font-size: 90% !important;}
 
 也可以编辑Jupypter Lab主题，需要更改variables.css。位于：  
 jupyterlab/packages/[THEME NAME]/style/
+
+---
+
+[首 页](https://patrickj-fd.github.io/index)
