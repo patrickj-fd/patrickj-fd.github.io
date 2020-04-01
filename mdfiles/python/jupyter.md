@@ -2,6 +2,23 @@
 
 ---
 
+# 通用配置
+命令行执行：ipython profile create
+会在 ~/.ipython/profile_default/ 下生成两个配置文件：
+- ipython_config.py：打开任意 ipython kernel 时都会运行
+- ipython_notebook_config.py：打开 notebook 时会运行
+
+在配置文件中添加：
+```
+c = get_config()
+c.InteractiveShellApp.exec_lines = [
+"import pandas as pd",
+"import numpy as np",
+"import scipy as sp",
+"import torch as tor",
+]
+```
+
 # Jupyter lab themes
 给浏览器安装 Stylus 插件，直接定制CSS，不需要去费劲寻找themes
 ```

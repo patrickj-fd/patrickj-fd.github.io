@@ -75,7 +75,26 @@ files.defaultLanguage ：修改自己希望的文件类型，比如：markdown
 
 ### Project Manager
 工作中，我们经常会来回切换多个项目，每次都要找到对应项目的目录再打开，比较麻烦。  
-它提供了专门的视图来展示你的项目，我们可以把常用的项目保存在这里，需要时一键切换，十分方便。
+它提供了专门的视图来展示你的项目，我们可以把常用的项目保存在这里，需要时一键切换，十分方便。  
+Ctrl+Shift+P，输入：Project Manager: Edit Projects，编辑配置文件添加本地项目即可：
+```
+[
+	{
+		"name": "项目1",
+		"rootPath": "全路径",
+		"paths": [],
+		"group": "",
+		"enabled": true
+	},
+	{
+		"name": "项目2",
+		"rootPath": "全路径",
+		"paths": [],
+		"group": "",
+		"enabled": true
+	}
+]
+```
 
 ### TabNine
 基于GPT-2语言模型的自动补全工具，AI智能代码补全。

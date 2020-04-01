@@ -1,6 +1,16 @@
 [首 页](https://patrickj-fd.github.io/index)
 
 ---
+# 格式化输出
+对于各个命令(ls/inspect ...)的屏幕输出，可使用 '--format' ，用GO模板进行格式化输出
+```
+docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
+```
+format详细用法参考：
+> https://docs.docker.com/engine/reference/commandline/ps/#formatting
+
+filter详细用法参考：
+> https://docs.docker.com/engine/reference/commandline/ps/#Filtering
 
 # 容器
 ## 启动和进入容器
