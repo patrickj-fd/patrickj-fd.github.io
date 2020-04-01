@@ -6,10 +6,10 @@
 ```
 docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
 ```
-format详细用法参考：
+- format 详细用法参考：
 > https://docs.docker.com/engine/reference/commandline/ps/#formatting
 
-filter详细用法参考：
+- filter 详细用法参考：
 > https://docs.docker.com/engine/reference/commandline/ps/#Filtering
 
 # 容器

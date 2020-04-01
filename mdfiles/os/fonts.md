@@ -33,7 +33,7 @@ fc-list  | grep "sim.*"
 ```
 
 # 最好的编程字体
-source code pro : Adobe免费开源的字体
+- source code pro : Adobe免费开源的字体
 > https://github.com/adobe-fonts/source-code-pro
 安装：
 ```
@@ -44,7 +44,7 @@ sudo fc-cache -f -v
 fc-list | grep "source-code-pro"
 ```
 
-Hack 
+- Hack 
 > https://github.com/source-foundry/Hack
 安装：
 ```

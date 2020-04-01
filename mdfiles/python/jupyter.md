@@ -10,7 +10,7 @@
 
 在配置文件中添加：
 ```
-c = get_config()
+#c = get_config() 这个在jupyterlab中是否需要待验证
 c.InteractiveShellApp.exec_lines = [
 "import pandas as pd",
 "import numpy as np",
