@@ -2,8 +2,13 @@
 
 ---
 
+# 通用
 - [安装自己的程序到系统中](deploy-myapp)
 - [Jupyter](jupyter)
+
+# 开发
+- [pandas](pandas)
+
 
 ---
 
