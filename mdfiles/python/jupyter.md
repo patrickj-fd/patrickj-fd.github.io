@@ -1,6 +1,8 @@
 [首 页](https://patrickj-fd.github.io/index)
 
 ---
+# 用法必读
+> https://www.codercto.com/a/75771.html
 
 # 通用配置
 命令行执行：ipython profile create
