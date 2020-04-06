@@ -1,4 +1,4 @@
-[�� ҳ](https://patrickj-fd.github.io/index)
+[首 页](https://patrickj-fd.github.io/index)
 
 ---
 
@@ -50,4 +50,4 @@ echo
 
 ---
 
-[�� ҳ](https://patrickj-fd.github.io/index)
+[首 页](https://patrickj-fd.github.io/index)
