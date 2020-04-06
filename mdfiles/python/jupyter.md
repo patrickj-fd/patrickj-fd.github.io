@@ -1,8 +1,9 @@
 [首 页](https://patrickj-fd.github.io/index)
 
 ---
-# 用法必读
-> https://www.codercto.com/a/75771.html
+# 必读
+- 安装： https://callmsn.top/posts/vps折腾记四搭建jupyterlab服务器
+- 用法：  https://www.codercto.com/a/75771.html
 
 # 通用配置
 命令行执行：ipython profile create
