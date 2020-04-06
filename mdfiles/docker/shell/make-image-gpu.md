@@ -78,7 +78,7 @@ echo
 ```
 
 # 构建 pytorch jupyter 镜像
-注意对 '\$' 的用法。因为是在shell脚本中书写的Dockerfile。
+注意对 '\\$' 的用法。因为是在shell脚本中书写的Dockerfile。
 ```
 #!/bin/bash
 

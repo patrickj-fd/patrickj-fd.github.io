@@ -70,11 +70,10 @@ fi
 
 echo
 echo "====> Jupyter container <$CAR_NAME> create success, HTTP Port is : $HTTP_PORT"
+echo "====> And now you're inside this container !"
+echo "====> You can start jupyterlab by running [ start-jupterlab.sh ]"
 echo
-echo "====> To start jupyter service:"
-echo "docker container exec -it $CAR_NAME bash"
-echo "jupyter lab --notebook-dir=/jpbook --ip 0.0.0.0 --no-browser --allow-root"
-echo 
+docker container exec -it $CAR_NAME bash
 
 ```
 
