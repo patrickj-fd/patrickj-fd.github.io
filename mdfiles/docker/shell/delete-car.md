@@ -1,4 +1,4 @@
-[Ê× Ò³](https://patrickj-fd.github.io/index)
+[ï¿½ï¿½ Ò³](https://patrickj-fd.github.io/index)
 
 ---
 
@@ -50,4 +50,4 @@ echo
 
 ---
 
-[Ê× Ò³](https://patrickj-fd.github.io/index)
+[ï¿½ï¿½ Ò³](https://patrickj-fd.github.io/index)
