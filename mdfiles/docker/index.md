@@ -7,7 +7,6 @@
 - [安装](install)
 - [创建镜像]()
   * [python基础镜像](mkimg-python-base)
-  * [jupyter](mkimg-jupyter)
 
 ---
 

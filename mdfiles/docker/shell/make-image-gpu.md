@@ -3,12 +3,9 @@
 ---
 
 # 构建 Nvidia 基础镜像
+所有需要gpu环境的python docker的基础镜像。
 ```
 #!/bin/bash
-# ============================================================
-# 所有需要gpu环境的python docker的基础镜像
-# 
-# ============================================================
 
 set -e
 
@@ -19,7 +16,6 @@ cat > .dockerignore << EOF
 *
 
 EOF
-
 
 # 【构建镜像】
 
@@ -35,15 +31,10 @@ ENV  TZ=Asia/Shanghai DEBIAN_FRONTEND=noninteractive
 
 RUN  set -ex && \
      echo "deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" > /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" >> /etc/apt/sources.list && \
      echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list && \
      echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
      echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >> /etc/apt/sources.list && \
      echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
      apt-get update && \
      mkdir ~/.pip/ && \
      apt-get install -y --no-install-recommends python3.6 python3-pip python3-setuptools tzdata && \
