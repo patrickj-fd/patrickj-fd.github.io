@@ -5,10 +5,25 @@
 - 安装： https://callmsn.top/posts/vps折腾记四搭建jupyterlab服务器
 - 用法：  https://www.codercto.com/a/75771.html
 
+# 实用功能
+## cell显示多个输出
+```python
+from IPython.core.interactiveshell import InteractiveShell
+InteractiveShell.ast_node_interactivity = "all"
+
+import numpy as np
+import pandas as pd
+df = pd.DataFrame(np.random.randn(3, 5))
+df
+df.info
+print("OK")
+```
+
 # 定制主题
 
 ```
 {
+    // monaco , Hack-Regular , WenQuanYi Micro Hei Mono , Source Code Pro
     "codeCellConfig": {
         "fontFamily": "monaco",
         "fontSize": 14,
