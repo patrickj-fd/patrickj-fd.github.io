@@ -3,6 +3,18 @@
 ---
 
 # 系统命令
+## 常用命令
+1. find 3天前的文件，并且移动到bak目录
+```shell
+find ./ -mtime +3 -type f -name "mkimg*" -exec mv {} bak \;
+```
+2. xargs 的用法
+```shell
+find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
+```
+- '-I file' ：指定输入的别名为file。可替换为：[ xargs mv -t ./ ]。'mv -t' 颠倒了原路径和目标路径，免除了-I参数，但若文件名含有空格，则不能正常执行
+- '-mindepth 2' ：排除当前层级
+
 ## lsof
 他是一个列出当前系统打开文件的工具，也就可以用来查看端口占用情况。
 ```

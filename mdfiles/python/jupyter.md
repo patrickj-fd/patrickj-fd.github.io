@@ -23,9 +23,9 @@ print("OK")
 
 ```
 {
-    // monaco , Hack-Regular , WenQuanYi Micro Hei Mono , Source Code Pro
+    // Monaco , Hack-Regular , WenQuanYi Micro Hei Mono , Source Code Pro
     "codeCellConfig": {
-        "fontFamily": "monaco",
+        "fontFamily": "Monaco",
         "fontSize": 14,
         "lineWiseCopyCut": true
     }
