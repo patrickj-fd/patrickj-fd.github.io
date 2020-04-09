@@ -5,6 +5,66 @@
 # gitee和github共存
 > https://www.cnblogs.com/leyili/p/git_ssh_key.html
 > https://www.jianshu.com/p/68578d52470c
+1. 清除 git 的全局设置
+因为不同的仓库，对应了各自使用的gitee或github，所以全局配置不能再用。
+```
+git config --global --list  # 查看全局配置
+# 把所有配置都都清除掉。除非有什么配置真的需要全局通用
+git config --global --unset user.name "用户名"
+git config --global --unset user.email "邮箱"
+```
+2. 生成新的 SSH keys
+```
+ssh-keygen -t rsa -f ~/.ssh/id_rsa.github -C "邮箱"
+ssh-keygen -t rsa -f ~/.ssh/id_rsa.gitee -C "邮箱"
+```
+3. 多账号必须配置 [~/.ssh/config] 文件
+```
+vi ~/.ssh/config
+添加如下内容：
+Host github.com
+HostName github.com
+IdentityFile ~/.ssh/id_rsa.github
+
+Host gitee.com
+HostName gitee.com
+IdentityFile ~/.ssh/id_rsa.gitee
+```
+4. 把公钥文件分别添加给gitee或github
+第2步生成的[id_rsa.github]和[id_rsa.gitee]，添加上去：  
+  - github : https://github.com/settings/keys
+  - gitee : https://gitee.com/profile/sshkeys
+
+5. 测试是否连接成功
+```
+ssh -T git@github.com
+ssh -T git@gitee.com
+```
+6. clone 项目
+```
+# 注意：这里不要用https的地址了！因为上面已经配置了SSH
+git clone git@gitlab.com:用户名/项目.git
+```
+
+7. 本地仓库设置
+给每个clone下来的项目，都分别配置上”用户名和邮箱“，避免每次提交修改时被git要求输入邮箱和密码
+```
+cd 本地仓库目录
+git config user.name "用户名"
+git config user.email "邮箱"
+```
+
+**或者，直接编辑本地仓库的配置文件**  
+**重点：确认url使用的是：git@github.com，而不是https！**
+vi .git/config
+```
+[remote "origin"]
+        url = git@github.com:用户名/项目.git  # 这个地址可以在github clone项目时，点选SSH看到
+        fetch = +refs/heads/*:refs/remotes/origin/*
+[user]
+        email = 邮箱
+        name = 用户名
+```
 
 # 从服务更新本地
 ## 强制使用服务器覆盖本地
@@ -73,13 +133,17 @@ git push -f    # 提交到远程仓库
 ```
 
 # 账户密码
-- git push 时需要输入用户名密码的问题
+解决 git push 时需要输入用户名密码的问题  
+- 方式一
 ```
 vi ~/.gitconfig
 # 添加如下代码
 [credential]
 helper = store --file .git-credentials
 ```
+- 方式二
+**推荐** ： 把本地主机的公钥添加到github上，并且，使用SSH方式访问（不要用https方式）
+
 # add 的3种方式
 git add . -A -all -u 的区别
   * git add .  ：他会监控工作区的状态树，使用它会把工作时的所有变化提交到暂存区，包括文件内容修改(modified)以及新文件(new)，但不包括被删除的文件。
