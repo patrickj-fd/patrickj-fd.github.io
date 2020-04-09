@@ -3,8 +3,6 @@
 ---
 
 # gitee和github共存
-> https://www.cnblogs.com/leyili/p/git_ssh_key.html
-> https://www.jianshu.com/p/68578d52470c
 1. 清除 git 的全局设置
 因为不同的仓库，对应了各自使用的gitee或github，所以全局配置不能再用。
 ```

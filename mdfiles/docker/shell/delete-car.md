@@ -13,7 +13,7 @@ if [ "x$CAR_NAME" == "x" ]; then
   echo "============================================================="
   echo "[ERROR] Missing container name !"
   echo "Current container list :"
-  docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
+  docker container ls -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
   echo
   exit -1
 fi

@@ -13,6 +13,18 @@ docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
 > https://docs.docker.com/engine/reference/commandline/ps/#Filtering
 
 # 容器
+## 开放 SSH 服务
+```
+apt install openssh-server
+mkdir /run/sshd
+# 允许root登录
+echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+service ssh start
+
+# 给容器的root设置密码
+echo "root:hmfms888" | chpasswd \
+```
+
 ## 启动和进入容器
 ```
 # 启动到后台
