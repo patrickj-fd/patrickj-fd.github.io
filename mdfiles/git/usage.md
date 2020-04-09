@@ -2,6 +2,10 @@
 
 ---
 
+# gitee和github共存
+> https://www.cnblogs.com/leyili/p/git_ssh_key.html
+> https://www.jianshu.com/p/68578d52470c
+
 # 从服务更新本地
 ## 强制使用服务器覆盖本地
 ```
