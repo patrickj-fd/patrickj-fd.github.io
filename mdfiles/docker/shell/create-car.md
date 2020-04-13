@@ -3,9 +3,11 @@
 ---
 
 以创建一个 pytorch jupyter 容器为例。
+
 ```shell
 #!/bin/bash
 
+# 容器对应的宿主机上的根目录，所有ipynb等程序文件被保存在这下面
 APP_ROOT=/data1/python/app/jupyter/TestOnPytorch
 
 PROJECT_NAME=$1

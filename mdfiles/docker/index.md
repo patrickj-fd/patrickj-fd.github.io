@@ -2,12 +2,19 @@
 
 ---
 
-- [Docker操作的工具脚本](shell/index)
-
 - [安装](install)
-- [创建镜像]()
-  * [python基础镜像](mkimg-python-base)
-- [应用软件]()
+- [常用操作](usage)
+- [常用操作-shell封装]()
+  * [创建容器：使用上面的镜像](shell/create-car)
+  * [删除容器：使用上面的镜像](shell/delete-car)
+  * [进入容器](shell/enter-container)
+
+- [镜像：python]()
+  * [基础镜像：普通环境](apps/py-base)
+  * [基础镜像：GPU](apps/py-base-gpu)
+  * [基础镜像：Jupyter-GPU](apps/py-jupyter-gpu)
+  * [Tor-TF 开发镜像](apps/py-tor-tf-jupyter-gpu)
+- [镜像：应用软件]()
   * [postgresql](apps/postgresql)
   * [mysql](apps/mysql)
   * [neo4j](apps/neo4j)

@@ -13,16 +13,13 @@ docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
 > https://docs.docker.com/engine/reference/commandline/ps/#Filtering
 
 # 容器
-## 开放 SSH 服务
+## 创建数据卷容器
 ```
-apt install openssh-server
-mkdir /run/sshd
-# 允许root登录
-echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
-service ssh start
+docker container run -v 本地全路径名:容器内全路径名:ro --name THisDataVolumnName ubuntu:18.04 /bin/bash
 
-# 给容器的root设置密码
-echo "root:hmfms888" | chpasswd \
+# 这个容器的状态是"Exited"。
+# 之后，任意容器在启动时可以直接引用该卷：
+--volumes-from THisDataVolumnName 
 ```
 
 ## 启动和进入容器
@@ -41,14 +38,6 @@ sudo docker container run --rm -it 镜像名 bash
 sudo docker container exec -it 容器名 bash
 
 ```
-
-## 创建数据卷容器
-```
-docker container run -v /data1/dataset:/RawDataset:ro --name DataVolumn ubuntu:18.04 /bin/bash
-# 这个容器的状态是"Exited"
-```
-所有用这个数据卷的容器，根目录都会被挂载上一个只读目录：RawDataset
-
 
 ## 查看容器
 ```
@@ -78,6 +67,18 @@ docker container rm $(docker container ls -a --filter status=exited | grep -v "C
 ```
 docker logs 容器名      
 docker logs -f 容器名    # 与 tail -f 同意义
+```
+
+## 容器提供 SSH 服务
+```
+apt install openssh-server
+mkdir /run/sshd
+# 允许root登录
+echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+service ssh start
+
+# 给容器的root设置密码
+echo "root:hmfms888" | chpasswd \
 ```
 
 # 镜像
