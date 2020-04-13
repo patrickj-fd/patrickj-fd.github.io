@@ -2,7 +2,7 @@
 
 ---
 
-```
+```shell
 #!/bin/bash
 
 BINDIR=$(cd $(dirname $0); pwd)

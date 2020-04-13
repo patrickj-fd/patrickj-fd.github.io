@@ -46,7 +46,7 @@ sudo docker run hello-world
 ```
 
 # 安装nvidia-docker
-```
+```shell
 # 以下未验证
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -

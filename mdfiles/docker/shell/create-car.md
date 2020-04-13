@@ -2,7 +2,7 @@
 
 ---
 
-以创建一个 pytorch jupyter 容器为例。
+以使用 pytorch jupyter GPU 镜像为例，创建容器：
 
 ```shell
 #!/bin/bash

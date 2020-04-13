@@ -2,12 +2,10 @@
 
 ---
 
-
-
 # 构建基于Jupyter GPU的开发镜像
 ## pytorch 镜像
 
-```
+```shell
 #!/bin/bash
 
 set -e
@@ -82,7 +80,7 @@ echo
 
 ## tensorflow 镜像
 
-```
+```shell
 #!/bin/bash
 
 set -e

@@ -3,7 +3,8 @@
 ---
 
 # 构建镜像
-```
+
+```shell
 #!/bin/bash
 set -e
 # 【设置 .dockerignore】

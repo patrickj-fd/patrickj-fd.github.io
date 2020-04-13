@@ -7,7 +7,7 @@
 
 基于ubuntu 18.04，构建的python 3.6版
 
-```
+```shell
 IMAGE_NAME=py-base
 IMAGE_TAG=3.6
 
@@ -52,17 +52,9 @@ echo "--------------------------------------"
 echo "New image is : ( $IMAGE_NAME:$IMAGE_TAG )"
 echo "--------------------------------------"
 echo 
-
-# 进入容器执行操作
-# docker container run --rm -it -v /hyren/python/app/xxx:/opt/hrscode $IMAGE_NAME:$IMAGE_TAG bash
-
-# 用容器执行命令
-# docker container run --rm -v /hyren/python/app/test:/opt/hrscode py:test python3 /opt/hrscode/hello.py
-
-# 【错误】：Temporary failure resolving 'mirrors.myhuaweicloud.com'
-# 【解决】：重启 docker 即可。 systemctl restart docker 
-
 ```
+**【错误】**：Temporary failure resolving 'mirrors.myhuaweicloud.com'
+**【解决】**：重启 docker 即可。 systemctl restart docker 
 
 ---
 

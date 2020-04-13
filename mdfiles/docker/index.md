@@ -4,11 +4,8 @@
 
 - [安装](install)
 - [常用操作](usage)
-- [常用操作-shell封装]()
-  * [创建容器：使用上面的镜像](shell/create-car)
-  * [删除容器：使用上面的镜像](shell/delete-car)
-  * [进入容器](shell/enter-container)
 
+# 镜像
 - [镜像：python]()
   * [基础镜像：普通环境](apps/py-base)
   * [基础镜像：GPU](apps/py-base-gpu)
@@ -18,6 +15,12 @@
   * [postgresql](apps/postgresql)
   * [mysql](apps/mysql)
   * [neo4j](apps/neo4j)
+
+# 容器
+常用操作-shell封装：  
+- [创建容器](shell/create-car)
+- [删除容器](shell/delete-car)
+- [进入容器](shell/enter-container)
 
 ---
 

@@ -13,8 +13,13 @@ docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
 > https://docs.docker.com/engine/reference/commandline/ps/#Filtering
 
 # 容器
-## 创建数据卷容器
+## 用容器执行命令
+```shell
+docker container run --rm -v /python/app/test:/opt/hrscode python-basic:3.6 python3 /opt/hrscode/hello.py
 ```
+
+## 创建数据卷容器
+```shell
 docker container run -v 本地全路径名:容器内全路径名:ro --name THisDataVolumnName ubuntu:18.04 /bin/bash
 
 # 这个容器的状态是"Exited"。
@@ -23,13 +28,13 @@ docker container run -v 本地全路径名:容器内全路径名:ro --name THisD
 ```
 
 ## 启动和进入容器
-```
+```shell
 # 启动到后台
 sudo docker container run -d -p 38888:8888 --name 容器名 \
      -v 本地目录:容器目录 \
      --volumes-from 数据卷名 \
      镜像名
-# --privileged=true --gpus all
+# --privileged
 
 # 临时启动并进入
 sudo docker container run --rm -it 镜像名 bash
@@ -40,7 +45,7 @@ sudo docker container exec -it 容器名 bash
 ```
 
 ## 查看容器
-```
+```shell
 # 按照容器名字查找容器
 docker container ls -a --filter name=DataVolumn
 
@@ -57,20 +62,20 @@ docker container ls -a | grep -v "CONTAINER ID" | grep "要找的名字" | awk '
 ```
 
 ## 删除容器
-```
+```shell
 # 删除所有退出的容器
 docker container rm $(docker container ls -a --filter status=exited | grep -v "CONTAINER ID" | awk '{print $1 }')
 # sudo docker container rm $(docker container ls -a | grep "Exited" | awk '{print $1 }')
 ```
 
 ## 查看容器日志
-```
+```shell
 docker logs 容器名      
 docker logs -f 容器名    # 与 tail -f 同意义
 ```
 
 ## 容器提供 SSH 服务
-```
+```shell
 apt install openssh-server
 mkdir /run/sshd
 # 允许root登录
@@ -83,7 +88,7 @@ echo "root:hmfms888" | chpasswd \
 
 # 镜像
 ## 构建镜像
-```
+```shell
 sudo docker build -f Dockerfile文件 -t 镜像名:镜像TAG .
 ```
 

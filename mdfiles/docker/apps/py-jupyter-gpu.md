@@ -6,8 +6,8 @@
 
 因为Jupyter环境仅用于开发，所以安装软件时，没有清理缓存。  
 注意对 '\\$' 的用法。因为是在shell脚本中书写的Dockerfile。  
- 
-```
+
+```shell
 #!/bin/bash
 
 set -e
