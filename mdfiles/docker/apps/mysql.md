@@ -63,7 +63,7 @@ RUN  set -ex && \
      echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
      echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
      apt-get update && \
-     apt-get install -y --no-install-recommends vim net-tools xz-utils wget bzip2 unzip curl && \
+     apt-get install -y --no-install-recommends vim net-tools wget bzip2 unzip curl && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
