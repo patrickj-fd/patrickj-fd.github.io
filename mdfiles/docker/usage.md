@@ -3,7 +3,7 @@
 ---
 # 格式化输出
 对于各个命令(ls/inspect ...)的屏幕输出，可使用 '--format' ，用GO模板进行格式化输出
-```
+```shell
 docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
 ```
 - format 详细用法参考：
