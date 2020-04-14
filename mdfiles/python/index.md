@@ -2,6 +2,9 @@
 
 ---
 
+# 安装
+- [源码编译安装](install-bysrc)
+
 # 通用
 - [安装自己的程序到系统中](deploy-myapp)
 - [Jupyter](jupyter)
