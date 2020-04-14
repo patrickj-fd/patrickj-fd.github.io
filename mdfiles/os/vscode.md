@@ -24,13 +24,23 @@ VS Code的层级设置关系为：
 2. 工作区设置：即工作环境设置，可对不同的工作环境是用不同的工作环境，若某项无设定，即使用上述设置
 3. 文件夹设置：即为项目设置，将一个文件夹当成一个项目，对同一个工作环境下的不同项目，使用不同的设置，若某项无设定，即使用上述设置
 
+# 建立Python环境
 
+1. 安装 Python 插件
+2. 为新项目生成 setting.json 文件
+  按ctrl+shift+p，找到“Python: Select Interpreter"。会跳出系统已经安装的所有python解释器，随便选一个，以便生成setting.json，之后就可以根据实际情况进行修改了
+3. 为项目运行时指定入口文件和参数
+  "Run"菜单中选"Add Configuration"，再选"Python"，会自动生成launch.json配置文件：  
+  program ： 指定项目运行时的入口文件的。其中${file}表示当前文件，${workspaceFolder}表示项目根目录
+  args ： 指定项目运行时，跟在入口文件后面的参数。如："args":["xxx","0.0.0.0:8080"]
+
+因为不同项目，用到python环境不一样，所以，可以在每个项目下建立一个虚拟环境。
 
 # 配置
 - 控制面板： Ctrl+Shift+P
 
-参考：第一次使用VS Code时你应该知道的一切配置
-> https://github.com/qianguyihao/Web/blob/master/00-前端工具/01-VS Code的使用.md
+参考：
+> https://www.cnblogs.com/DesignerA/p/11604200.html
 
 ## 设置中文支持
 在命令面板中，输入 [Configure Display Language] ，选择 [Install additional languages]，然后安装插件 [Chinese (Simplified) Language Pack for Visual Studio Code] 即可。
