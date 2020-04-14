@@ -9,7 +9,6 @@
 set -e
 # 【设置 .dockerignore】
 cat > .dockerignore << EOF
-# *表示将当前所有的目录下的文件都作为构建上下文的例外文件
 *
 EOF
 
@@ -47,16 +46,10 @@ FROM mysql:5.7
 ENV  TZ=Asia/Shanghai \
      MYSQL_ROOT_PASSWORD=HRS123321
 
-# For SSH login
-# apt-get install -yq --no-install-recommends openssh-server && \
-# mkdir /run/sshd && \
-# echo "root:hmfms888" | chpasswd && \
-# echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
-
 RUN  set -ex && \
 $SOURCES_LIST
      apt-get update && \
-     apt-get install -y --allow-unauthenticated --no-install-recommends vim net-tools wget bzip2 unzip curl && \
+     apt-get install -y --allow-unauthenticated --no-install-recommends vim wget curl && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
@@ -64,20 +57,16 @@ EOF
 # ----------------- Dockerfile End  -----------------
 
 sudo docker build -f $DFILE_NAME -t $IMAGE_NAME:$IMAGE_TAG .
-echo 
-echo "====================================================================="
-echo 
+echo "================================================================"
 echo "image build success : ( $IMAGE_NAME:$IMAGE_TAG )"
-echo 
-echo "====================================================================="
-echo 
+echo "================================================================"
 ```
 
 # 启动容器
 ```shell
 CAR_NAME="hrs-mysql"
-DATA_DIR="/tmp/data"
-LOGS_DIR="/tmp/logs"
+DATA_DIR="/tmp/mysql/data"
+LOGS_DIR="/tmp/mysql/logs"
 sudo docker container run -d -p 33306:3306 --name $CAR_NAME \
      -v $PWD/my.cnf.sample:/etc/mysql/conf.d/my.cnf -v $DATA_DIR:/var/lib/mysql \
      -v $LOGS_DIR:/logs \

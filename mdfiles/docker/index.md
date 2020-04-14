@@ -6,6 +6,7 @@
 - [常用操作](usage)
 
 # 镜像
+- [通用的处理-如更新apt源](apps/common)
 - [镜像：python]()
   * [基础镜像：普通环境](apps/py-base)
   * [基础镜像：GPU](apps/py-base-gpu)

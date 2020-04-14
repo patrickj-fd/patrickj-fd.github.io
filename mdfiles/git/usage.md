@@ -2,8 +2,17 @@
 
 ---
 
-# gitee和github共存
-## 1. 清除 git 的全局设置
+# 创建新项目并提交
+```
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin 自己git库的地址
+git push -u origin master
+```
+
+# 1. gitee和github共存
+## 1) 清除 git 的全局设置
 
 因为不同的仓库，对应了各自使用的gitee或github，所以全局配置不能再用。
 ```
@@ -13,14 +22,14 @@ git config --global --unset user.name "用户名"
 git config --global --unset user.email "邮箱"
 ```
 
-## 2. 生成新的 SSH keys
+## 2) 生成新的 SSH keys
 
 ```
 ssh-keygen -t rsa -f ~/.ssh/id_rsa.github -C "邮箱"
 ssh-keygen -t rsa -f ~/.ssh/id_rsa.gitee -C "邮箱"
 ```
 
-## 3. 多账号必须配置 [~/.ssh/config] 文件
+## 3) 多账号必须配置 [~/.ssh/config] 文件
 
 ```
 vi ~/.ssh/config
@@ -34,27 +43,27 @@ HostName gitee.com
 IdentityFile ~/.ssh/id_rsa.gitee
 ```
 
-## 4. 把公钥文件分别添加给gitee或github
+## 4) 把公钥文件分别添加给gitee或github
 
 第2步生成的[id_rsa.github]和[id_rsa.gitee]，添加上去：  
   - github : https://github.com/settings/keys
   - gitee : https://gitee.com/profile/sshkeys
 
-## 5. 测试是否连接成功
+## 5) 测试是否连接成功
 
 ```
 ssh -T git@github.com
 ssh -T git@gitee.com
 ```
 
-## 6. clone 项目
+## 6) clone 项目
 
 ```
 # 注意：这里不要用https的地址了！因为上面已经配置了SSH
 git clone git@gitlab.com:用户名/项目.git
 ```
 
-## 7. 本地仓库设置
+## 7) 本地仓库设置
 
 给每个clone下来的项目，都分别配置上”用户名和邮箱“，避免每次提交修改时被git要求输入邮箱和密码。
 ```
@@ -64,7 +73,7 @@ git config user.email "邮箱"
 ```
 
 或者，直接编辑本地仓库的配置文件  
-**重点：确认url使用的是：git@github.com，而不是https！**  
+**重点：确认url使用的是：git@github.com，而不是https！**   
 vi .git/config
 ```
 [remote "origin"]
@@ -75,21 +84,25 @@ vi .git/config
         name = 用户名
 ```
 
-# 从服务更新本地
-## 强制使用服务器覆盖本地
+# 2. 更新时的强制覆盖
+## 2.1 强制覆盖本地 - 与远程仓库保持一致
 ```
 git fetch --all 
 git reset --hard origin/master 
 git pull
 ```
-## 保留本地
+## 2.2 保留本地的前提下，取远程仓库
 ```
 git stash        # 将本地修改保存起来。 这样本地就干净了（git status后看不见修改的文件）
 git pull
 git stash pop    # 恢复最新的进度到工作区
 ```
+## 2.2 强制覆盖远程仓库
+```
+git push -u -f origin master
+```
 
-# 分支
+# 3. 分支
 ## 查看分支
 ```
 git branch       # 查看分支
@@ -124,7 +137,14 @@ git checkout master
 git branch -d testing
 ```
 
-# 删除提交记录
+# 4. Pull Request操作
+1. fork : 把源仓库 fork 到自己在github上的工作空间中
+2. clone: 从自己的github上的这个新库中取到本地 - git clone
+3. 本地开始各种开发和修改，最终push到自己的github上
+4. pull request给原始仓库，等待管理员做合并处理
+
+# 5. 其他
+## 删除提交记录
 将最近两次提交的记录合并为一次完美记录为例：
 ```
 git rebase -i HEAD~4
@@ -141,7 +161,7 @@ git rebase --continue    # 如果想放弃这次处理，执行以下命令： g
 git push -f    # 提交到远程仓库
 ```
 
-# 账户密码
+## 账户密码
 解决 git push 时需要输入用户名密码的问题  
 - 方式一
 ```
@@ -153,30 +173,15 @@ helper = store --file .git-credentials
 - 方式二
 **推荐** ： 把本地主机的公钥添加到github上，并且，使用SSH方式访问（不要用https方式）
 
-# add 的3种方式
+## add 的3种方式
 git add . -A -all -u 的区别
   * git add .  ：他会监控工作区的状态树，使用它会把工作时的所有变化提交到暂存区，包括文件内容修改(modified)以及新文件(new)，但不包括被删除的文件。
   * git add -u ：他仅监控已经被add的文件（即tracked file），他会将被修改的文件提交到暂存区。add -u 不会提交新文件（untracked file）。（git add --update的缩写）
   * git add -A ：提交所有变化。是上面两个功能的合集（git add --all的缩写）
 
-# 优美简洁的显示log
+## 优美简洁的显示log
 ```
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-```
-
-# Pull Request操作
-1. fork : 把源仓库 fork 到自己在github上的工作空间中
-2. clone: 从自己的github上的这个新库中取到本地 - git clone
-3. 本地开始各种开发和修改，最终push到自己的github上
-4. pull request给原始仓库，等待管理员做合并处理
-
-# 创建新项目并提交
-```
-git init
-git add README.md
-git commit -m "first commit"
-git remote add origin 自己git库的地址
-git push -u origin master
 ```
 
 ---

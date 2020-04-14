@@ -27,6 +27,7 @@ IMAGE_NAME="python-basic"
 IMAGE_TAG="3.6-GPU-cuda10.0-cudnn7"
 
 DFILE_NAME=/tmp/DF-$IMAGE_NAME-$IMAGE_TAG.df
+SOURCES_LIST=$(cat /data1/docker/apps/apt-sources.list)
 # ----------------- Dockerfile Start -----------------
 cat >$DFILE_NAME <<EOF
 FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04
@@ -34,15 +35,7 @@ FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04
 ENV  TZ=Asia/Shanghai DEBIAN_FRONTEND=noninteractive HR_OSLABEL=$IMAGE_NAME:$IMAGE_TAG
 
 RUN  set -ex && \
-     echo "deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" > /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
+$SOURCES_LIST
      apt-get update && \
      mkdir ~/.pip/ && \
      apt-get install -y --no-install-recommends python3.6 python3-pip python3-setuptools tzdata && \
