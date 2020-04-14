@@ -48,15 +48,15 @@ RUN  set -ex && \
      apt-get install -y --no-install-recommends vim net-tools wget bzip2 unzip curl && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/* && \
-
-     sed -i "s/^[[:space:]]*#[[:space:]]*listen_addresses.*/listen_addresses='*'/" $PG_CNF_FILE && \
-     sed -i "s/^[[:space:]]*listen_addresses.*/listen_addresses='*'/" $PG_CNF_FILE && \
-
-     sed -i "s/^[[:space:]]*#[[:space:]]*max_connections.*/max_connections=20/" $PG_CNF_FILE && \
-     sed -i "s/^[[:space:]]*max_connections.*/max_connections=20/" $PG_CNF_FILE && \
-
-     sed -i "s/^[[:space:]]*#[[:space:]]*shared_buffers.*/shared_buffers=32MB/" $PG_CNF_FILE && \
-     sed -i "s/^[[:space:]]*shared_buffers.*/shared_buffers=32MB/" $PG_CNF_FILE
+     \
+     sed -i "s/^[[:space:]]*#[[:space:]]*listen_addresses.*/listen_addresses='*'/" \$PG_CNF_FILE && \
+     sed -i "s/^[[:space:]]*listen_addresses.*/listen_addresses='*'/" \$PG_CNF_FILE && \
+     \
+     sed -i "s/^[[:space:]]*#[[:space:]]*max_connections.*/max_connections=20/" \$PG_CNF_FILE && \
+     sed -i "s/^[[:space:]]*max_connections.*/max_connections=20/" \$PG_CNF_FILE && \
+     \
+     sed -i "s/^[[:space:]]*#[[:space:]]*shared_buffers.*/shared_buffers=32MB/" \$PG_CNF_FILE && \
+     sed -i "s/^[[:space:]]*shared_buffers.*/shared_buffers=32MB/" \$PG_CNF_FILE
 
 EOF
 # ----------------- Dockerfile End  -----------------
@@ -72,13 +72,25 @@ echo
 ```
 
 # 启动容器
-```
+```shell
 CAR_NAME="hrs-pgsql"
 DATA_DIR="/tmp/data"
 sudo docker container run -d -p 35432:5432 --name $CAR_NAME \
      -v $DATA_DIR:/var/lib/postgresql/data \
      -e POSTGRES_PASSWORD=123456 \
      hrs-postgresql:11.7 -c 'config_file=/etc/postgresql/postgresql.conf'
+```
+
+# 用容器执行psql执行
+```shell
+sudo docker container run --rm -it hrs-postgres:11.7 psql -U postgres -h 容器的IP
+
+# 看看配置是否生效了
+show max_connections;
+show shared_buffers;
+
+# 修改 pg_hba.conf ，可以避免每次连接都输入密码
+echo "host all all 192.168.8.169/32  trust" >> pg_hba.conf
 ```
 
 ---

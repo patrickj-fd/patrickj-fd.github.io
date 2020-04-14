@@ -39,32 +39,24 @@ IMAGE_NAME="hrs-mysql"
 IMAGE_TAG="5.7"
 
 DFILE_NAME=/tmp/DF-$IMAGE_NAME-$IMAGE_TAG.df
+SOURCES_LIST=$(cat /data1/docker/apps/apt-sources.list)
 # ----------------- Dockerfile Start -----------------
 cat >$DFILE_NAME <<EOF
 FROM mysql:5.7
 
-ARG  PG_CNF_FILE="/etc/postgresql/postgresql.conf"
 ENV  TZ=Asia/Shanghai \
-     LANG=en_US.utf8 LC_ALL=en_US.UTF-8 LANGUAGE=en_US.UTF-8 \
-	MYSQL_ROOT_PASSWORD=HRS123321
+     MYSQL_ROOT_PASSWORD=HRS123321
 
 # For SSH login
 # apt-get install -yq --no-install-recommends openssh-server && \
 # mkdir /run/sshd && \
 # echo "root:hmfms888" | chpasswd && \
-# echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
+# echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+
 RUN  set -ex && \
-     echo "deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" > /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-     echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
+$SOURCES_LIST
      apt-get update && \
-     apt-get install -y --no-install-recommends vim net-tools wget bzip2 unzip curl && \
+     apt-get install -y --allow-unauthenticated --no-install-recommends vim net-tools wget bzip2 unzip curl && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
@@ -82,7 +74,7 @@ echo
 ```
 
 # 启动容器
-```
+```shell
 CAR_NAME="hrs-mysql"
 DATA_DIR="/tmp/data"
 LOGS_DIR="/tmp/logs"
@@ -91,6 +83,17 @@ sudo docker container run -d -p 33306:3306 --name $CAR_NAME \
      -v $LOGS_DIR:/logs \
      -e MYSQL_ROOT_PASSWORD=123456 \
      hrs-mysql:5.7
+```
+
+# 通过容器使用mysql客户端：
+```shell
+# 容器的IP：docker inspect 容器名 | grep IP
+docker container run --rm -it mysql:5.7 sh -c 'exec mysql -h"容器的IP" -uroot -p"123456"'
+```
+
+# 【备份数据】
+```shell
+sudo docker container exec 容器名 sh -c 'exec mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD"' > /some/path/on/your/host/all-databases.sql
 ```
 
 ---
