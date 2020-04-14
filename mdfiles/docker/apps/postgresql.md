@@ -58,7 +58,7 @@ echo "image build success : ( $IMAGE_NAME:$IMAGE_TAG )"
 echo "================================================================"
 ```
 几点说明：
-- "echo debconf ..." ： 这句是为了解决构建过程中提示系统服务要重启的[yes|no]选择问题
+- "echo debconf ..." ： 这句是为了解决构建过程中提示系统服务要重启的(yes|no)选择问题
 - "locales 和 localedef" ： 这是为了安装en_US.utf8，否则在initdb的时候，会报错：invalid locale settings; check LANG and LC_* environment variables
 - "TZ=Asia/Shanghai" ： 为了让容器中的时间是东八区
 
