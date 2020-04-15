@@ -55,13 +55,26 @@ deactivate
 
 python2中，需要单独安装virtualenv软件
 ```shell
-pip3 install virtualenv -i https://pypi.tuna.tsinghua.edu.cn/simple/
+pip3 install virtualenv -i https://mirrors.aliyun.com/pypi/simple/
 ln -s $PYTHON_HOME/bin/virtualenv /usr/bin/virtualenv
+```
+
+# 常用包安装
+```shell
+pip3 install --upgrade setuptools pip -i https://mirrors.aliyun.com/pypi/simple/
+pip3 install matplotlib numpy scipy pandas scikit-learn python-dateutil
 ```
 
 # 设置全局加速
 ```shell
-pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+# 执行了 upgrade setuptools pip 之后，下面命令才能使用
+pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+```
+
+或者直接修改配置文件 ： ~/.config/pip/pip.conf
+```
+[global]
+index-url = https://mirrors.aliyun.com/pypi/simple/
 ```
 
 ---

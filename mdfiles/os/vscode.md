@@ -33,6 +33,7 @@ VS Code的层级设置关系为：
   "Run"菜单中选"Add Configuration"，再选"Python"，会自动生成launch.json配置文件：  
   program ： 指定项目运行时的入口文件的。其中${file}表示当前文件，${workspaceFolder}表示项目根目录
   args ： 指定项目运行时，跟在入口文件后面的参数。如："args":["xxx","0.0.0.0:8080"]
+4. Ctrl+F5运行程序；F5调试程序
 
 因为不同项目，用到python环境不一样，所以，可以在每个项目下建立一个虚拟环境。
 
