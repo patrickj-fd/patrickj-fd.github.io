@@ -19,9 +19,15 @@ df.info
 print("OK")
 ```
 
+## 画出矢量图
+```
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+```
+
 # 定制主题
 
-```
+```json
 {
     // Monaco , Hack-Regular , WenQuanYi Micro Hei Mono , Source Code Pro
     "codeCellConfig": {
@@ -30,6 +36,14 @@ print("OK")
         "lineNumbers": true
     }
 }
+```
+
+# 设置访问密码
+```python
+from IPython.lib import passwd
+passwd()
+# 输入两次密码，即得到密码串，更新到配置文件即可
+c.NotebookApp.password = u'sha1:62b97e3a3a60:fsdf......'
 ```
 
 # 安装插件

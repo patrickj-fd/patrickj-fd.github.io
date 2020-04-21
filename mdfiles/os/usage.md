@@ -15,6 +15,36 @@ find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
 - '-I file' ：指定输入的别名为file。可替换为：[ xargs mv -t ./ ]。'mv -t' 颠倒了原路径和目标路径，免除了-I参数，但若文件名含有空格，则不能正常执行
 - '-mindepth 2' ：排除当前层级
 
+3. vi
+
+多行编辑：
+```
+1. 光标定位到要操作首行或尾行。
+2. CTRL+v 进入“可视 块”模式，上下键选取多行。
+3. SHIFT+i(I) 输入要插入的内容。
+4. ESC 按两次
+```
+
+## 查看系统硬件信息
+1. 查看CPU个数
+```shell
+# 逻辑CPU个数
+cat /proc/cpuinfo | grep "processor"|wc -l
+# 物理CPU个数
+cat /proc/cpuinfo |grep "physical id"|sort |uniq|wc -l
+# 其他方式
+cat /proc/cpuinfo | grep physical | uniq -c
+cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
+```
+2. 查看CPU是几核
+```shell
+cat /proc/cpuinfo |grep "cores"|uniq
+```
+3. 查看CPU的主频
+```shell
+cat /proc/cpuinfo |grep MHz|uniq
+```
+
 ## lsof
 他是一个列出当前系统打开文件的工具，也就可以用来查看端口占用情况。
 ```
