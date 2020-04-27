@@ -2,11 +2,15 @@
 
 ---
 
-```
+```shell
 # yum install -y readline-devel zlib-devel flex bison
 apt install -y libreadline-dev zlib1g-dev flex bison
+# ubuntu docker: apt install -y gcc automake autoconf libtool make
 
-PGSQL_HOME=/opt/postgresql-11.7
+PGSQL_HOME="指定目录"
+PGSQL_PGDATA="指定目录"
+PGSQL_LOGS="指定目录"
+
 ./configure --prefix=$PGSQL_HOME
 make -j
 make install
@@ -16,9 +20,17 @@ cd postgresql-源码解压目录/contrib/file_fdw
 make -j
 make install
 
+# 创建 postgres 用户
+useradd --home-dir=$PGSQL_HOME --shell=/bin/bash postgres
+chown -R postgres.postgres $PGSQL_HOME
+chown -R postgres.postgres $PGSQL_PGDATA
+chown -R postgres.postgres $PGSQL_LOGS
 
 # 初始化数据库
-
+su - postgres
+# 确认环境变量中的LANG是否正确
+export LANG=en_US.utf8
+export LANGUAGE=en_US.UTF-8
 $PGSQL_HOME/bin/initdb -E UTF8 -D $PGSQL_PGDATA
 
 sed -i "s/^#listen_addresses.*/listen_addresses='*'/"  $PGSQL_PGDATA/postgresql.conf
