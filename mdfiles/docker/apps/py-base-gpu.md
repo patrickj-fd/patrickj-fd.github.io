@@ -30,6 +30,7 @@ DFILE_NAME=/tmp/DF-$IMAGE_NAME-$IMAGE_TAG.df
 SOURCES_LIST=$(cat /data1/docker/apps/apt-sources.list)
 # ----------------- Dockerfile Start -----------------
 cat >$DFILE_NAME <<EOF
+#FROM ubuntu:18.04
 FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04
 
 ENV  TZ=Asia/Shanghai DEBIAN_FRONTEND=noninteractive HR_OSLABEL=$IMAGE_NAME:$IMAGE_TAG
@@ -38,7 +39,7 @@ RUN  set -ex && \
 $SOURCES_LIST
      apt-get update && \
      mkdir ~/.pip/ && \
-     apt-get install -y --no-install-recommends python3.6 python3-pip python3-setuptools tzdata && \
+     apt-get install -y --no-install-recommends python3.6 python3-dev python3-pip python3-setuptools tzdata && \
      echo "[global]" > ~/.pip/pip.conf && \
      echo "index-url = https://mirrors.aliyun.com/pypi/simple/" >> ~/.pip/pip.conf && \
      pip3 install --upgrade setuptools pip && \
@@ -46,7 +47,7 @@ $SOURCES_LIST
      dpkg-reconfigure -f noninteractive tzdata
 
 RUN  set -ex \
-     && apt-get install -yq --no-install-recommends locales xz-utils wget bzip2 unzip curl \
+     && apt-get install -yq --no-install-recommends locales wget bzip2 unzip curl \
      && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
      && apt-get clean \
      && rm -rf /var/lib/apt/lists/* \
@@ -54,7 +55,7 @@ RUN  set -ex \
 
 ENV LANG=en_US.utf8 LC_ALL=en_US.UTF-8 LANGUAGE=en_US.UTF-8
 
-RUN  pip3 install --no-cache-dir matplotlib numpy scipy pandas scikit-learn python-dateutil
+RUN  pip3 install --no-cache-dir numpy scipy pandas scikit-learn python-dateutil h5py
 
 EOF
 # ----------------- Dockerfile End  -----------------

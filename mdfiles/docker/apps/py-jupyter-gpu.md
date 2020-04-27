@@ -47,6 +47,7 @@ ENV  PATH=\$PATH:/opt/node-v12.16.1-linux-x64/bin
 WORKDIR \$WORKDIR_VAL
 # install python-language-server[all] : for jupyter-lsp
 RUN  set -ex \
+     && pip3 install matplotlib Scikit-Image opencv-python \
      && pip3 install jupyterlab==${VERSION} jupyter-lsp \
      && jupyter labextension install @jupyter-widgets/jupyterlab-manager @jupyterlab/toc \
                 @krassowski/jupyterlab-lsp @krassowski/jupyterlab_go_to_definition \
