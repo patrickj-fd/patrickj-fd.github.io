@@ -70,6 +70,8 @@ echo "====================================================================="
 echo 
 ```
 
+[SOURCES_LIST](apt-sources-list.md)
+
 ---
 
 [首 页](https://patrickj-fd.github.io/index)
