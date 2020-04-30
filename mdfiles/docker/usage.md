@@ -92,6 +92,17 @@ echo "root:hmfms888" | chpasswd \
 sudo docker build -f Dockerfile文件 -t 镜像名:镜像TAG .
 ```
 
+## 虚悬镜像
+指没有仓库名，也没有标签名，皆为<none>的镜像。这类镜像原来是有仓库名和标签的，只不过，随着官方镜像的维护，这个镜像被重新发布了，以相同仓库名和标签名重新发布了。那么仓库名和标签名被转移到了新下载的镜像身上，而旧的镜像上的名称和标签都被取消了，从而成为了<none>
+```shell
+# 列出这些镜像
+sudo docker image ls -f dangling=true
+# 删除
+sudo docker image prune
+```
+## 中间层镜像
+为了加速镜像构建，重复利用资源，Docker会利用中间层镜像。  
+默认的docker image ls列表中只会显示顶层镜像，如果希望显示包括中间层镜像在内的所有镜像的话，需要加上-a参数。
 ---
 
 [首 页](https://patrickj-fd.github.io/index)
