@@ -33,10 +33,10 @@ ARG  WORKDIR_VAL=/jpbook
 
 # ========== install soft ==========
 # gcc python3-dev : for ujson using by jupyter-lsp
-RUN  set -ex \
-     && apt-get update \
-     && apt-get install -yq --no-install-recommends openssh-server net-tools xz-utils vim wget bzip2 unzip curl git \
-     && apt-get install -yq --no-install-recommends gcc python3-dev \
+RUN  set -ex \\
+     && apt-get update \\
+     && apt-get install -yq --no-install-recommends openssh-server net-tools xz-utils vim wget bzip2 unzip curl git \\
+     && apt-get install -yq --no-install-recommends gcc python3-dev \\
      && mkdir /run/sshd
 
 # install node
@@ -46,24 +46,24 @@ ENV  PATH=\$PATH:/opt/node-v12.16.1-linux-x64/bin
 # ========== install jupyter ==========
 WORKDIR \$WORKDIR_VAL
 # install python-language-server[all] : for jupyter-lsp
-RUN  set -ex \
-     && pip3 install matplotlib Scikit-Image opencv-python \
-     && pip3 install jupyterlab==${VERSION} jupyter-lsp \
-     && jupyter labextension install @jupyter-widgets/jupyterlab-manager @jupyterlab/toc \
-                @krassowski/jupyterlab-lsp @krassowski/jupyterlab_go_to_definition \
-     && pip3 install python-language-server[all] \
+RUN  set -ex \\
+     && pip3 install matplotlib Scikit-Image opencv-python \\
+     && pip3 install jupyterlab==${VERSION} jupyter-lsp \\
+     && jupyter labextension install @jupyter-widgets/jupyterlab-manager @jupyterlab/toc \\
+                @krassowski/jupyterlab-lsp @krassowski/jupyterlab_go_to_definition \\
+     && pip3 install python-language-server[all] \\
      
-     && echo "nohup jupyter lab --notebook-dir=\$WORKDIR_VAL --ip 0.0.0.0 --no-browser --allow-root > /var/log/jupyterlab.log 2>&1 &" > /bin/start-jupyterlab.sh \
-     && echo "echo " >> /bin/start-jupyterlab.sh \
-     && echo "echo 'Waitting log : /var/log/jupyterlab.log ... ...'" >> /bin/start-jupyterlab.sh \
-     && echo "tail -f /var/log/jupyterlab.log" >> /bin/start-jupyterlab.sh \
-     && chmod a+x /bin/start-jupyterlab.sh \
+     && echo "nohup jupyter lab --notebook-dir=\$WORKDIR_VAL --ip 0.0.0.0 --no-browser --allow-root > /var/log/jupyterlab.log 2>&1 &" > /bin/start-jupyterlab.sh \\
+     && echo "echo " >> /bin/start-jupyterlab.sh \\
+     && echo "echo 'Waitting log : /var/log/jupyterlab.log ... ...'" >> /bin/start-jupyterlab.sh \\
+     && echo "tail -f /var/log/jupyterlab.log" >> /bin/start-jupyterlab.sh \\
+     && chmod a+x /bin/start-jupyterlab.sh \\
      
-     && echo "[pycodestyle]" > ~/.config/pycodestyle \
-     && echo "ignore = E402, E703, E251, E121, E122" >> ~/.config/pycodestyle \
-     && echo "max-line-length = 120" >> ~/.config/pycodestyle \
+     && echo "[pycodestyle]" > ~/.config/pycodestyle \\
+     && echo "ignore = E402, E703, E251, E121, E122" >> ~/.config/pycodestyle \\
+     && echo "max-line-length = 120" >> ~/.config/pycodestyle \\
 
-     && echo "root:hmfms888" | chpasswd \
+     && echo "root:hmfms888" | chpasswd \\
      && echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
 # jupyter port
 EXPOSE 8888

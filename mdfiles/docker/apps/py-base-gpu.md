@@ -35,22 +35,22 @@ FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04
 
 ENV  TZ=Asia/Shanghai DEBIAN_FRONTEND=noninteractive HR_OSLABEL=$IMAGE_NAME:$IMAGE_TAG
 
-RUN  set -ex && \
+RUN  set -ex && \\
 $SOURCES_LIST
-     apt-get update && \
-     mkdir ~/.pip/ && \
-     apt-get install -y --no-install-recommends python3.6 python3-dev python3-pip python3-setuptools tzdata && \
-     echo "[global]" > ~/.pip/pip.conf && \
-     echo "index-url = https://mirrors.aliyun.com/pypi/simple/" >> ~/.pip/pip.conf && \
-     pip3 install --upgrade setuptools pip && \
-     ln -sf /usr/share/zoneinfo/\$TZ /etc/localtime && echo \$TZ > /etc/timezone && \
+     apt-get update && \\
+     mkdir ~/.pip/ && \\
+     apt-get install -y --no-install-recommends python3.6 python3-dev python3-pip python3-setuptools tzdata && \\
+     echo "[global]" > ~/.pip/pip.conf && \\
+     echo "index-url = https://mirrors.aliyun.com/pypi/simple/" >> ~/.pip/pip.conf && \\
+     pip3 install --upgrade setuptools pip && \\
+     ln -sf /usr/share/zoneinfo/\$TZ /etc/localtime && echo \$TZ > /etc/timezone && \\
      dpkg-reconfigure -f noninteractive tzdata
 
-RUN  set -ex \
-     && apt-get install -yq --no-install-recommends locales wget bzip2 unzip curl \
-     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
-     && apt-get clean \
-     && rm -rf /var/lib/apt/lists/* \
+RUN  set -ex \\
+     && apt-get install -yq --no-install-recommends locales wget bzip2 unzip curl \\
+     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \\
+#     && apt-get clean \\
+#     && rm -rf /var/lib/apt/lists/* \\
      && mkdir /opt/app
 
 ENV LANG=en_US.utf8 LC_ALL=en_US.UTF-8 LANGUAGE=en_US.UTF-8

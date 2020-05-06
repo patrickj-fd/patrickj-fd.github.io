@@ -52,12 +52,12 @@ FROM jupyter:2.0.2-python-GPU
 
 ENV  HR_OSLABEL=$IMAGE_NAME:$IMAGE_TAG
 # ========== install pytorch and others ==========
-RUN  set -ex \
-     && pip3 install jieba gensim transformers \
+RUN  set -ex \\
+     && pip3 install jieba gensim transformers \\
 
 COPY ${WHEEL_DIR} /tmp/
-RUN  set -ex \
-     && pip3 install /tmp/torch*.whl \
+RUN  set -ex \\
+     && pip3 install /tmp/torch*.whl \\
      && rm -rf /tmp/torch*.whl
 
 

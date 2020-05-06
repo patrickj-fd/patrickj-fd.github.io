@@ -43,14 +43,14 @@ SOURCES_LIST=$(cat /data1/docker/apps/apt-sources.list)
 cat >$DFILE_NAME <<EOF
 FROM mysql:5.7
 
-ENV  TZ=Asia/Shanghai \
+ENV  TZ=Asia/Shanghai \\
      MYSQL_ROOT_PASSWORD=HRS123321
 
-RUN  set -ex && \
+RUN  set -ex && \\
 $SOURCES_LIST
-     apt-get update && \
-     apt-get install -y --allow-unauthenticated --no-install-recommends vim wget curl && \
-     apt-get clean && \
+     apt-get update && \\
+     apt-get install -y --allow-unauthenticated --no-install-recommends vim wget curl && \\
+     apt-get clean && \\
      rm -rf /var/lib/apt/lists/*
 
 EOF

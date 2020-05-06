@@ -22,7 +22,7 @@ DFILE_NAME=/tmp/DF-$IMAGE_NAME-$IMAGE_TAG.df
 cat >$DFILE_NAME <<EOF
 FROM neo4j:3.5
 
-ENV  TZ=Asia/Shanghai \
+ENV  TZ=Asia/Shanghai \\
      NEO4J_AUTH=none
 
 EOF

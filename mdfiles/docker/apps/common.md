@@ -3,6 +3,7 @@
 ---
 
 # apt sources.list
+## Dockerfile中使用的
 ```shell
      echo "deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" > /etc/apt/sources.list && \
      echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" >> /etc/apt/sources.list && \
