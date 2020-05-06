@@ -1,18 +1,8 @@
 [首 页](https://patrickj-fd.github.io/index)
 
 ---
-# 格式化输出
-对于各个命令(ls/inspect ...)的屏幕输出，可使用 '--format' ，用GO模板进行格式化输出
-```shell
-docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
-```
-- format 详细用法参考：
-> https://docs.docker.com/engine/reference/commandline/ps/#formatting
 
-- filter 详细用法参考：
-> https://docs.docker.com/engine/reference/commandline/ps/#Filtering
-
-# 容器
+# 1. 容器
 ## 用容器执行命令
 ```shell
 docker container run --rm -v /python/app/test:/opt/hrscode python-basic:3.6 python3 /opt/hrscode/hello.py
@@ -86,7 +76,7 @@ service ssh start
 echo "root:hmfms888" | chpasswd \
 ```
 
-# 镜像
+# 2. 镜像
 ## 构建镜像
 ```shell
 sudo docker build -f Dockerfile文件 -t 镜像名:镜像TAG .
@@ -104,5 +94,20 @@ sudo docker image prune
 为了加速镜像构建，重复利用资源，Docker会利用中间层镜像。  
 默认的docker image ls列表中只会显示顶层镜像，如果希望显示包括中间层镜像在内的所有镜像的话，需要加上-a参数。
 ---
+
+# 3. 其他
+## 容器共享宿主机SSH端口
+> http://www.ateijelo.com/blog/2016/07/09/share-port-22-between-docker-gogs-ssh-and-local-system
+
+## 格式化输出
+对于各个命令(ls/inspect ...)的屏幕输出，可使用 '--format' ，用GO模板进行格式化输出
+```shell
+docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
+```
+- format 详细用法参考：
+> https://docs.docker.com/engine/reference/commandline/ps/#formatting
+
+- filter 详细用法参考：
+> https://docs.docker.com/engine/reference/commandline/ps/#Filtering
 
 [首 页](https://patrickj-fd.github.io/index)

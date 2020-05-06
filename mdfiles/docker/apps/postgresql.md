@@ -20,34 +20,26 @@ IMAGE_TAG="11.7"
 DFILE_NAME=/tmp/DF-$IMAGE_NAME-$IMAGE_TAG.df
 SOURCES_LIST=$(cat /data1/docker/apps/apt-sources.list)
 # ----------------- Dockerfile Start -----------------
-PG_CNF_FILE="/etc/postgresql/postgresql.conf"
 cat >$DFILE_NAME <<EOF
 FROM postgres:11.7
 
 ARG  PG_CNF_FILE=/etc/postgresql/postgresql.conf
-ENV  TZ=Asia/Shanghai \
-     LANG=en_US.utf8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
+ENV  TZ=Asia/Shanghai \\
      POSTGRES_PASSWORD=HRS123321
 
-# max_connections > ( max_wal_senders + superuser_reserved_connections )
-RUN  set -ex && \
-$SOURCES_LIST
-     echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
-     apt-get update && \
-     apt-get install -yq --allow-unauthenticated --no-install-recommends locales vim wget && \
-     localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
-     apt-get clean && \
-     rm -rf /var/lib/apt/lists/* && \
-     \
-     cp /usr/share/postgresql/postgresql.conf.sample $PG_CNF_FILE && \
-     sed -i "s/^[[:space:]]*#[[:space:]]*listen_addresses.*/listen_addresses='*'/" $PG_CNF_FILE ; \
-     sed -i "s/^[[:space:]]*listen_addresses.*/listen_addresses='*'/" $PG_CNF_FILE ; \
-     \
-     sed -i "s/^[[:space:]]*#[[:space:]]*max_connections.*/max_connections=20/" $PG_CNF_FILE ; \
-     sed -i "s/^[[:space:]]*max_connections.*/max_connections=20/" $PG_CNF_FILE ; \
-     \
-     sed -i "s/^[[:space:]]*#[[:space:]]*shared_buffers.*/shared_buffers=32MB/" $PG_CNF_FILE ; \
-     sed -i "s/^[[:space:]]*shared_buffers.*/shared_buffers=32MB/" $PG_CNF_FILE
+RUN  set -x && \\
+     cp /usr/share/postgresql/postgresql.conf.sample \$PG_CNF_FILE && \\
+# 修改监听IP
+     sed -i "s/^[[:space:]]*#[[:space:]]*listen_addresses.*/listen_addresses='*'/" \$PG_CNF_FILE ; \\
+     sed -i "s/^[[:space:]]*listen_addresses.*/listen_addresses='*'/" \$PG_CNF_FILE ; \\
+
+# 修改最大连接数 原则：max_connections > ( max_wal_senders + superuser_reserved_connections )
+     sed -i "s/^[[:space:]]*#[[:space:]]*max_connections.*/max_connections=20/" \$PG_CNF_FILE ; \\
+     sed -i "s/^[[:space:]]*max_connections.*/max_connections=20/" \$PG_CNF_FILE ; \\
+
+# 修改共享内存
+     sed -i "s/^[[:space:]]*#[[:space:]]*shared_buffers.*/shared_buffers=32MB/" \$PG_CNF_FILE ; \\
+     sed -i "s/^[[:space:]]*shared_buffers.*/shared_buffers=32MB/" \$PG_CNF_FILE
 
 EOF
 # ----------------- Dockerfile End  -----------------
@@ -66,7 +58,7 @@ echo "================================================================"
 # 启动容器
 ```shell
 CAR_NAME="hrs-pgsql"
-DATA_DIR="/tmp/pgdata"
+DATA_DIR="/tmp/pgsql/pgdata" && mkdir -p $DATA_DIR
 sudo docker container run -d -p 35432:5432 --name $CAR_NAME \
      -v $DATA_DIR:/var/lib/postgresql/data \
      -e POSTGRES_PASSWORD=123456 \
@@ -85,6 +77,9 @@ show shared_buffers;
 # 修改 pg_hba.conf ，可以避免每次连接都输入密码
 echo "host all all 192.168.8.169/32  trust" >> pg_hba.conf
 ```
+
+# 常用命令
+[常用命令](../../db/pgsql)
 
 # 官方Dockerfile
 ```dockerfile

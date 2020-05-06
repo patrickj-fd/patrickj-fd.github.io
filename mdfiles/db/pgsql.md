@@ -3,6 +3,10 @@
 ---
 
 # 安装
+## 使用Docker安装
+[使用Docker安装](../docker/apps/postgresql)
+
+## 在主机上源码编译安装
 ```shell
 # yum install -y readline-devel zlib-devel flex bison
 apt install -y libreadline-dev zlib1g-dev flex bison

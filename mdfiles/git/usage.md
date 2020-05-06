@@ -20,6 +20,7 @@ git config --global --list  # 查看全局配置
 # 把所有配置都都清除掉。除非有什么配置真的需要全局通用
 git config --global --unset user.name "用户名"
 git config --global --unset user.email "邮箱"
+git config --global --unset credential.helper
 ```
 
 ## 2) 生成新的 SSH keys
@@ -84,22 +85,38 @@ vi .git/config
         name = 用户名
 ```
 
-# 2. 更新时的强制覆盖
-## 2.1 强制覆盖本地 - 与远程仓库保持一致
+# 2. 拉取和提交相关
+## 2.1 更新时的强制覆盖
+### 1) 强制覆盖本地 - 与远程仓库保持一致
 ```
 git fetch --all 
 git reset --hard origin/master 
 git pull
 ```
-## 2.2 保留本地的前提下，取远程仓库
+### 2) 保留本地的前提下，取远程仓库
 ```
 git stash        # 将本地修改保存起来。 这样本地就干净了（git status后看不见修改的文件）
 git pull
 git stash pop    # 恢复最新的进度到工作区
 ```
-## 2.2 强制覆盖远程仓库
+### 3) 强制覆盖远程仓库
 ```
 git push -u -f origin master
+```
+
+## 2.2 删除服务器文件,但保留本地
+```
+git rm --cached -r 本地要保留的目录
+git rm --cached file 本地要保留的文件
+git commit -m "del xxx"
+git push -u origin master
+```
+如果要保留很多本地文件，可以利用gitigore，将不需要的文件过滤掉
+```
+git rm -r --cached .
+git add .
+git commit
+git push -u origin master
 ```
 
 # 3. 分支
