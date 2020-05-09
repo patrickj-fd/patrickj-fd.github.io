@@ -33,8 +33,8 @@ ssh-keygen -t rsa -f ~/.ssh/id_rsa.gitee -C "邮箱"
 ## 3) 多账号必须配置 [~/.ssh/config] 文件
 
 ```
-vi ~/.ssh/config
-添加如下内容：
+mv ~/.ssh/config ~/.ssh/config.bak
+cat >~/.ssh/config <<EOF
 Host github.com
 HostName github.com
 IdentityFile ~/.ssh/id_rsa.github
@@ -42,6 +42,7 @@ IdentityFile ~/.ssh/id_rsa.github
 Host gitee.com
 HostName gitee.com
 IdentityFile ~/.ssh/id_rsa.gitee
+EOF
 ```
 
 ## 4) 把公钥文件分别添加给gitee或github
