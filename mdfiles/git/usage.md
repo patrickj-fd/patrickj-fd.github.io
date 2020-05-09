@@ -32,6 +32,7 @@ ssh-keygen -t rsa -f ~/.ssh/id_rsa.gitee -C "邮箱"
 
 ## 3) 多账号必须配置 [~/.ssh/config] 文件
 - Host 可以是任意字符，下面的自定义配置会覆盖默认的/etc/ssh/ssh_config
+
 ```
 mv ~/.ssh/config ~/.ssh/config.bak
 cat >~/.ssh/config <<EOF
