@@ -16,6 +16,7 @@
   * [postgresql](apps/postgresql)
   * [mysql](apps/mysql)
   * [neo4j](apps/neo4j)
+  * [gogs](apps/gogs)
 
 # 容器
 常用操作-shell封装：  
