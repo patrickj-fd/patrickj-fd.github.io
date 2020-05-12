@@ -122,10 +122,18 @@ git push -u origin master
 ```
 
 # 3. 分支
+
+**应该在分支上工作！**  
+从第一次向远程仓库push后，每次修改都应该先创建一个分支，在分支上工作：
+- 发现做错了，就直接干掉分支重来
+- 都做好了，合并到master，push master到远程，并且干掉分支
+
 ## 查看分支
 ```
 git branch       # 查看分支
 git branch -v    # 查看各个分支最后一个提交对象的信息
+git branch --no-merged   # 查看所有包含未合并工作的分支
+git branch --no-merged master  # 查看未合并到 master 分支的有哪些
 ```
 ## 创建分支
 ```
@@ -136,7 +144,6 @@ git branch testing
 ## 切换分支
 ```
 git checkout testing    # 这样 HEAD 就指向 testing 分支了。
-
 # 同样道理，切换回 master 分支的方式：
 git checkout master
 ```

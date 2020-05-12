@@ -2,8 +2,8 @@
 
 ---
 
-1. 建立程序目录my_package存放自己py文件，并且在同级目录创建__init__.py
-2. 在my_package同级目录下面建立setup.py文件
+- 每个包目录下创建__init__.py
+- 顶级目录下面建立setup.py文件
    
 ```
 # from distutils.core import  setup
@@ -22,10 +22,15 @@ setup(
     packages=find_packages()
 )
 ```
+制作安装包：
+1. 构建模块：python3 setup.py build。完成后会多出来一个build目录
+2. 生成发布压缩包：python3 setup.py sdist。完成后生成dist目录，并且创建出一个gz压缩文件
+3. 解压该文件，执行：python3 setup.py install，即完成安装到自己的Python目录下面。
 
-3. 构建模块：python3 setup.py build。完成后会多出来一个build目录
-4. 生成发布压缩包：python3 setup.py sdist。完成后会生成一个gz压缩文件
-5. 解压该文件，执行：python3 setup.py install，即完成安装到自己的Python目录下面。
+关于find_packages的用法：
+- 它默认在和setup.py同一目录下搜索各个含有 __init__.py 的包
+- 排除某些包：find_packages(exclude=["test", "test.*"]
+- 制定从哪个目录开始：find_packages('src') 注意还要加上package_dir和package_data
 
 ---
 
