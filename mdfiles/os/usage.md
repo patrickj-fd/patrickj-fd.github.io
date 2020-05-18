@@ -4,19 +4,29 @@
 
 # 系统命令
 ## 常用命令
-1. find 3天前的文件，并且移动到bak目录
+### find 查找文件
+- 按文件时间查找
+  * '-m : 指定时间曾被改动过的文件，意思是文件內容被更改过
+  * '-c : 指定时间曾被更改过的文件，意思是文件权限被更改过
+  * '-a : 指定时间曾被存取过的文件，意思是文件被读取过
+  * time/min : 查找的单位，time是天/min是分钟
+```shell
+find . -mtime +3 -type f -print # 最近3天内被修改过的文件
+find . -mmin  +3 -type f -print # 最近3分钟内被修改过的文件
+```
+
+- 查找且移动到bak目录
 ```shell
 find ./ -mtime +3 -type f -name "mkimg*" -exec mv {} bak \;
 ```
-2. xargs 的用法
+### xargs 的用法
 ```shell
 find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
 ```
 - '-I file' ：指定输入的别名为file。可替换为：[ xargs mv -t ./ ]。'mv -t' 颠倒了原路径和目标路径，免除了-I参数，但若文件名含有空格，则不能正常执行
 - '-mindepth 2' ：排除当前层级
 
-3. vi
-
+### vi
 多行编辑：
 ```
 1. 光标定位到要操作首行或尾行。
