@@ -21,7 +21,7 @@ git push -u origin master
 3. 合并到主分支(master)上：
   * 切换到主分支上：git checkout master
   * 取远程最新版本：git pull/fetch等 ： 。直接覆盖，不需要解决冲突。因为必须用最新的
-  * 合并临时分支　：git merge --no-ff tempdev 解决冲突
+  * 合并临时分支　：git merge --no-ff tempdev -m "说明"
   * 删除临时分支　：git branch -d tempdev
 4. 把本地的master提交到远程仓库： git add && git commit && git push
 
