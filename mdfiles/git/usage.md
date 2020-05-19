@@ -2,14 +2,30 @@
 
 ---
 
-# 创建新项目并提交
+# 把本地项目建立git管理并提交远程
+假定本地有一个目录，已经有了大量文件，现在希望使用git进行版本管理：
 ```
+cd "你的这个目录"
 git init
-git add README.md
+git add .
 git commit -m "first commit"
-git remote add origin 自己git库的地址
+git remote add origin 远程git仓库地址，例如：http://139.9.126.19:38111/xxx/yyy.git
 git push -u origin master
 ```
+
+# 使用git的第一原则
+**要使用分支！！！！！**  
+开始修改程序前，正确的工作方式：
+1. 创建一个新分支，并切换过去： git branch tempdev && git checkout tempdev
+2. 各种工作完成后，提交本次工作： git add && git commit
+3. 合并到主分支(master)上：
+  * 切换到主分支上：git checkout master
+  * 取远程最新版本：git pull/fetch等 ： 。直接覆盖，不需要解决冲突。因为必须用最新的
+  * 合并临时分支　：git merge tempdev 解决冲突
+  * 删除临时分支　：git branch -d tempdev
+4. 把本地的master提交到远程仓库： git add && git commit && git push
+
+[参考 Learning Git Branching](https://learngitbranching.js.org/?locale=zh_CN)
 
 # 1. gitee和github共存
 ## 1) 清除 git 的全局设置

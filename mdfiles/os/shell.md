@@ -2,6 +2,8 @@
 
 ---
 
+[Bash 脚本教程](https://wangdoc.com/bash/intro.html)
+
 # 变量
 - 根据变量是否为空或者未设置，进行赋值
 ```shell
