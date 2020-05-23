@@ -6,7 +6,7 @@
 
 ```shell
 #!/bin/bash
-set -e
+
 # 【设置 .dockerignore】
 cat > .dockerignore << EOF
 *

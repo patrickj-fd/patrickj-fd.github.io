@@ -7,6 +7,7 @@
 
 # 镜像
 - [通用的处理-如更新apt源](apps/common)
+- [仅操作系统的基础镜像](apps/only-os-ssh)
 - [镜像：python]()
   * [基础镜像：普通环境](apps/py-base)
   * [基础镜像：GPU](apps/py-base-gpu)
