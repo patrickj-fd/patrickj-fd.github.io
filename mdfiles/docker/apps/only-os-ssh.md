@@ -57,7 +57,9 @@ echo "====================================================================="
 echo 
 echo "image build success : ( $IMAGE_NAME:$IMAGE_TAG )"
 echo "root password : hrs@6688"
-echo "docker container run --rm -it $IMAGE_NAME:$IMAGE_TAG bash"
+echo 
+echo "Checking it :"
+echo "docker container run -d --name cartest-$IMAGE_NAME $IMAGE_NAME:$IMAGE_TAG"
 echo 
 echo "====================================================================="
 echo 

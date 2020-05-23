@@ -59,6 +59,9 @@ EOF
 sudo docker build -f $DFILE_NAME -t $IMAGE_NAME:$IMAGE_TAG .
 echo "================================================================"
 echo "image build success : ( $IMAGE_NAME:$IMAGE_TAG )"
+echo 
+echo "Checking it :"
+echo "docker container run -d --name cartest-$IMAGE_NAME $IMAGE_NAME:$IMAGE_TAG"
 echo "================================================================"
 ```
 
