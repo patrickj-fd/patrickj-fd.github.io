@@ -31,7 +31,22 @@ git push -u origin master
 ```
 
 # 2. 拉取和提交相关
-## 2.1 更新时的强制覆盖
+
+## 2.1 仅拉取指定目录
+1. 开启sparse clone
+```shell
+git config core.sparsecheckout true
+```
+
+2. 设置需要拉取的目录
+```shell
+echo "develop"  >>.git/info/sparse-checkout
+echo "web/assets/*"  >>.git/info/sparse-checkout  # '*' 表示所有
+```
+
+之后，正常使用pull和push即可。
+
+## 2.2 更新时的强制覆盖
 ### 1) 强制覆盖本地 - 与远程仓库保持一致
 ```
 git fetch --all 
@@ -49,7 +64,7 @@ git stash pop    # 恢复最新的进度到工作区
 git push -u -f origin master
 ```
 
-## 2.2 删除服务器文件,但保留本地
+## 2.3 删除服务器文件,但保留本地
 ```
 git rm --cached -r 本地要保留的目录
 git rm --cached file 本地要保留的文件
