@@ -2,17 +2,6 @@
 
 ---
 
-# 把本地项目建立git管理并提交远程
-假定本地有一个目录，已经有了大量文件，现在希望使用git进行版本管理：
-```
-cd "你的这个目录"
-git init
-git add .
-git commit -m "first commit"
-git remote add origin 远程git仓库地址，例如：http://139.9.126.19:38111/xxx/yyy.git
-git push -u origin master
-```
-
 # 使用git的第一原则
 **要使用分支！！！！！**  
 开始修改程序前，正确的工作方式：
@@ -27,84 +16,59 @@ git push -u origin master
 
 [参考 Learning Git Branching](https://learngitbranching.js.org/?locale=zh_CN)
 
-# 1. gitee和github共存
-## 1) 清除 git 的全局设置
 
-因为不同的仓库，对应了各自使用的gitee或github，所以全局配置不能再用。
+# 1. 创建仓库
+
+## 把本地项目建立git管理并提交远程
+假定本地有一个目录，已经有了大量文件，现在希望使用git进行版本管理：
 ```
-git config --global --list  # 查看全局配置
-# 把所有配置都都清除掉。除非有什么配置真的需要全局通用
-git config --global --unset user.name "用户名"
-git config --global --unset user.email "邮箱"
-git config --global --unset credential.helper
-```
-
-## 2) 生成新的 SSH keys
-
-```
-ssh-keygen -t rsa -f ~/.ssh/id_rsa.github -C "邮箱"
-ssh-keygen -t rsa -f ~/.ssh/id_rsa.gitee -C "邮箱"
-```
-
-## 3) 多账号必须配置 [~/.ssh/config] 文件
-- Host 可以是任意字符，下面的自定义配置会覆盖默认的/etc/ssh/ssh_config
-
-```
-mv ~/.ssh/config ~/.ssh/config.bak
-cat >~/.ssh/config <<EOF
-Host github.com
-HostName github.com
-IdentityFile ~/.ssh/id_rsa.github
-
-Host gitee.com
-HostName gitee.com
-IdentityFile ~/.ssh/id_rsa.gitee
-EOF
-```
-
-## 4) 把公钥文件分别添加给gitee或github
-
-第2步生成的[id_rsa.github]和[id_rsa.gitee]，添加上去：  
-  - github : https://github.com/settings/keys
-  - gitee : https://gitee.com/profile/sshkeys
-
-## 5) 测试是否连接成功
-
-```
-ssh -T git@github.com
-ssh -T git@gitee.com
-```
-
-## 6) clone 项目
-
-```
-# 注意：这里不要用https的地址了！因为上面已经配置了SSH
-git clone git@gitlab.com:用户名/项目.git
-```
-
-## 7) 本地仓库设置
-
-给每个clone下来的项目，都分别配置上”用户名和邮箱“，避免每次提交修改时被git要求输入邮箱和密码。
-```
-cd 本地仓库目录
-git config user.name "用户名"
-git config user.email "邮箱"
-```
-
-或者，直接编辑本地仓库的配置文件  
-**重点：确认url使用的是：git@github.com，而不是https！**   
-vi .git/config
-```
-[remote "origin"]
-        url = git@github.com:用户名/项目.git  # 这个地址可以在github clone项目时，点选SSH看到
-        fetch = +refs/heads/*:refs/remotes/origin/*
-[user]
-        email = 邮箱
-        name = 用户名
+cd "你的这个目录"
+git init
+git add .
+git commit -m "first commit"
+git remote add origin 远程git仓库地址，例如：http://139.9.126.19:38111/xxx/yyy.git
+git push -u origin master
 ```
 
 # 2. 拉取和提交相关
-## 2.1 更新时的强制覆盖
+
+## * 仅拉取指定目录
+```shell
+# 本地目录初始化仓库
+git init
+# 编辑 .git/config 文件，配置好远程仓库的url等信息
+git config core.sparsecheckout true
+
+# 设置需要拉取的目录，例如：
+echo "develop"  >>.git/info/sparse-checkout
+echo "web/assets/*"  >>.git/info/sparse-checkout  # '*' 表示所有
+
+# 之后即可拉取和提交了
+git pull
+```
+在sparse-checkout文件中，也可以设置不拉取什么文件：
+```
+*
+!unwanted
+```
+参考：
+> http://schacon.github.io/git/git-read-tree.html#_sparse_checkout
+
+
+## * 仅拉取最新提交的版本
+当项目过大时，git clone会很慢，解决方法很简单，在git clone时加上--depth=1即可解决。
+> depth用于指定克隆深度，为1即表示只克隆最近一次commit.
+
+这种方法克隆的项目只包含最近的一次commit的一个分支，体积很小。  
+但是，这样会把默认分支clone下来，其他远程分支并不在本地。解决办法：
+```shell
+git clone --depth 1 url
+git remote set-branches origin 'remote_branch_name'
+git fetch --depth 1 origin remote_branch_name
+git checkout remote_branch_name
+```
+
+## * 更新时的强制覆盖
 ### 1) 强制覆盖本地 - 与远程仓库保持一致
 ```
 git fetch --all 
@@ -122,7 +86,7 @@ git stash pop    # 恢复最新的进度到工作区
 git push -u -f origin master
 ```
 
-## 2.2 删除服务器文件,但保留本地
+## * 删除服务器文件,但保留本地
 ```
 git rm --cached -r 本地要保留的目录
 git rm --cached file 本地要保留的文件
