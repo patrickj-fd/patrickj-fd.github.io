@@ -32,21 +32,43 @@ git push -u origin master
 
 # 2. 拉取和提交相关
 
-## 2.1 仅拉取指定目录
-1. 开启sparse clone
+## * 仅拉取指定目录
 ```shell
+# 本地目录初始化仓库
+git init
+# 编辑 .git/config 文件，配置好远程仓库的url等信息
 git config core.sparsecheckout true
-```
 
-2. 设置需要拉取的目录
-```shell
+# 设置需要拉取的目录，例如：
 echo "develop"  >>.git/info/sparse-checkout
 echo "web/assets/*"  >>.git/info/sparse-checkout  # '*' 表示所有
+
+# 之后即可拉取和提交了
+git pull
+```
+在sparse-checkout文件中，也可以设置不拉取什么文件：
+```
+*
+!unwanted
+```
+参考：
+> http://schacon.github.io/git/git-read-tree.html#_sparse_checkout
+
+
+## * 仅拉取最新提交的版本
+当项目过大时，git clone会很慢，解决方法很简单，在git clone时加上--depth=1即可解决。
+> depth用于指定克隆深度，为1即表示只克隆最近一次commit.
+
+这种方法克隆的项目只包含最近的一次commit的一个分支，体积很小。  
+但是，这样会把默认分支clone下来，其他远程分支并不在本地。解决办法：
+```shell
+git clone --depth 1 url
+git remote set-branches origin 'remote_branch_name'
+git fetch --depth 1 origin remote_branch_name
+git checkout remote_branch_name
 ```
 
-之后，正常使用pull和push即可。
-
-## 2.2 更新时的强制覆盖
+## * 更新时的强制覆盖
 ### 1) 强制覆盖本地 - 与远程仓库保持一致
 ```
 git fetch --all 
@@ -64,7 +86,7 @@ git stash pop    # 恢复最新的进度到工作区
 git push -u -f origin master
 ```
 
-## 2.3 删除服务器文件,但保留本地
+## * 删除服务器文件,但保留本地
 ```
 git rm --cached -r 本地要保留的目录
 git rm --cached file 本地要保留的文件
