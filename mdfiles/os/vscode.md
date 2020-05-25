@@ -155,7 +155,7 @@ code pathName/fileName
 ```
 
 # 远程开发配置
-1. 安装Remote Development插件
+1. 安装Remote Development插件（会自动包含SSH等包）
 2. 点击远程资源管理器，在SSH TARGETS配置远程服务器
    点击齿轮图标，打开弹出的config文件，分别配置：Host、Hostname、User
    Host随意命名；Hostname是远程服务器的IP；User是用于登录远程服务器的账户名
@@ -163,6 +163,7 @@ code pathName/fileName
 4. 打开远程连接窗口
    把鼠标放在上一步配置的远程连接条目上，点击Connect to Host in New Window，然后就会在新的窗口打开我们想要的远程连接。
 5. 配置免密登录
+6. 点击“open folder”，即可访问远程目录了
 
 ---
 
