@@ -36,7 +36,7 @@ find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
 ```
 
 ## 查看系统硬件信息
-1. 查看CPU个数
+1. 查看CPU
 ```shell
 # 逻辑CPU个数
 cat /proc/cpuinfo | grep "processor"|wc -l
@@ -45,14 +45,19 @@ cat /proc/cpuinfo |grep "physical id"|sort |uniq|wc -l
 # 其他方式
 cat /proc/cpuinfo | grep physical | uniq -c
 cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
-```
-2. 查看CPU是几核
-```shell
+# 查看CPU是几核
 cat /proc/cpuinfo |grep "cores"|uniq
-```
-3. 查看CPU的主频
-```shell
+# 查看CPU的主频
 cat /proc/cpuinfo |grep MHz|uniq
+# 查看CPU位数(32 or 64)
+getconf LONG_BIT
+echo $HOSTTYPE
+```
+
+2. 内存
+```shell
+grep MemTotal /proc/meminfo
+free -m |grep "Mem" | awk '{print $2}'
 ```
 
 ## lsof
