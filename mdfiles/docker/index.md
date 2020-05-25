@@ -4,6 +4,7 @@
 
 - [安装](install)
 - [常用操作](usage)
+- [项目Docker模版](templateShell/index)
 
 # 镜像
 - [通用的处理-如更新apt源](apps/common)
