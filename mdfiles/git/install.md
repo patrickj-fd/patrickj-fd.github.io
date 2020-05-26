@@ -51,6 +51,7 @@ git config user.email "email@example.com"
 *.bz2
 *.rar
 *.tar
+*.xz
 
 # temp file
 *.log
