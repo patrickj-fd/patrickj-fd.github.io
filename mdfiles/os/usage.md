@@ -36,28 +36,21 @@ find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
 ```
 
 ## 查看系统硬件信息
-1. 查看CPU
 ```shell
-# 逻辑CPU个数
-cat /proc/cpuinfo | grep "processor"|wc -l
-# 物理CPU个数
-cat /proc/cpuinfo |grep "physical id"|sort |uniq|wc -l
-# 其他方式
-cat /proc/cpuinfo | grep physical | uniq -c
-cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
-# 查看CPU是几核
-cat /proc/cpuinfo |grep "cores"|uniq
-# 查看CPU的主频
-cat /proc/cpuinfo |grep MHz|uniq
-# 查看CPU位数(32 or 64)
-getconf LONG_BIT
-echo $HOSTTYPE
-```
+#!/bin/bash
+echo
+echo 物理CPU个数 :  $(cat /proc/cpuinfo |grep "physical id" |sort |uniq |wc -l)
+echo 逻辑CPU个数 :  $(cat /proc/cpuinfo |grep "processor" |wc -l)
+echo 　　CPU核数 :  $(cat /proc/cpuinfo |grep "cores" |uniq)
+echo 　　CPU主频 :  $(cat /proc/cpuinfo |grep MHz |uniq)
+echo 　　CPU位数 :  $(getconf LONG_BIT)
 
-2. 内存
-```shell
-grep MemTotal /proc/meminfo
-free -m |grep "Mem" | awk '{print $2}'
+echo 物理Mem大小 :  $(grep MemTotal /proc/meminfo)
+echo 可用Mem大小 :  $(free -g |grep "Mem" || free -g |grep "内存" |awk '{print $2}')GB
+echo
+# 其他方式看CPU个数
+# cat /proc/cpuinfo | grep physical | uniq -c
+# cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
 ```
 
 ## lsof

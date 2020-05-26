@@ -8,6 +8,8 @@
 - 根据变量是否为空或者未设置，进行赋值
 ```shell
 DIR="${DIR:-"/tmp"}"  # DIR为空或未设置，则赋值为 /tmp
+DIR="${DIR:="/tmp"}"  # DIR为空或未设置，则赋值为 /tmp
+
 DIR="${DIR:+"/tmp"}"  # DIR设置了值，则赋值为 /tmp
 ```
 
@@ -15,10 +17,10 @@ DIR="${DIR:+"/tmp"}"  # DIR设置了值，则赋值为 /tmp
 ```shell
 ARCH=$(uname -m)
 case $ARCH in
-    i386|i686) ARCH=x86 ;;
-    armv6*) ARCH=armv6 ;;
-    armv7*) ARCH=armv7 ;;
-    aarch64*) ARCH=arm64 ;;
+  i386|i686) ARCH=x86 ;;
+  armv6*) ARCH=armv6 ;;
+  armv7*) ARCH=armv7 ;;
+  aarch64*) ARCH=arm64 ;;
 esac
 ```
 
@@ -27,15 +29,15 @@ esac
 ValueList=$(ls)
 # echo "ValueList : ${ValueList}"
 value_arr=($ValueList)
-for val in ${value_arr[@]}; do
+for val in "${value_arr[@]}"; do    # 一定要加上双引号，否则在某些情况下出现意外
   echo "val=${val}"
 done
 ```
 
 # 目录及文件名相关
 ```shell
-parentdir=$(dirname "$PWD")  # 获得当前目录的上级目录全路径名
-parentdir_name=$(basename "$parentdir")  # 获得当前目录的上级目录的名字
+parentdir=$(dirname "$PWD")  # 把这个路径变量的最后一级名字作为一个“文件”看待，得到他所在目录全路径名。
+parentdir_name=$(basename "$PWD")  # 获得这个路径变量的最后后一级名字，也就是当前的目录名
 ```
 ---
 
