@@ -39,6 +39,51 @@ git config user.email "email@example.com"
 	merge = refs/heads/master
 ```
 
+# 忽略文件的通用规则
+```
+# git file
+.git*
+!.gitignore
+
+# package file
+*.zip
+*.gz
+*.bz2
+*.rar
+*.tar
+
+# temp file
+*.log
+*.out
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# ---> VisualStudioCode
+.settings
+.vscode*
+
+# ---> Linux
+*~
+*.o
+*.so
+
+# system ignore
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db
+*.dll
+*.exe
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+```
+
 ---
 
 [首 页](https://patrickj-fd.github.io/index)
