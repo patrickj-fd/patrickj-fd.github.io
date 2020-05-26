@@ -165,6 +165,40 @@ code pathName/fileName
 5. 配置免密登录
 6. 点击“open folder”，即可访问远程目录了
 
+# 内置Git的使用
+内置Git插件的操作命令与git命令的对照关系：
+- Pull：对应 git pull 命令
+- Pull (Rebase)：对应 git pull --rebase 命令
+- Pull from：对应 git pull origin --tags 命令
+- Push：对应 git push 命令
+- Push to：对应 git origin
+- Sync：先 pull 再 push
+  
+- Checkout to：对应 git checkout 命令
+- Publish Branch：对应 git push -u origin 命令
+  
+- Commit All：先 add 再 commit
+- Commit All (Amend)：先 add 再 commit --amend
+- Commit All (Signed Off)：先 add 再 commit --signoff
+- Commit Staged：对应 git commit 命令
+- Commit Staged (Amend)：对应 git commit --amend 命令
+- Commit Staged (Signed Off)：对应 git commit --signoff 命令
+- Undo Last Commit：对应 git reset 命令
+  
+- Discard All Changes：
+- Stage All Changes：对应 git add 命令
+- Unstage All Changes：
+  
+- Apply Latest Stash：
+- Apply Stash：
+- Pop Latest Stash：
+- Pop Stash：
+- Stash：
+- Stash (Include Untracked)：
+
+- Show Git Output：显示 git 的控制台输出
+
+
 ---
 
 [首 页](https://patrickj-fd.github.io/index)
