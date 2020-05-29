@@ -4,7 +4,25 @@
 
 # 安装
 ```
+# Ubuntu
 sudo apt-get install git
+
+# CentOS7 默认是1.8.3，直接yum安装没办法升级
+# 找到系统上git，卸载掉
+yum remove git
+rpm -qa |grep -i git
+# 还有的话，用找到的确切名字再次卸载
+yum remove git-1.8.3.1-22.el7_8.x86_64
+
+wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.26.2.tar.xz
+tar xf git-2.26.2.tar.xz
+cd git-2.26.2
+make prefix=/usr/local/git all
+make prefix=/usr/local/git install
+# 把git/bin加到PATH里面即可
+echo "export PATH=\$PATH:/usr/local/git/bin" >> /etc/bashrc
+source /etc/bashrc
+git --version
 ```
 # 初始设置
 如果只有一个远程仓库，可以设置全局配置

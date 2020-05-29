@@ -48,8 +48,10 @@ VS Code的层级设置关系为：
 
 ## 制表符
 VS Code 会根据所打开的文件来决定该使用空格还是制表。也就是说，如果项目中使用的都是制表符，那么，在写新的代码时，按下tab 键后，编辑器就会识别成制表符。
-- editor.detectIndentation ：打开/关闭上面的这个功能
-- editor.insertSpaces ：按 Tab 键时插入空格（默认）
+定制这个设置的方式：在“文件->首选项->设置”的“用户设置”里搜索下面3个选项：
+- detectIndentation（不勾选） ：目的是不要检测到第一个是tab，就后面都用tab（因为这样会覆盖默认设置）
+- renderControlCharacters（选中）
+- renderWhitespace（选 all）
 
 ## 新文件默认文件类型
 files.defaultLanguage ：修改自己希望的文件类型，比如：markdown
