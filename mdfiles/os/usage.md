@@ -26,33 +26,34 @@ find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
 - '-I file' ：指定输入的别名为file。可替换为：[ xargs mv -t ./ ]。'mv -t' 颠倒了原路径和目标路径，免除了-I参数，但若文件名含有空格，则不能正常执行
 - '-mindepth 2' ：排除当前层级
 
-### vi
-多行编辑：
-```
-1. 光标定位到要操作首行或尾行。
-2. CTRL+v 进入“可视 块”模式，上下键选取多行。
-3. SHIFT+i(I) 输入要插入的内容。
-4. ESC 按两次
-```
+### vi 的用法
+- 多行按列编辑
+  1. 光标定位到要操作首行或尾行。
+  2. CTRL+v 进入“可视 块”模式，上下键选取多行。
+  3. SHIFT+i(I) 输入要插入的内容。
+  4. ESC 按两次
+
+- 删除多行
+  * : 1,10d  --  1到10行
+  * ndd  --  光标所在行以下的n行
+  * d$ -- 删除以当前字符开始的一行字符
 
 ## 查看系统硬件信息
-1. 查看CPU个数
 ```shell
-# 逻辑CPU个数
-cat /proc/cpuinfo | grep "processor"|wc -l
-# 物理CPU个数
-cat /proc/cpuinfo |grep "physical id"|sort |uniq|wc -l
-# 其他方式
-cat /proc/cpuinfo | grep physical | uniq -c
-cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
-```
-2. 查看CPU是几核
-```shell
-cat /proc/cpuinfo |grep "cores"|uniq
-```
-3. 查看CPU的主频
-```shell
-cat /proc/cpuinfo |grep MHz|uniq
+#!/bin/bash
+echo
+echo 物理CPU个数 :  $(cat /proc/cpuinfo |grep "physical id" |sort |uniq |wc -l)
+echo 逻辑CPU个数 :  $(cat /proc/cpuinfo |grep "processor" |wc -l)
+echo 　　CPU核数 :  $(cat /proc/cpuinfo |grep "cores" |uniq)
+echo 　　CPU主频 :  $(cat /proc/cpuinfo |grep MHz |uniq)
+echo 　　CPU位数 :  $(getconf LONG_BIT)
+
+echo 物理Mem大小 :  $(grep MemTotal /proc/meminfo)
+echo 可用Mem大小 :  $(free -g |grep "Mem" || free -g |grep "内存" |awk '{print $2}')GB
+echo
+# 其他方式看CPU个数
+# cat /proc/cpuinfo | grep physical | uniq -c
+# cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
 ```
 
 ## lsof
