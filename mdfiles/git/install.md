@@ -3,11 +3,14 @@
 ---
 
 # 安装
+#### Ubuntu
 ```
-# Ubuntu
 sudo apt-get install git
+```
 
-# CentOS7 默认是1.8.3，直接yum安装没办法升级
+#### CentOS 7
+CentOS 7 默认是1.8.3，直接yum安装没办法升级
+```shell
 # 找到系统上git，卸载掉
 yum remove git
 rpm -qa |grep -i git
