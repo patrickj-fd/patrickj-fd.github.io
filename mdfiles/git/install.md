@@ -25,8 +25,14 @@ yum install gcc perl-ExtUtils-MakeMaker
 wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.26.2.tar.xz
 tar xf git-2.26.2.tar.xz
 cd git-2.26.2
+# 编译
 make prefix=/usr/local/git all
 make prefix=/usr/local/git install
+# 也可以：
+./configure --prefix=/usr/local/git
+make -j
+make install
+
 # 把git/bin加到PATH里面即可
 echo "export PATH=\$PATH:/usr/local/git/bin" >> /etc/bashrc
 source /etc/bashrc
