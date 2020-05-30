@@ -265,7 +265,8 @@ EXPOSE 5432
 CMD ["postgres"]
 ```
 
-* docker-enrypoint.sh
+#### docker-enrypoint.sh
+
 ```shell
 #!/usr/bin/env bash
 set -Eeo pipefail
