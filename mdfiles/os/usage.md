@@ -54,7 +54,15 @@ find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
   * ndd  --  光标所在行以下的n行
   * d$ -- 删除以当前字符开始的一行字符
 
-## 查看系统硬件信息
+## 查看系统信息
+### 目录占用
+```shell
+du -sh                 # 当前目录总大小
+du -sh *               # 当前目录的每个文件和目录的大小
+du -h --max-depth=0    # 等价'du -sh *'，指定不同数字，可看不同级别目录的大小
+```
+
+### 系统硬件信息
 ```shell
 #!/bin/bash
 echo
@@ -99,6 +107,7 @@ sudo apt-get install \
 ```
 
 ## 彻底卸载软件
+#### Ubuntu
 ```
 apt --purge remove <package>            # 删除软件及其配置文件
 dpkg -l |grep ^rc|awk '{print $2}' |sudo xargs dpkg -P		# 清理dpkg的列表中有“rc”状态的软件包
@@ -106,6 +115,12 @@ dpkg -l |grep ^rc|awk '{print $2}' |sudo xargs dpkg -P		# 清理dpkg的列表中
 # 删除为了满足依赖而安装的，但现在不再需要的软件包（包括已安装包），保留配置文件
 # 慎用！！！它会在你不知情的情况下，一股脑删除很多“它认为”你不再使用的软件! 
 apt-get autoremove
+```
+#### CentOS
+```shell
+rpm -qa | grep <package>    # 找到需要卸载软件的确切名字
+yum remove <package>        # 卸载（同时卸载其依赖的软件）
+rpm -e <package>            # 仅卸载这个软件，不管依赖
 ```
 
 ## 查看已安装软件
