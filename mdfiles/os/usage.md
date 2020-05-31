@@ -25,6 +25,7 @@ egrep -w '[a-z]{5,6}' test.txt
   * -c : 指定时间曾被更改过的文件，意思是文件权限被更改过
   * -a : 指定时间曾被存取过的文件，意思是文件被读取过
   * time/min : 查找的单位，time是天/min是分钟
+
 ```shell
 find . -mtime +3 -type f -print # 最近3天内被修改过的文件
 find . -mmin  +3 -type f -print # 最近3分钟内被修改过的文件
@@ -34,6 +35,7 @@ find . -mmin  +3 -type f -print # 最近3分钟内被修改过的文件
 ```shell
 find ./ -mtime +3 -type f -name "mkimg*" -exec mv {} bak \;
 ```
+
 ### xargs 的用法
 ```shell
 find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
@@ -59,7 +61,7 @@ find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
 ```shell
 du -sh                 # 当前目录总大小
 du -sh *               # 当前目录的每个文件和目录的大小
-du -h --max-depth=0    # 等价'du -sh *'，指定不同数字，可看不同级别目录的大小
+du -h --max-depth=1    # 等价'du -sh *'，指定不同数字，可看不同级别目录的大小
 ```
 
 ### 系统硬件信息
