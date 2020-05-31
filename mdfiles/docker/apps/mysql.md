@@ -80,7 +80,10 @@ sudo docker container run -d -p 33306:3306 --name $CAR_NAME \
 # 通过容器使用mysql客户端：
 ```shell
 # 容器的IP：docker inspect 容器名 | grep IP
+# 用临时容器的mysql客户端
 docker container run --rm -it mysql:5.7 sh -c 'exec mysql -h"容器的IP" -uroot -p"123456"'
+# 使用已经创建的容器
+docker container exec -it yours_car_name sh -c "exec mysql -h容器的IP -uroot -p123456"
 ```
 
 # 【备份数据】
