@@ -6,6 +6,10 @@
 下载地址：
 > https://code.visualstudio.com/
 
+# 定制
+### 全局修改CRLF为LF
+Settings中搜索 'eol'，会定位到：Text Editor -> Files: Eol，下拉框里面选择\n即可
+
 # 基本知识
 ## 工作区
 VSCode中的工作区是为了让你配置一个工作环境,让你更好地针对不同地环境（如JAVA环境，C++环境）设定不同地配置体验更好的VSCode
