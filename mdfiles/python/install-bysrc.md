@@ -8,7 +8,7 @@
 wget -c https://www.python.org/ftp/python/3.6.9/Python-3.6.9.tgz
 
 # 安装必要的软件
-apt install -y zlib zlib-devel openssl openssl-devel openssl-static \
+yum(or apt) install -y zlib zlib-devel openssl openssl-devel openssl-static \
 bzip2 bzip2-devel \
 ncurses ncurses-devel \
 readline readline-devel \
@@ -25,13 +25,22 @@ PYTHON_HOME=/opt/Python-$PYTHON_VERSION
 
 tar zxf Python-$PYTHON_VERSION.tgz -C /tmp
 cd /tmp/Python-$PYTHON_VERSION
-# 不加也行： --enable-loadable-sqlite-extensions --with-system-expat --with-system-ffi
-# 可以加上： --enable-optimizations --enable-shared
-./configure --prefix=$PYTHON_HOME
+# 最好加上： --enable-optimizations --with-system-expat --with-system-ffi
+# 一定加上： --enable-shared
+./configure --prefix=$PYTHON_HOME --enable-shared
 make -j 8
 make install
 
-# 3. 配置软连接
+# 配置动态链接库（如果configure时，什么参数都没加，可以跳过本步骤）
+# 加上那些操作后，不配置动态链接库的位置，运行python3会报错：error while loading shared libraries libpython3.6m.so.1.0
+echo "/opt/Python-$PYTHON_VERSION/lib" > /etc/ld.so.conf.d/python3.6.conf
+ldconfig
+# 查看libpython3.6m.so.1.0 等动态库是否被成功指向echo中的lib目录下的对应文件
+ldd /opt/Python-$PYTHON_VERSION/bin/python3
+# 以上方式也可以通过设置LD_LIBRARY_PATH来完成，但使用LD_LIBRARY_PATH是个临时方案，不推荐
+
+
+# 配置软连接
 ln -s $PYTHON_HOME/bin/python3 /usr/bin/python3
 ln -s $PYTHON_HOME/bin/pip3 /usr/bin/pip3
 python3 -V
