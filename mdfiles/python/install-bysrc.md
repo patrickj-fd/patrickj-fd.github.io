@@ -8,7 +8,13 @@
 wget -c https://www.python.org/ftp/python/3.6.9/Python-3.6.9.tgz
 
 # 安装必要的软件
-yum(or apt) install -y zlib zlib-devel openssl openssl-devel openssl-static \
+# Debain
+apt install -y gcc libbluetooth-dev libbz2-dev libc6-dev libexpat1-dev libffi-dev \
+    libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev \
+    libssl-dev make tk-dev xz-utils zlib1g-dev
+
+# CentOS
+yum install -y zlib zlib-devel openssl openssl-devel openssl-static \
 bzip2 bzip2-devel \
 ncurses ncurses-devel \
 readline readline-devel \
