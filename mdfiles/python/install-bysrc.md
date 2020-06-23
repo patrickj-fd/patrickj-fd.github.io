@@ -13,7 +13,7 @@ apt install -y --no-install-recommends \
     autoconf automake gcc g++ bzip2 dpkg-dev file imagemagick make patch unzip openssh-client \
     libbz2-dev libc6-dev libcurl4-openssl-dev libdb-dev libevent-dev libffi-dev libgdbm-dev \
     libglib2.0-dev libgmp-dev libjpeg-dev libkrb5-dev liblzma-dev libmagickcore-dev libmagickwand-dev \
-    libmaxminddb-dev libncurses5-dev libncursesw5-dev libpng-dev libpq-dev libreadline-dev \
+    libmaxminddb-dev libncurses5-dev libncursesw5-dev libpng-dev libpq-dev libreadline-dev zlib1g \
     libsqlite3-dev libssl-dev libtool libwebp-dev libxml2-dev libxslt-dev libyaml-dev zlib1g-dev \
     libbluetooth-dev tk-dev xz-utils uuid-dev
 
