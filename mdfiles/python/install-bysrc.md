@@ -57,8 +57,8 @@ make install
 echo "$PYTHON_HOME/lib" > /etc/ld.so.conf.d/python3.6.conf
 ldconfig
 # 查看libpython3.6m.so.1.0 等动态库是否被成功指向echo中的lib目录下的对应文件
-ldd /opt/Python-$PYTHON_VERSION/bin/python3
-# 以上方式也可以通过设置LD_LIBRARY_PATH来完成，但使用LD_LIBRARY_PATH是个临时方案，不推荐
+ldd $PYTHON_HOME/bin/python3
+# 以上方式也可以通过设置export LD_LIBRARY_PATH=$PYTHON_HOME/lib来完成，但使用LD_LIBRARY_PATH是个临时方案，不推荐
 
 
 # 配置软连接
