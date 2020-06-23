@@ -9,9 +9,13 @@ wget -c https://www.python.org/ftp/python/3.6.9/Python-3.6.9.tgz
 
 # 安装必要的软件
 # Debain
-apt install -y gcc libbluetooth-dev libbz2-dev libc6-dev libexpat1-dev libffi-dev \
-    libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev \
-    libssl-dev make tk-dev xz-utils zlib1g-dev
+apt install -y --no-install-recommends \
+    autoconf automake gcc g++ bzip2 dpkg-dev file imagemagick make patch unzip openssh-client \
+    libbz2-dev libc6-dev libcurl4-openssl-dev libdb-dev libevent-dev libffi-dev libgdbm-dev \
+    libglib2.0-dev libgmp-dev libjpeg-dev libkrb5-dev liblzma-dev libmagickcore-dev libmagickwand-dev \
+    libmaxminddb-dev libncurses5-dev libncursesw5-dev libpng-dev libpq-dev libreadline-dev \
+    libsqlite3-dev libssl-dev libtool libwebp-dev libxml2-dev libxslt-dev libyaml-dev zlib1g-dev \
+    libbluetooth-dev tk-dev xz-utils uuid-dev
 
 # CentOS
 yum install -y zlib zlib-devel openssl openssl-devel openssl-static \
@@ -33,13 +37,24 @@ tar zxf Python-$PYTHON_VERSION.tgz -C /tmp
 cd /tmp/Python-$PYTHON_VERSION
 # 最好加上： --enable-optimizations --with-system-expat --with-system-ffi
 # 一定加上： --enable-shared
+# 官方debain系docker中的编译参数：
+gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"
+--build="$gnuArch" \
+--enable-loadable-sqlite-extensions \
+--enable-optimizations \
+--enable-option-checking=fatal \
+--enable-shared \
+--with-system-expat \
+--with-system-ffi \
+--without-ensurepip
+
 ./configure --prefix=$PYTHON_HOME --enable-shared
 make -j 8
 make install
 
 # 配置动态链接库（如果configure时，什么参数都没加，可以跳过本步骤）
 # 加上那些操作后，不配置动态链接库的位置，运行python3会报错：error while loading shared libraries libpython3.6m.so.1.0
-echo "/opt/Python-$PYTHON_VERSION/lib" > /etc/ld.so.conf.d/python3.6.conf
+echo "$PYTHON_HOME/lib" > /etc/ld.so.conf.d/python3.6.conf
 ldconfig
 # 查看libpython3.6m.so.1.0 等动态库是否被成功指向echo中的lib目录下的对应文件
 ldd /opt/Python-$PYTHON_VERSION/bin/python3
@@ -49,6 +64,7 @@ ldd /opt/Python-$PYTHON_VERSION/bin/python3
 # 配置软连接
 ln -s $PYTHON_HOME/bin/python3 /usr/bin/python3
 ln -s $PYTHON_HOME/bin/pip3 /usr/bin/pip3
+ln -s $PYTHON_HOME/bin/python3-config /usr/bin/python-config
 python3 -V
 pip3 -V
 ```
