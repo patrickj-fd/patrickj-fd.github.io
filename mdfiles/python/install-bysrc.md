@@ -72,6 +72,12 @@ rm /usr/bin/python3m
 ln -s $PYTHON_HOME/bin/python3.7m /usr/bin/python3m
 python3 -V
 pip3 -V
+
+# 如果没有pip3，安装它：
+python3 -m ensurepip
+
+# 升级pip
+python3 -m pip install --upgrade pip
 ```
 
 # 创建虚拟环境
