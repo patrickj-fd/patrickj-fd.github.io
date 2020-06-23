@@ -62,9 +62,14 @@ ldd /opt/Python-$PYTHON_VERSION/bin/python3
 
 
 # 配置软连接
+rm /usr/bin/python3
 ln -s $PYTHON_HOME/bin/python3 /usr/bin/python3
+rm /usr/bin/pip3
 ln -s $PYTHON_HOME/bin/pip3 /usr/bin/pip3
-ln -s $PYTHON_HOME/bin/python3-config /usr/bin/python-config
+rm /usr/bin/python3-config
+ln -s $PYTHON_HOME/bin/python3-config /usr/bin/python3-config
+rm /usr/bin/python3m
+ln -s $PYTHON_HOME/bin/python3.7m /usr/bin/python3m
 python3 -V
 pip3 -V
 ```
