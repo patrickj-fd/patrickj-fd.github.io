@@ -3,7 +3,7 @@
 ---
 
 # 卸载
-# 慎重！！！ 这会把很多系统级的依赖库都卸载掉!
+## 慎重！！！ 这会把很多系统级的依赖库都卸载掉!
 apt-get remove python3
 apt-get remove --auto-remove python3
 apt-get purge --auto-remove python3
@@ -21,7 +21,9 @@ apt install -y --no-install-recommends \
     libglib2.0-dev libgmp-dev libjpeg-dev libkrb5-dev liblzma-dev libmagickcore-dev libmagickwand-dev \
     libmaxminddb-dev libncurses5-dev libncursesw5-dev libpng-dev libpq-dev libreadline-dev zlib1g \
     libsqlite3-dev libssl-dev libtool libwebp-dev libxml2-dev libxslt-dev libyaml-dev zlib1g-dev \
-    libbluetooth-dev tk-dev xz-utils uuid-dev gfortran libblas-dev liblapack-dev libopenblas-dev
+    libbluetooth-dev tk-dev xz-utils uuid-dev \
+    gfortran libblas-dev liblapack-dev libopenblas-dev libatlas-base-dev llvm-8
+# 最后一行 gfortran 开头的这些库，是为了安装 scripy 需要的库
 
 # CentOS
 yum install -y zlib zlib-devel openssl openssl-devel openssl-static \
