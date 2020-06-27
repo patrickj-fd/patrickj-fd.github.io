@@ -2,7 +2,7 @@
 
 ---
 
-# 系统命令
+# 一、系统命令
 ## 常用命令
 ### grep 和 egrep
 参数：  
@@ -96,7 +96,7 @@ lsof -d 4：显示使用fd为4的进程
 lsof -i -U：显示所有打开的端口和UNIX domain文件
 ```
 
-# apt 使用
+# 二、包管理器使用（apt/yum）
 ## apt 安装软件
 允许apt使用HTTPS安装软件
 ```
@@ -133,12 +133,38 @@ list状态:
 - 期望状态=未知(u)/安装(i)/删除(r)/清除(p)/保持(h)
 - 当前状态=未(n)/已安装(i)/仅存配置(c)/仅解压缩(U)/配置失败(F)/不完全安装(H)
 
-# 系统使用
+# 三、系统使用
+## 设置开机启动
+创建开机启动服务文件：vi /etc/systemd/system/frpc.service
+```ini
+[Unit]
+Description=Frp Client Service
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+Restart=on-failure
+RestartSec=5s
+ExecStart=/opt/frp-0.33.0/frpc -c /opt/frp-0.33.0/frpc.ini
+ExecReload=/opt/frp-0.33.0/frpc reload -c /opt/frp-0.33.0/frpc.ini
+
+[Install]
+WantedBy=multi-user.target
+```
+
+开启服务
+```shell
+sudo systemctl start frpc
+sudo systemctl enable frpc
+```
+
 ## 屏幕截图
 屏幕截图：print； 窗口截图：Alt + print； 区域截图：Shift + print。图片被自动保存到了home-文档目录下。如果要存到剪切板中，以上命令都加上 Ctrl 即可。  
 “系统 -> 设备 -> 键盘” 可以修改截图快捷键。
 
-# 安装Nvidia显卡
+
+# 九、安装Nvidia显卡
 > https://www.cnblogs.com/2sheep2simple/p/10787371.html  
 > https://www.cnblogs.com/cenariusxz/p/10841099.html 实测有效！  
 
