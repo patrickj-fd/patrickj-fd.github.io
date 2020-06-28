@@ -2,6 +2,8 @@
 
 ---
 
+> https://github.com/jlevy/the-art-of-command-line/blob/master/README-zh.md
+
 # 一、系统命令
 ## 常用命令
 ### grep 和 egrep
