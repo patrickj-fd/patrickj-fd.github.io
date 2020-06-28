@@ -2,7 +2,9 @@
 
 ---
 
+# 树莓派
 - [配置WIFI和SSH](pi-wifi-ssh))
+- [编译安装Hadoop](hadoop)
 
 ---
 

@@ -11,7 +11,7 @@
 - [WPS安装](wps)
 - [VS Code](vscode)
 
-- [Arch 架构](arch-usage)
+- [Arch 架构](arch/index)
 
 ---
 
