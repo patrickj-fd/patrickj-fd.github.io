@@ -190,31 +190,42 @@ source /etc/profile
 ```
 
 ### (-) 编译 Spark
+#### 下载源码
 ```shell
 wget -c https://github.com/apache/spark/archive/v2.4.6.tar.gz
 tar xf v2.4.6.tar.gz && cd spark-2.4.6
+```
+#### 修改配置
+- 修改根目录的pom.xml文件，把第1个repository和第1个pluginRepository里面的url标签(googleapis)，改成：https://mirrors.huaweicloud.com/repository/maven/
+- 修改编译脚本：dev/make-distribution.sh ：
 
-# 这个环境变量可以不加，因为在 make-distribution.sh 里面已经加上了
+```
+1） 第40行左右，给MVN赋值为自己安装的maven（要使用 3.5.4！）。否则用Spark的mvn又得改一遍setting.xml文件
+2） 把130行左右开始的4段 MVN help:evaluate 代码注释掉，直接给 VERSION、SCALA_VERSION赋值即可，如下所示：（否则会及其耗时）
+--- 手工设置被注释掉的4个变量：
+VERSION=2.4.6
+SCALA_VERSION=2.12  # 如果用scala版本是2.11.x，那么设置成：2.11
+SPARK_HADOOP_VERSION=
+SPARK_HIVE=1  # Hive版本1.x
+```
+
+#### 开始编译
+
+```shell
+# 这个环境变量可以不加，因为在 make-distribution.sh 里面已经设置了
 # export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=1g"
 
-# Building a Runnable Distribution like those distributed by the : https://spark.apache.org/downloads.html
-dev/make-distribution.sh --tgz --name 2.4.6-aarch64 -Phive,hive-thriftserver
+# 根据需要，后面增加各种参数，比如：-Phive,hive-thriftserver -PHadoop-2.6(hadoop的大版本号) -Dhadoop.version=2.6.0-cdh5.15.1(详细版本号) -Pyarn
+dev/make-distribution.sh --tgz --name 2.4.6-aarch64
 ```
-
-- 运行 make-distribution.sh 之前，修改内容
-  * 第40行左右，给MVN赋值为自己安装的maven（要使用 3.5.4！）。否则用Spark的mvn又得改一遍setting.xml文件
-  * 把130行左右开始的4段 MVN help:evaluate 代码注释掉，直接给 VERSION、SCALA_VERSION赋值即可，如下所示：（否则会及其耗时）
-```shell
-VERSION=2.4.6
-SCALA_VERSION=2.12.11
-SPARK_HADOOP_VERSION=
-SPARK_HIVE=
-```
-
 - 如果mvn编译执行一半停止了，再更换源，可能会出现卡死在某个jar一致无法下载。这时要进去本地仓库这个jar包所在目录，把.part、.part.lock等文件删掉，或者把这个jar包目录所有文件都删掉，再重新执行
 
-- 2.4.6默认使用的是scala 2.11.12，如果要更换，到根目录的pom.xml里面把scala.version等版本号修改了
+#### 成果及验证
+在当前目录下，会编译出来指定名字后缀的 tgz 文件。解压到任意目录即可使用了。
 
+echo "export SPARK_HOME=/data1/java/spark-2.4.6-bin-2.4.6-aarch64" >> ~/.bashrc
+echo "export PATH=\$PATH:\$SPARK_HOME/bin:\$SPARK_HOME/sbin" >> ~/.bashrc
+source ~/.bashrc
 ---
 
 [首 页](https://patrickj-fd.github.io)
