@@ -232,12 +232,12 @@ spark-submit \
 --class org.apache.spark.examples.SparkPi \
 --executor-memory 1G \
 --total-executor-cores 2 \
-./examples/jars/spark-examples_2.11-2.4.6.jar \
+$SPARK_HOME/examples/jars/spark-examples_2.11-2.4.6.jar \
 100
 # 应该看到运行结果： Pi is roughly 3.1409291140929114
 
 # 2）编写wordcount程序
-mkdir input && cd input
+mkdir input
 echo "hello spark" >> input/1.txt && echo "hello world" >> input/1.txt
 echo "hello fd" >> input/2.txt && echo "hrs spark" >> input/2.txt
 # 进入shell
