@@ -222,10 +222,33 @@ dev/make-distribution.sh --tgz --name 2.4.6-aarch64
 
 #### 成果及验证
 在当前目录下，会编译出来指定名字后缀的 tgz 文件。解压到任意目录即可使用了。
-
+```shell
 echo "export SPARK_HOME=/data1/java/spark-2.4.6-bin-2.4.6-aarch64" >> ~/.bashrc
 echo "export PATH=\$PATH:\$SPARK_HOME/bin:\$SPARK_HOME/sbin" >> ~/.bashrc
 source ~/.bashrc
+
+# 1）运行计算Pi的程序
+spark-submit \
+--class org.apache.spark.examples.SparkPi \
+--executor-memory 1G \
+--total-executor-cores 2 \
+./examples/jars/spark-examples_2.11-2.4.6.jar \
+100
+# 应该看到运行结果： Pi is roughly 3.1409291140929114
+
+# 2）编写wordcount程序
+mkdir input && cd input
+echo "hello spark" >> input/1.txt && echo "hello world" >> input/1.txt
+echo "hello fd" >> input/2.txt && echo "hrs spark" >> input/2.txt
+# 进入shell
+spark-shell
+scala> sc.textFile("input").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_).collect
+# 得到结果：
+res1: Array[(String, Int)] = Array((hrs,1), (world,1), (hello,3), (fd,1), (spark,2))
+
+# 在启动了shell的状态下，可以浏览器访问 http://ip:4040 查看运行结果
+```
+
 ---
 
 [首 页](https://patrickj-fd.github.io)
