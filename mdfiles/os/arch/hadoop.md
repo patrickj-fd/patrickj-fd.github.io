@@ -23,8 +23,36 @@ sudo echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile
 source /etc/profile
 mvn -v
 ```
+
 - 修改仓库配置：apache-maven-3.5.4/conf/settings.xml
-  * <localRepository>/path/to/local/repo</localRepository>
+```xml
+<localRepository>/path/to/local/repo</localRepository>
+
+<!-- 下面要放到 147 行左右的 <mirrors> 标签里面！ -->
+<!-- 务必确保 <mirrors> 标签只有一个！ -->
+    <mirror>
+      <id>huaweimaven</id>
+      <mirrorOf>central</mirrorOf>
+      <name>huawei maven</name>
+      <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+    </mirror>
+
+```
+
+## 3. 设置 gcc 和 g++
+**仅在Aarch64平台上需要这样设置gcc**
+
+```shell
+# 找到 gcc。一般位于/usr/bin/gcc
+command -v gcc
+## 看看gcc是符号连接还是真实程序，并相应修改下面脚本文件的指向
+ls -l /usr/bin/gcc
+echo "#! /bin/sh" > gcc-signed-char.sh
+echo "/usr/bin/gcc-8 -fsigned-char "$@"" >> gcc-signed-char.sh
+chmod +x gcc-signed-char.sh
+ln -s /usr/bin/gcc-signed-char.sh /usr/bin/gcc
+```
+对 g++ 做同样的处理
 
 ## 3. cmake
 ```shell
@@ -76,7 +104,8 @@ vim CMakeLists.txt
 修改：option(BUILD_SHARED_LIBS "Build shared libraries(DLLs)." ON)
 ```
 
-# 二、编译Hadoop
+# 二、编译Hadoop 3.1.3
+完成（一、环境配置）的 1-5 步
 ## 编译
 ```shell
 wget https://archive.apache.org/dist/hadoop/common/hadoop-3.1.3/hadoop-3.1.3-src.tar.gz
@@ -100,7 +129,88 @@ mvn package -DskipTests -Pdist,native -Dtar -Dsnappy.lib=/usr/local/lib -Dbundle
 
 # 三、编译Hive
 
-# 四、编译Spark
+# 四、编译Spark 2.4.6
+说明：Spark runs on Java 8, Python 2.7+/3.4+ and R 3.1+. For the Scala API, Spark 2.4.6 uses Scala 2.12. You will need to use a compatible Scala version (2.12.x).
+
+完成（一、环境配置）的 1-2 步
+
+## 安装 R(可选) 一般不需要
+```shell
+wget -c http://cran.rstudio.com/src/base/R-3/R-3.1.1.tar.gz
+tar -zxf R-3.1.1.tar.gz && cd R-3.1.1
+./configure --prefix=/opt/R-3.1.1 --enable-R-shlib --enable-R-static-lib --with-libpng --with-jpeglib
+sudo make all -j4
+sudo make install
+
+export R_HOME=/opt/R-3.1.1
+```
+
+## 安装 Scala
+### (1) 安装 sbt
+```shell
+wget -c https://piccolo.link/sbt-0.13.18.tgz
+tar -zxf sbt-0.13.18.tgz && mv sbt /opt/
+# repositories标签定义了sbt编译时使用的maven仓库顺序。内容参考下面的样例
+mkdir ~/.sbt
+cp repositories ~/.sbt
+sudo echo "export SBT_HOME=/opt/sbt" >> /etc/profile
+sudo echo "export PATH=\$PATH:\$SBT_HOME/bin" >> /etc/profile
+source /etc/profile
+```
+- repositories内容样例
+```ini
+[repositories]
+local
+huawei-maven: http://mirrors.huaweicloud.com/repository/maven/
+sbt-releases-repo: http://repo.typesafe.com/typesafe/ivy-releases/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+sbt-plugins-repo: http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+```
+
+### (2) 安装 scala
+```shell
+cd /opt/
+sudo git clone https://github.com/scala/scala.git
+cd scala
+git checkout v2.11.12
+# scala 2.12.11 不需要加下面这句
+sed -i "50,50s%)%),\n\ \ \ \ Keys.\`package\`\ := bundle.value%g" project/Osgi.scala
+# 这个sed就是把第50行(50,50就是开始行50、结束行50，也即第50行)改成下面两行：
+#    ),
+#    Keys.`package` := bundle.value
+# 实际上，第50行就是一个括号
+
+
+sudo sbt package
+sudo echo "export SCALA_HOME=/opt/scala" >> /etc/profile
+sudo echo "export PATH=\$PATH:\$SCALA_HOME/build/pack/bin" >> /etc/profile
+source /etc/profile
+```
+
+### (-) 编译 Spark
+```shell
+wget -c https://github.com/apache/spark/archive/v2.4.6.tar.gz
+tar xf v2.4.6.tar.gz && cd spark-2.4.6
+
+# 这个环境变量可以不加，因为在 make-distribution.sh 里面已经加上了
+# export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=1g"
+
+# Building a Runnable Distribution like those distributed by the : https://spark.apache.org/downloads.html
+dev/make-distribution.sh --tgz --name 2.4.6-aarch64 -Phive,hive-thriftserver
+```
+
+- 运行 make-distribution.sh 之前，修改内容
+  * 第40行左右，给MVN赋值为自己安装的maven（要使用 3.5.4！）。否则用Spark的mvn又得改一遍setting.xml文件
+  * 把130行左右开始的4段 MVN help:evaluate 代码注释掉，直接给 VERSION、SCALA_VERSION赋值即可，如下所示：（否则会及其耗时）
+```shell
+VERSION=2.4.6
+SCALA_VERSION=2.12.11
+SPARK_HADOOP_VERSION=
+SPARK_HIVE=
+```
+
+- 如果mvn编译执行一半停止了，再更换源，可能会出现卡死在某个jar一致无法下载。这时要进去本地仓库这个jar包所在目录，把.part、.part.lock等文件删掉，或者把这个jar包目录所有文件都删掉，再重新执行
+
+- 2.4.6默认使用的是scala 2.11.12，如果要更换，到根目录的pom.xml里面把scala.version等版本号修改了
 
 ---
 
