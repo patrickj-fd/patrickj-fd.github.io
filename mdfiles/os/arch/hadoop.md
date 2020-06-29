@@ -25,6 +25,7 @@ mvn -v
 ```
 
 - 修改仓库配置：conf下settings.xml
+
 ```
 <localRepository>/path/to/local/repo</localRepository>
 
