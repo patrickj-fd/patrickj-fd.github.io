@@ -24,8 +24,8 @@ source /etc/profile
 mvn -v
 ```
 
-- 修改仓库配置：apache-maven-3.5.4/conf/settings.xml
-```xml
+- 修改仓库配置：conf下settings.xml
+```
 <localRepository>/path/to/local/repo</localRepository>
 
 <!-- 下面要放到 147 行左右的 <mirrors> 标签里面！ -->
@@ -148,6 +148,8 @@ export R_HOME=/opt/R-3.1.1
 ## 安装 Scala
 ### (1) 安装 sbt
 ```shell
+# x86平台可直接下载下面的二进制包，解压配置HOME即可
+# https://downloads.lightbend.com/scala/2.12.11/scala-2.12.11.tgz
 wget -c https://piccolo.link/sbt-0.13.18.tgz
 tar -zxf sbt-0.13.18.tgz && mv sbt /opt/
 # repositories标签定义了sbt编译时使用的maven仓库顺序。内容参考下面的样例
