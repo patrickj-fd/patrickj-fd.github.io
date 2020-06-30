@@ -209,6 +209,11 @@ SPARK_HADOOP_VERSION=
 SPARK_HIVE=1  # Hive版本1.x
 ```
 
+- 使用scala 2.12编译spark
+```shell
+dev/change-scala-version.sh 2.12
+```
+
 #### 开始编译
 
 ```shell
@@ -265,8 +270,9 @@ lines terminated by '\n'
 stored as textfile location '/data1/java/app/spark/input';
 > show tables;
 > select * from test;
-
 ```
+
+- [验证 standalone 集群模式](http://spark.apache.org/docs/2.4.6/spark-standalone.html)
 
 ---
 
