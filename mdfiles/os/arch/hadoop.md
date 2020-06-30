@@ -216,7 +216,8 @@ SPARK_HIVE=1  # Hive版本1.x
 # export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=1g"
 
 # 根据需要，后面增加各种参数，比如：-Phive,hive-thriftserver -PHadoop-2.6(hadoop的大版本号) -Dhadoop.version=2.6.0-cdh5.15.1(详细版本号) -Pyarn
-dev/make-distribution.sh --tgz --name 2.4.6-aarch64
+# 编译一个仅仅包含hive-thriftserver的版本。如果不加这个，就是编译了一个最小功能版。
+dev/make-distribution.sh --tgz --name 2.4.6-aarch64 -Phive-thriftserver
 ```
 - 如果mvn编译执行一半停止了，再更换源，可能会出现卡死在某个jar一致无法下载。这时要进去本地仓库这个jar包所在目录，把.part、.part.lock等文件删掉，或者把这个jar包目录所有文件都删掉，再重新执行
 
@@ -247,6 +248,23 @@ scala> sc.textFile("input").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_).co
 res1: Array[(String, Int)] = Array((hrs,1), (world,1), (hello,3), (fd,1), (spark,2))
 
 # 在启动了shell的状态下，可以浏览器访问 http://ip:4040 查看运行结果
+
+# 3）测试hive-thriftserver可用性（如果编译时，没有加 -Phive-thriftserver ，则不需要做这个测试）
+start-thriftserver.sh
+beeline
+# 连接到 thrift server 。用户密码：hadoop/hadoop。或者直接加上 -n hadoop 连接。
+beeline> !connect jdbc:hive2://localhost:10000
+# 在本地任意目录下放上几个csv文件，执行创建外部表：
+> create external table test (
+    say string comment 'some comment',
+    word string comment 'info'
+)
+row format delimited fields terminated by ','
+lines terminated by '\n'
+stored as textfile location '/data1/java/app/spark/input';
+> show tables;
+> select * from test;
+
 ```
 
 ---
