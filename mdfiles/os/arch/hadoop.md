@@ -250,7 +250,8 @@ res1: Array[(String, Int)] = Array((hrs,1), (world,1), (hello,3), (fd,1), (spark
 # 在启动了shell的状态下，可以浏览器访问 http://ip:4040 查看运行结果
 
 # 3）测试hive-thriftserver可用性（如果编译时，没有加 -Phive-thriftserver ，则不需要做这个测试）
-start-thriftserver.sh
+start-thriftserver.sh  # 可以加上：--executor-memory --executor-cores 等参数
+# http://ip:4040/sqlserver/ 访问WEB界面
 beeline
 # 连接到 thrift server 。用户密码：hadoop/hadoop。或者直接加上 -n hadoop 连接。
 beeline> !connect jdbc:hive2://localhost:10000
