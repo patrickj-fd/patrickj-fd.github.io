@@ -274,6 +274,24 @@ stored as textfile location '/data1/java/app/spark/input';
 
 - [验证 standalone 集群模式](http://spark.apache.org/docs/2.4.6/spark-standalone.html)
 
+把编译出来的spark传到每个主机上，解压。
+
+```shell
+# 启动 master：在选定为master的主机上执行：
+start-master.sh   # 注意：要把/etc/hosts中本主机名对应的ip改成真实ip，不能是127，否则各个slave连接布上。或者，增加启动参数 -h 明确指定一个名字，并配置到各个slave主机的hosts中。
+# 启动 slave ：在其它主机上执行：
+start-slave.sh spark://master ip or hostname:7077
+# 任意一台主机上执行计算Pi的例子
+spark-submit \
+--master spark://172.168.0.216:7077 \
+--class org.apache.spark.examples.SparkPi \
+--executor-memory 1G \
+--total-executor-cores 2 \
+$SPARK_HOME/examples/jars/spark-examples_2.11-2.4.6.jar \
+100
+# 观察 master/slave每个主机的日志，会看到计算过程日志
+```
+
 ---
 
 [首 页](https://patrickj-fd.github.io)
