@@ -3,7 +3,7 @@
 ---
 
 # 树莓派
-- [配置WIFI和SSH](pi-wifi-ssh))
+- [系统初始化](pi-init))
 - [编译安装Hadoop](hadoop)
 
 ---
