@@ -160,6 +160,55 @@ WantedBy=multi-user.target
 sudo systemctl start frpc
 sudo systemctl enable frpc
 ```
+## 设置目录-文件的颜色
+比如，终端下看U盘的目录，所有目录都被增加了底色，很难看。
+
+在用户主目录创建文件：vi ~/.dir_colors
+```
+TERM xterm-256color
+TERM xterm-88color
+TERM xterm-color
+TERM xterm-debian
+
+# EIGHTBIT, followed by '1' for on, '0' for off. (8-bit output)
+EIGHTBIT 1
+
+# Below are the color init strings for the basic file types. A color init
+# string consists of one or more of the following numeric codes:
+# Attribute codes:
+# 00=none 01=bold 04=underscore 05=blink 07=reverse 08=concealed
+# Text color codes:
+# 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white
+# Background color codes:
+# 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
+#NORMAL 00      # no color code at all
+#FILE 00        # normal file, use no color at all
+RESET 0         # reset to "normal" color
+DIR 01;34       # directory blod:blue
+LINK 01;36      # symbolic link (If you set this to 'target' instead of a
+                # numerical value, the color is as for the file pointed to.)
+MULTIHARDLINK 00        # regular file with more than one link
+FIFO 40;33      # pipe
+SOCK 01;35      # socket
+DOOR 01;35      # door
+BLK 40;33;01    # block device driver
+CHR 40;33;01    # character device driver
+ORPHAN 40;31;01  # symlink to nonexistent file, or non-stat'able file
+MISSING 01;05;37;41 # ... and the files they point to
+SETUID 37;41    # file that is setuid (u+s)
+SETGID 30;43    # file that is setgid (g+s)
+CAPABILITY 30;41        # file with capability
+STICKY_OTHER_WRITABLE 30;42 # dir that is sticky and other-writable (+t,o+w)
+OTHER_WRITABLE 34;42 # dir that is other-writable (o+w) and not sticky
+STICKY 37;44    # dir with the sticky bit set (+t) and not other-writable
+
+# This is for files with execute permission:
+EXEC 01;32
+
+# List any file extensions like '.sh' to colorize below. 
+.sh  01;32
+
+```
 
 ## 屏幕截图
 屏幕截图：print； 窗口截图：Alt + print； 区域截图：Shift + print。图片被自动保存到了home-文档目录下。如果要存到剪切板中，以上命令都加上 Ctrl 即可。  
