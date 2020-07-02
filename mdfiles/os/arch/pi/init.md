@@ -52,16 +52,6 @@ echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui" >
 
 apt update
 apt upgrade
-
-# 切换回 pi 用户
-su - pi
-mkdir ~/.pip
-echo "[global]" > ~/.pip/pip.conf
-# trusted-host=mirrors.aliyun.com
-# index-url = https://mirrors.aliyun.com/pypi/simple/
-echo "trusted-host=pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
-echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple" >> ~/.pip/pip.conf
-
 ```
 ## 2.2 修改系统时间
 ```shell
