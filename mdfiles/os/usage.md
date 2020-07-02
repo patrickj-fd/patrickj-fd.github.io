@@ -207,7 +207,10 @@ EXEC 01;32
 
 # List any file extensions like '.sh' to colorize below. 
 .sh  01;32
-
+```
+在 ~/.bashrc 中，增加：
+```
+eval `dircolors $HOME/.dir_colors`
 ```
 
 ## 屏幕截图
