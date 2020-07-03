@@ -10,6 +10,11 @@ echo "[global]" > ~/.pip/pip.conf
 # index-url = https://mirrors.aliyun.com/pypi/simple/
 echo "trusted-host=pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
 echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple" >> ~/.pip/pip.conf
+
+# 也配置给root，以便适用sudo pip3 install
+su -
+mkdir ~/.pip
+cp /home/pi/.pip/pip.conf ~/.pip
 ```
 
 # 安装 pip
@@ -27,8 +32,8 @@ sudo apt-get install python3-distutils
 sudo apt update
 
 pip3 -V
-# 看到安装了18.1，可更新到最新版
-python3 -m pip install -U pip
+# 更新到最新版，要用sudo，否则setuptools是装在当前用户下
+sudo python3 -m pip install -U pip setuptools
 
 
 # ========= 另外一种安装方式 =========
