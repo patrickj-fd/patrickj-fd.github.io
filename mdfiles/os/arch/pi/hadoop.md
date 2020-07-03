@@ -26,7 +26,7 @@ mvn -v
 
 - 修改仓库配置：conf下settings.xml
 
-```
+```xml
 <localRepository>/path/to/local/repo</localRepository>
 
 <!-- 下面要放到 147 行左右的 <mirrors> 标签里面！ -->
