@@ -73,10 +73,10 @@ wget https://mirrors.huaweicloud.com/kunpeng/archive/kunpeng_solution/bigdata/Pa
 # 下载源码。必须用这个版本！
 wget -c https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
 tar -zxf protobuf-2.5.0.tar.gz
-mv protobuf-2.5.0 /opt/protobuf-2.5.0
+sudo mv protobuf-2.5.0 /opt/protobuf-2.5.0
 cd /opt/protobuf-2.5.0
 cp "protoc.zip解压路径"/protoc.patch ./src/google/protobuf/stubs/
-patch -p1 < protoc.patch
+cd ./src/google/protobuf/stubs/ && patch -p1 < protoc.patch
 cd -
 sudo apt-get install autoconf automake libtool curl make g++ unzip libffi-dev
 sudo ./autogen.sh
@@ -85,7 +85,7 @@ sudo ./configure CFLAGS='-fsigned-char'
 sudo make -j4
 # make check
 sudo make install
-echo "/usr/local/lib" > /etc/ld.so.conf.d/libprotobuf.conf
+sudo echo "/usr/local/lib" > /etc/ld.so.conf.d/libprotobuf.conf
 ldconfig
 protoc --version
 ```
@@ -149,8 +149,7 @@ export R_HOME=/opt/R-3.1.1
 ## 安装 Scala
 ### (1) 安装 sbt
 ```shell
-# x86平台可直接下载下面的二进制包，解压配置HOME即可
-# https://downloads.lightbend.com/scala/2.12.11/scala-2.12.11.tgz
+# x86不需要安装sbt
 wget -c https://piccolo.link/sbt-0.13.18.tgz
 tar -zxf sbt-0.13.18.tgz && mv sbt /opt/
 # repositories标签定义了sbt编译时使用的maven仓库顺序。内容参考下面的样例
@@ -171,6 +170,8 @@ sbt-plugins-repo: http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/, [orga
 
 ### (2) 安装 scala
 ```shell
+# x86平台可直接下载下面的二进制包，解压配置HOME即可
+# https://downloads.lightbend.com/scala/2.12.11/scala-2.12.11.tgz
 cd /opt/
 sudo git clone https://github.com/scala/scala.git
 cd scala
