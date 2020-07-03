@@ -3,8 +3,8 @@
 ---
 
 # 树莓派
-- [系统初始化](pi/init))
-- [tensorflow](pi/tensorflow))
+- [系统初始化](pi/init)
+- [tensorflow](pi/tensorflow)
 - [编译安装Hadoop](pi/hadoop)
 
 ---

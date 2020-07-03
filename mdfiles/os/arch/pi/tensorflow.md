@@ -11,9 +11,13 @@ sudo nohup python3 -m pip install grpcio &
 # grpcio 安装时可能报错：command: 'install_requires' must string or list of strings containing ...
 sudo python3 -m pip install -U setuptools
 
+# 安装 numpy 因为旧版本的TF不支持高版本的numpy，所以干脆装一个最后的一个py2.7兼容版 1.16.6
+sudo python3 -m pip install numpy==1.16.6
+
+# 截止到 2020年7月1日 ，还是不要装1.14。因为不能和opencv3共存，keras会报错：找不到libhdfs.so
 # sudo pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow==1.14.0
-wget -c https://www.piwheels.org/simple/tensorflow/tensorflow-1.14.0-cp37-none-linux_armv7l.whl
-sudo python3 -m pip install tensorflow-1.14.0-cp37-none-linux_armv7l.whl
+wget -c https://www.piwheels.org/simple/tensorflow/tensorflow-1.13.1-cp37-none-linux_armv7l.whl
+sudo python3 -m pip install tensorflow-1.13.1-cp37-none-linux_armv7l.whl
 
 sudo python3 -m pip install h5py pandas
 # wget -c https://www.piwheels.org/simple/pandas/pandas-1.0.5-cp37-cp37m-linux_armv7l.whl

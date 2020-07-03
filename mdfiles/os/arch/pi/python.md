@@ -8,7 +8,7 @@ mkdir ~/.pip
 echo "[global]" > ~/.pip/pip.conf
 # trusted-host=mirrors.aliyun.com
 # index-url = https://mirrors.aliyun.com/pypi/simple/
-echo "trusted-host=pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
+echo "trusted-host = pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
 echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple" >> ~/.pip/pip.conf
 
 # 也配置给root，以便适用sudo pip3 install
