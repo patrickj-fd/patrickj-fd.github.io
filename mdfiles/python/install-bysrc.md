@@ -113,7 +113,7 @@ ln -s $PYTHON_HOME/bin/virtualenv /usr/bin/virtualenv
 
 # 常用包安装
 ```shell
-pip3 install --upgrade setuptools pip -i https://mirrors.aliyun.com/pypi/simple/
+pip3 install --upgrade setuptools pip -i https://pypi.mirrors.ustc.edu.cn/simple/
 pip3 install matplotlib numpy scipy pandas scikit-learn python-dateutil
 ```
 
@@ -123,10 +123,11 @@ pip3 install matplotlib numpy scipy pandas scikit-learn python-dateutil
 pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 ```
 
-或者直接修改配置文件 ： ~/.config/pip/pip.conf
+或者直接修改配置文件 ： ~/.pip/pip.conf
 ```
 [global]
-index-url = https://mirrors.aliyun.com/pypi/simple/
+trusted-host = pypi.mirrors.ustc.edu.cn
+index-url = https://pypi.mirrors.ustc.edu.cn/simple/
 ```
 
 ---
