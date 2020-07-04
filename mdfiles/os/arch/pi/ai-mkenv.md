@@ -87,9 +87,94 @@ import cv2
 cv2.__version__
 ```
 
-
 - [树莓派4 安装OPENCV3](https://blog.csdn.net/weixin_43287964/article/details/101696036)
 
+# pytorch
+
+官网上已经有了aarch64版，如果在armv7l下，只能源码编译安装。
+
+### python 3.7 下源码编译安装
+
+```shell
+# 下载源码。必须加上recursive，下载pytorch依赖的各种外部链接库
+git clone --recursive https://github.com/pytorch/pytorch
+cd pytorch
+git tag
+git checkout v1.5.1
+# git submodule update --init
+git submodule sync
+git submodule update --init --recursive
+# 解决协议缓冲区的一个bug。否则编译到caffe2会出错
+git submodule update --remote third_party/protobuf
+
+# 安装依赖软件
+sudo apt install -y libopenblas-dev cython3 libatlas-base-dev m4 libblas-dev cmake
+
+# 创建虚拟环境
+sudo apt install -y python3-venv
+mkdir -p ~/python/venv && python3 -m venv ~/python/venv/pytorch
+source ~/python/venv/pytorch/bin/activate
+python3 -m pip install -U setuptools pip
+
+# 先安装numpy，否则编译出来的PyTorch不支持numpy。
+# 如果不用虚拟环境，前面加上 sudo
+python3 -m pip install numpy==1.18.6 pyyaml
+
+# 设置环境变量(树莓派不支持GPU)： vi setup.py 看看应该怎么设置这些参数
+export USE_CUDA=0
+export USE_CUDNN=0
+export USE_MKLDNN=0
+export USE_DISTRIBUTED=0
+export USE_NNPACK=0
+export USE_QNNPACK=0
+echo $USE_CUDA $USE_CUDNN $USE_MKLDNN $USE_DISTRIBUTED $USE_NNPACK $USE_QNNPACK
+# 下面这些参数是旧版本才使用的，比如v1.0.1
+# export NO_CUDA=1
+# export NO_DISTRIBUTED=1
+# export NO_MKLDNN=1 
+# export NO_NNPACK=1
+# export NO_QNNPACK=1
+# echo $NO_CUDA $NO_DISTRIBUTED $NO_MKLDNN
+
+# 编译安装
+# 1) 编译成wheel文件，以便到处安装
+python3 setup.py bdist_wheel
+# 如果报错： error: invalid command 'bdist_wheel'
+# pip install wheel
+# pip install --upgrade setuptools
+
+# -- 安装
+python3 -m pip install dist/yours.whl
+
+# 2) 编译在本机后安装
+python3 setup.py build
+# 数小时后，看到 no longer necessary to use ‘build’ or 'rebuild’意思就是成功啦
+# -- 安装
+python3 setup.py install
+# 如果不用虚拟环境，直接sudo安装（-E : 在sudo执行时保留当前用户已存在的环境变量，不会被sudo重置）
+sudo -E python3 setup.py install
+
+# 验证
+# 要离开当前的源码编译目录，否则会报告报错：No module named 'torch._C'。
+# 参见：https://github.com/pytorch/pytorch/issues/574
+cd ~
+python3
+import torch
+torch.__version__
+```
+
+### 编译 torchvision
+
+```shell
+# 不是上面的虚拟环境的话，要加上 sudo
+python3 -m pip install pillow
+
+git clone https://github.com/pytorch/vision.git
+cd vision
+git tag
+git checkout v0.6.1
+python3 setup.py bdist_wheel
+```
 
 ---
 

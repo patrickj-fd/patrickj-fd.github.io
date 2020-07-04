@@ -5,11 +5,15 @@
 # 更换源
 ```shell
 mkdir ~/.pip
-echo "[global]" > ~/.pip/pip.conf
+# https://repo.huaweicloud.com/repository/pypi/simple/ 华为
 # https://mirrors.aliyun.com/pypi/simple/   阿里
 # https://pypi.mirrors.ustc.edu.cn/simple/  中科大，据说是最好的
-echo "trusted-host = pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
-echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple" >> ~/.pip/pip.conf
+#echo "trusted-host = pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
+#echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple" >> ~/.pip/pip.conf
+echo "[global]" > ~/.pip/pip.conf
+echo "trusted-host = pypi.mirrors.ustc.edu.cn" >> ~/.pip/pip.conf
+echo "index-url = https://pypi.mirrors.ustc.edu.cn/simple/" >> ~/.pip/pip.conf
+echo "timeout = 120" >> ~/.pip/pip.conf
 
 # 也配置给root，以便适用sudo pip3 install
 su -
