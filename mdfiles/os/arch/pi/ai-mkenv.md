@@ -116,9 +116,11 @@ mkdir -p ~/python/venv && python3 -m venv ~/python/venv/pytorch
 source ~/python/venv/pytorch/bin/activate
 python3 -m pip install -U setuptools pip
 
+# 安装依赖包：python3 -m pip -r requirements.txt
+# 因为使用的是旧版本，为了避免numpy可能出现版本太高的问题，最好明确指定版本
 # 先安装numpy，否则编译出来的PyTorch不支持numpy。
 # 如果不用虚拟环境，前面加上 sudo
-python3 -m pip install numpy==1.18.6 pyyaml
+python3 -m pip install future numpy==1.18.6 pyyaml requests six
 
 # 设置环境变量(树莓派不支持GPU)： vi setup.py 看看应该怎么设置这些参数
 export USE_CUDA=0
