@@ -6,23 +6,28 @@
 
 ** 1. 创建一个service文件 **
 进入/etc/systemd/system/，创建一个xxx.service文件，主要内容如下：
-```
+```ini
 [Unit]
 Description=just for test         简介
-After=BBB.service AAA.service     脚本所需要的前置service，比如：sshd.service
+After=network.target              脚本所需要的前置service，空格分隔写多个
 
 [Service]
-ExecStart=/usr/local/my/my.sh     文件路径，后面可以跟参数，比如 -D -I 
+ExecStart=/usr/bin/python3 -u main.py
+WorkingDirectory=/home/pi/myscript    服务会运行 /home/pi/myscript 目录下面的 main.py 脚本
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
 
 [Install]
 WantedBy=multi-user.target
 ```
 
 ** 2. 开启服务 **
-```
-sudo systemctl daemon-reload      service文件改动后要重新装载一下 
-sudo systemctl enable my.service  设置成开机启动（下次开机时生效）
+```shell
+# sudo systemctl daemon-reload      service文件改动后要重新装载一下 
 sudo systemctl start my.service   立即开启该服务（立即执行该脚本）
+sudo systemctl enable my.service  设置成开机启动（下次开机时生效）
 ```
 
 详细讲解service文件参考：
