@@ -66,6 +66,7 @@ python3 -m pip install opencv_python-3.4.7.28-cp37-cp37m-linux_armv7l.whl
 sudo find / -name "libatomic.so*"  # 找到 libatomic.so.1.2.0 的路径，导入环境变量
 echo "export LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libatomic.so.1.2.0" >> ~/.bashrc
 source ~/.bashrc
+# 或者，把 LD_PRELOAD 加到虚拟环境的启动脚本中（bin/activate）
 ```
 
 用这种方式，或者也可以装OpenCV4。（未验证）
