@@ -52,14 +52,16 @@ sudo apt install -y python3-opencv
 ```
 
 - 方式2
+
 用方式1，安装的是3.2.0（截止2020年6月），而且，创建虚拟环境时，默认无法使用cv。  
 可以直接下载指定版本的whl文件进行安装。[下载地址](https://www.piwheels.org/simple/opencv-python/)  
 ```shell
 sudo apt install -y libqtgui4 libqt4-test
 sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng-dev -y
+python3 -m pip install opencv_python-3.4.7.28-cp37-cp37m-linux_armv7l.whl
 ```
 
-如果 import cv2 报错类似： ImportError: ....... undefined symbol: __atomic_fetch_add_8  
+如果 import cv2 报错类似： ImportError: ... undefined symbol: ... arm-linux-gnueabihf.so __atomic_fetch_add_8。 这是一个bug，需要加载一个库文件来解决：
 ```shell
 sudo find / -name "libatomic.so*"  # 找到 libatomic.so.1.2.0 的路径，导入环境变量
 echo "export LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libatomic.so.1.2.0" >> ~/.bashrc
