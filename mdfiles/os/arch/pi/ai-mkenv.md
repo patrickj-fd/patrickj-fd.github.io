@@ -123,30 +123,34 @@ sudo echo "199.232.28.133 raw.githubusercontent.com" >> /etc/hosts
 # 创建一个临时构建目录
 mkdir build && cd build
 
+# == 配置 ==
 # ENABLE_NEON ENABLE_VFPV3 针对ARM架构CPU的。 cat /proc/cpuinfo 能看到支持什么
 # -D ENABLE_NEON=ON -D ENABLE_VFPV3=ON
 # -D OPENCV_ENABLE_NONFREE=ON
-# -D WITH_LIBV4L=ON 开启Video
+# -D WITH_LIBV4L=ON 开启Video(video for linux 2)
 # -D WITH_TBB=ON -D WITH_V4L=ON -D WITH_QT=ON -D WITH_OPENGL=ON
-#     -D PYTHON3_EXECUTABLE=/usr/bin/python3.7 \
+# 下载可以不加，会自动检测出来
+#    -D PYTHON3_EXECUTABLE=/usr/bin/python3.7 \
 #    -D PYTHON_INCLUDE_DIR=/usr/include/python3.7 \
 #    -D PYTHON_LIBRARY=/usr/lib/arm-linux-gnueabihf/libpython3.7m.so \
+#    -D PYTHON3_NUMPY_INCLUDE_DIRS=/usr/local/lib/python3.7/dist-packages/numpy/core/include \
 cmake -D CMAKE_BUILD_TYPE=RELEASE \
     -D CMAKE_INSTALL_PREFIX=/opt/opencv3.4.10 \
     -D INSTALL_PYTHON_EXAMPLES=OFF \
-    -D ENABLE_NEON=ON
+    -D ENABLE_NEON=ON -D ENABLE_VFPV3=ON \
     -D INSTALL_C_EXAMPLES=OFF \
     -D INSTALL_CXX_EXAMPLES=OFF \
     -D OPENCV_GENERATE_PKGCONFIG=ON \
-    -D PYTHON3_NUMPY_INCLUDE_DIRS=/usr/local/lib/python3.7/dist-packages/numpy/core/include \
     -D BUILD_TESTS=OFF \
     -D OPENCV_EXTRA_MODULES_PATH=/data1/soft/opencv-gitsrc/opencv_contrib/modules \
     -D BUILD_EXAMPLES=OFF \
     ..
 ## 最后的 .. 表示上级目录
-# 在当前目录下生成很多配置、编译相关的文件，其中 CMakeCache.txt文件可以自己修改，关闭不要的功能模块，比如： WITH_1394:BOOL=OFF。make时出错的模块可以不编译可以通过CMakeCache.txt文件配置关掉
+# 在当前目录下生成很多配置、编译相关的文件，其中 CMakeCache.txt文件可以自己修改，关闭不要的功能模块。
+# 比如： WITH_1394:BOOL=OFF。make时出错的模块可以不编译可以通过CMakeCache.txt文件配置关掉
+vi CMakeCache.txt # WITH_1394:BOOL=OFF
 
-# 对现在失败的文件，在CMakeDownloadLog.txt里面找到下载地址，手动下载
+# 对下载失败的文件，在CMakeDownloadLog.txt里面找到下载地址，手动下载
 vi CMakeDownloadLog.txt
 # 把下载的文件，放到： opencv_contrib/modules/xfeatures2d/src/ 即可开始后面的make了
 # 或者也许，提前放到opencv/.cache/xfeatures2d/下的boostdesc和vgg目录下
@@ -156,16 +160,48 @@ vi modules/face/CMakeLists.txt
 # 把："https://raw.githubusercontent.com/opencv/opencv_3rdparty/${__commit_hash}/"
 # 改："file:///这个文件的全路径"（不带文件名）
 
-# 保险起见，不加 -j 参数，不要多核并行编译
-make
+# == 编译 ==
+make -j4
+
+# == 安装 == 安装到前面指定的目录（CMAKE_INSTALL_PREFIX）
+make install
+# 验证
+/opt/opencv3.4.10/bin/opencv_version
+
+# 安装给python
+cp -r /opt/opencv3.4.10/lib/python3.7/dist-packages/cv2 ~/.local/lib/python3.7/site-packages
+python3 -c "import cv2; print(cv2.__version__)"
+
+# 或者，把so加入到系统中
+echo "/opt/opencv3.4.10/lib" > /etc/ld.so.conf.d/opencv.conf
+# 或许要加上下面这句。？表示一个空格，可能原因是有的语言要求最后有一个空格才可以编译通过。
+echo "?" >> /etc/ld.so.conf.d/opencv.conf
+ldconfig
 ```
 
 ## 验证
-```shell
-python3
+```python
 import cv2
 # 显示已经安装的 opencv 版本
 cv2.__version__
+
+import numpy as np
+
+img = np.zeros((512, 512), np.uint8)         # 生成一张空的灰度图像
+cv2.line(img, (0, 0), (511, 511), 255, 5)    # 绘制一条白色直线
+
+# 图形终端下可运行下面代码
+#cv2.namedWindow("gray")
+#cv2.imshow("gray",img)#显示图像
+# 循环等待，按q键退出
+#while True:
+#    key=cv2.waitKey(1)
+#    if key==ord("q"):
+#        break
+#cv2.destoryWindow("gray")
+
+cv2.imwrite('messigray.png', img)
+
 ```
 
 - [树莓派4 安装OPENCV3](https://blog.csdn.net/weixin_43287964/article/details/101696036)
