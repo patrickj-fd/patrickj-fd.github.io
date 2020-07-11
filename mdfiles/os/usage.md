@@ -136,30 +136,22 @@ list状态:
 - 当前状态=未(n)/已安装(i)/仅存配置(c)/仅解压缩(U)/配置失败(F)/不完全安装(H)
 
 # 三、系统使用
-## 设置开机启动
-创建开机启动服务文件：vi /etc/systemd/system/frpc.service
-```ini
-[Unit]
-Description=Frp Client Service
-After=network.target
-
-[Service]
-Type=simple
-User=nobody
-Restart=on-failure
-RestartSec=5s
-ExecStart=/opt/frp-0.33.0/frpc -c /opt/frp-0.33.0/frpc.ini
-ExecReload=/opt/frp-0.33.0/frpc reload -c /opt/frp-0.33.0/frpc.ini
-
-[Install]
-WantedBy=multi-user.target
-```
-
-开启服务
+## 磁盘测速
 ```shell
-sudo systemctl start frpc
-sudo systemctl enable frpc
+su -
+RW_DIR=/mnt/usb3_30
+# 如果测U盘，先挂载
+fdisk -l
+mkdir $RW_DIR
+mount /dev/sdb1 $RW_DIR
+ 
+## 测试写入300MB速度
+sync; time dd if=/dev/zero of=$RW_DIR/largefile bs=300k count=1024 conv=fdatasync; time sync
+ 
+## 测试读取300MB速度
+sync; echo 3 > /proc/sys/vm/drop_caches && time dd if=$RW_DIR/largefile of=/dev/null bs=500k iflag=direct
 ```
+
 ## 设置目录-文件的颜色
 比如，终端下看U盘的目录，所有目录都被增加了底色，很难看。
 

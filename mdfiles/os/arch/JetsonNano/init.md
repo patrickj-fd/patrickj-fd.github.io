@@ -8,6 +8,7 @@
 不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
 
 System Settings | Software & Updates，在Updates页，Automatically check for updates，选择Never。
+
 ##### 清理不用的软件
 ```shell
 sudo apt-get purge wolfram-engine
@@ -17,9 +18,9 @@ sudo apt-get autoremove
 ```
 
 ## 1.2 更换源
-```
+```shell
 cd /etc/apt && sudo cp source.list source.list.orgn && sudo echo "" > source.list && sudo vi source.list
-
+# 加入以下内容
 deb http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe
 deb http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-proposed main multiverse restricted universe
 deb http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe
@@ -32,6 +33,27 @@ deb-src http://mirrors.ustc.edu.cn/ubuntu-ports/ bionic-updates main multiverse 
 
 sudo apt update
 ```
+
+## 1.3 禁止启动时进入桌面
+- 编辑配置文件：vi /etc/default/grub   
+  * 注释掉：GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"   
+  * 修改为：GRUB_CMDLINE_LINUX_DEFAULT="text"   
+- 执行 “update-grub” 以生效   
+- 重启系统
+
+** Ubuntu 18.04 另外一种方式 (未验证) **
+```shell
+sudo systemctl set-default multi-user.target   #关闭图形界面
+sudo reboot
+systemctl set-default graphical.target    #打开图形界面
+sudo reboot
+
+# 关闭：在图形界面下 终端输入 
+sudo service lightdm stop
+# 开启：在命令行输入
+sudo service lightdm start
+```
+
 ## 1.x 其他
 - 开启远程桌面访问
   * 服务器：通过RDP（Remote Desktop Protocol）：apt install xrdp
