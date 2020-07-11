@@ -6,7 +6,9 @@
 - [系统初始化](pi/init)
 - [常用操作](pi/usage)
 
+- [设置python](pi/python)
 - [构建ai需要的环境-tf-opencv-torch等](pi/ai-mkenv)
+
 - [编译安装Hadoop](pi/hadoop)
 
 # JetsonNano

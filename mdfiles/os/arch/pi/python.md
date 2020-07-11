@@ -29,9 +29,9 @@ tar -zxvf setuptools-19.6.tar.gz && cd setuptools-19.6/
 python3 setup.py build
 sudo python3 setup.py install
 
-sudo apt-get install python3-pip
+sudo apt-get install -y python3-pip
 # 若报错： No module named ‘distutils.util’
-sudo apt-get install python3-distutils
+sudo apt-get install -y python3-distutils
 # 若报错： Package python3-distutils has no installation candidate
 sudo apt update
 
