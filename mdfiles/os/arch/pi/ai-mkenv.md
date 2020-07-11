@@ -171,8 +171,9 @@ make install
 # 安装给python
 cp -r /opt/opencv3.4.10/lib/python3.7/dist-packages/cv2 ~/.local/lib/python3.7/site-packages
 python3 -c "import cv2; print(cv2.__version__)"
+# 如果要安装到其他机器上，把/opt/opencv3.4.10整个复制新机器的opt目录下，即可
 
-# 或者，把so加入到系统中
+# 或者，把so加入到系统中（没验证）
 echo "/opt/opencv3.4.10/lib" > /etc/ld.so.conf.d/opencv.conf
 # 或许要加上下面这句。？表示一个空格，可能原因是有的语言要求最后有一个空格才可以编译通过。
 echo "?" >> /etc/ld.so.conf.d/opencv.conf
