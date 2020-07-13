@@ -14,6 +14,10 @@ sudo apt install -y git g++ pkg-config curl libfreetype6-dev
 sudo apt install -y libcanberra-gtk-module libcanberra-gtk3-module
 sudo apt install -y libpython3.6-dev
 sudo apt install -y python3-dev python3-testresources
+sudo apt install -y autoconf libtool
+
+sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
+
 ```
 
 # 设置 python 环境
@@ -39,24 +43,93 @@ sudo python3 -m pip install -U pip setuptools
 
 ## 安装 venv
 ```shell
-sudo apt install python3-venv libpython3-dev
+sudo apt install -y python3-venv
 ```
 
 # 安装 protobuf
  
-**注意：** For “protobuf” libraries, instead of doing apt install, I recommend installing the newer version (3.8.0) using my “install_protobuf-3.8.0.sh” script as shown below. The “protobuf” libraries could have a noticeable effect on the performance (inference speed) of tensorflow or else.
+**注意：** 不要使用apt安装。应该基于源码编译安装较新的版本，比如3.8.0。 protobuf libraries 对tensorflow等软件产生巨大的性能影响。
 
 ```shell
-cd ${HOME}/project/jetson_nano
-./install_protobuf-3.8.0.sh
+mkdir -p /data1/protobuf/src && cd /data1/protobuf/src
+# Install protoc
+wget -c https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protobuf-python-3.8.0.zip
+wget -c https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protoc-3.8.0-linux-aarch_64.zip
+unzip protobuf-python-3.8.0.zip
+unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0
+sudo cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc
+
+# Build and install protobuf-3.8.0 libraries
+export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
+cd protobuf-3.8.0/
+./autogen.sh
+./configure --prefix=/usr/local
+make -j4
+# 检查make编译结果。这一步非常耗时(半个多小时)。最后应该是7个项目都是PASS
+make check
+sudo make install
+sudo ldconfig
+
+# 卸载系统protobuf
+sudo pip3 uninstall -y protobuf
+```
+
+#### 安装python运行库
+
+用下面命令，是安装在系统环境中。对于使用py虚拟环境的情况，是否还有执行一遍，待确认！
+
+```shell
+# Update python3 protobuf module
+sudo python3 -m pip install Cython
+cd /data1/protobuf/src/protobuf-3.8.0/python/
+python3 setup.py build --cpp_implementation
+python3 setup.py test --cpp_implementation
+sudo python3 setup.py install --cpp_implementation
+```
+
+- 验证
+
+1) vi app/people.proto
+```txt
+syntax = "proto3";
+message people
+{
+    string name = 1;
+    int32 height = 2;
+}
+```
+
+2) 编译
+```shell
+protoc -I=./app --python_out=./app_out/ app/people.proto
+```
+
+3) vi app_out/test.py
+```python
+import people_pb2
+
+pbFirstPeople = people_pb2.people()
+pbFirstPeople.name = "joey"
+pbFirstPeople.height = 160
+print(pbFirstPeople)
+```
+
+4) 结果
+```shell
+cd app_out
+python3 test.py
+
+# 结果显示：
+name: "joey"
+height: 160
 ```
 
 # 安装 tensorflow
 参考官方指定：
 > https://docs.nvidia.com/deeplearning/frameworks/install-tf-jetson-platform/index.html
 
+## 1) 安装依赖软件
 ```shell
-# ==== 安装依赖软件
 sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
 
 # 下载tensorflow wheels文件：
@@ -71,8 +144,10 @@ $ sudo pip3 install --pre --extra-index-url https://developer.download.nvidia.co
 # 指定版本安装： https://..../v44 tensorflow==$TF_VERSION+nv$NV_VERSION
 # TF_VERSION 例如 1.13.1
 # NV_VERSION 例如 20.04
+```
 
-# ===== 创建虚拟环境
+## 2) 创建虚拟环境
+```shell
 python3 -m venv /data1/python/venv/tf-1.15
 cp /data1/python/venv/tf-1.15/bin/activate ~/pyvenv-tf15
 source ~/pyvenv-tf15
@@ -81,19 +156,30 @@ source ~/pyvenv-tf15
 # 官方推荐：numpy==1.16.1 future==0.17.1 mock==3.0.5 h5py==2.9.0 keras_preprocessing==1.0.5 keras_applications==1.0.8 gast==0.2.2 futures protobuf pybind11
 python3 -m pip install -U pip setuptools
 python3 -m pip install -U testresources
+# 把系统中安装的opencv拷贝到虚拟环境中
+cp -r /usr/lib/python3.6/dist-packages/cv2 /data1/python/venv/tf-1.15/lib/python3.6/site-packages/
+python3 -c "import cv2; print(cv2.__version__)"
+```
+
+## 3) 安装 protobuf
+
+使用上面《安装 protobuf》章节中的 “安装python运行库” 的命令进行安装！
+
+## 4) 安装 tensorflow
+```shell
 python3 -m pip install  numpy-1.16.6.zip
 # grpcio 安装非常慢，后台执行
-nohup python3 -m pip install  grpcio-1.30.0.tar.gz &
+nohup python3 -m pip install grpcio-1.30.0.tar.gz &
 python3 -m pip install tensorboard-1.15.0.whl
 nohup python3 -m pip install tensorflow-1.15.2+nv20.6-cp36-cp36m-linux_aarch64.whl &
 
 # scipy 安装非常慢，后台执行
 nohup python3 -m pip install scipy-1.5.1.tar.gz &
 python3 -m pip install keras==2.3.1
+```
 
-# 验证
-python3
-
+## 5) 验证
+```python
 import keras
 print(keras.__version__)
 
@@ -110,6 +196,15 @@ sess.close()
 ```
 
 # OpenCV
+## 检查系统opencv情况
+```shell
+# 查看opencv版本
+pkg-config opencv --modversion
+
+# 查看opencv安装库
+pkg-config opencv --libs
+```
+
 ## 安装
 ### 1) OpenCV3
 - 方式1

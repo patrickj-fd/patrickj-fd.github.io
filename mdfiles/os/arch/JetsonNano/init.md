@@ -16,8 +16,12 @@ sudo chown -R hyren:hyren /opt
 sudo mkdir -p /data1/python/venv
 sudo chown -R hyren:hyren /data1
 
+echo "" >> ${HOME}/.bashrc
+echo "export CUBA_HOME=/usr/local/cuda" >> ${HOME}/.bashrc
 echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ${HOME}/.bashrc
 echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOME}/.bashrc
+source .bashrc
+nvcc -V  # see CUDA info
 ```
 
 ## 1.2 修改系统性能配置
@@ -42,6 +46,9 @@ echo "/mnt/8GB.swap  none  swap  sw 0  0" >> /etc/fstab
 swapon -s
 
 reboot
+
+# 验证交换区是否可用
+sudo swapon --show
 ```
 
 ### 设置 10w 功率模式
@@ -83,9 +90,11 @@ sudo apt clean
 ## 1.4 更换源
 ### apt 源
 ```shell
+# 清华源对于 nano 来说，是最好的
 su -
 cd /etc/apt && cp sources.list sources.list.orgn && echo "" > sources.list && vi sources.list
 # 加入以下内容
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe
 deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe
 deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe
 deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe
@@ -156,11 +165,36 @@ echo "trusted-host = pypi.mirrors.ustc.edu.cn" >> ~/.pip/pip.conf
 echo "index-url = https://pypi.mirrors.ustc.edu.cn/simple/" >> ~/.pip/pip.conf
 ```
 
+## 1.5 安装常用软件
+
+由于在使用时经常查看CPU和共享的内存占用，系统自带的top命令并不好用。使用 htop 可以看到每个CPU核心的使用率、共享内存的使用率，方便直观  
+sudo apt install htop
+
 ## 1.5 设置AI环境
 
-[参见 ai-mkenv](ai-mkenv)
+- 看看Nano系统自带的软件：
+  * TensorRT ： /usr/src/tensorrt/samples/
+  * CUDA ： /usr/local/cuda-/samples/
+  * cuDNN ： /usr/src/cudnn_samples_v7/
+  * Multimedia API ： /usr/src/tegra_multimedia_api/
+  * VisionWorks ： /usr/share/visionworks/sources/samples/ , /usr/share/visionworks-tracking/sources/samples/ , /usr/share/visionworks-sfm/sources/samples/
+  * OpenCV ： /usr/share/OpenCV/samples/
+
+- 安装配置AI环境[参见 ai-mkenv](ai-mkenv)
 
 # 其他可选工作
+
+## 查看系统情况
+```shell
+# Jetson Nano L4T版本：
+head -n 1 /etc/nv_tegra_release
+
+lscpu
+lsusb   # 查看USB设备
+lspci   # 查看PCI总线
+lsmod   # 查看系统已载入的相关模块
+lshw    # 查看硬件
+```
 
 ## 验证系统环境
 ```shell
