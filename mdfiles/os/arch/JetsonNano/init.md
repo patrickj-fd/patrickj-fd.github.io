@@ -2,8 +2,9 @@
 
 ---
 
-> https://elinux.org/Jetson_Nano
-> https://jkjung-avt.github.io/
+- [jkjung Blog](https://jkjung-avt.github.io/)
+- [elinux.org/Jetson_Nano](https://elinux.org/Jetson_Nano
+- [NVIDIA Developer Forum](https://devtalk.nvidia.com/default/board/371/jetson-nano/)
 
 # 1. 初始设置
 ## 1.1 初始化环境
@@ -20,21 +21,25 @@ echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOM
 ```
 
 #### 增加swap
-网上版本：
-1. 创建8G大小的swapfile
-fallocate -l 8G swapfile
-2. 更改swapfile的权限
-chmod 600 swapfile
-3. 创建swap区
-mkswap swapfile
-4. 激活swap区
-sudo swapon swapfile
-5. 确认swap区在用
-swapon -s
+```shell
+su -
+# Create the file for swap.
+# If the fallocate command fails or isn’t installed :
+# sudo dd if=/dev/zero of=/mnt/8GB.swap bs=8192 count=1048576
+fallocate -l 8G /mnt/8GB.swap
+chmod 600 /mnt/8GB.swap
+# Format the swap file
+mkswap /mnt/8GB.swap
+# Add the file to the system as a swap file
+swapon /mnt/8GB.swap
 
-和下面的比较一下：
-[初始化工作参考](https://jkjung-avt.github.io/setting-up-nano/)
+echo "/mnt/8GB.swap  none  swap  sw 0  0" >> /etc/fstab
+# vi /etc/sysctl.conf
+# vm.swappiness=10
 
+# Check that the swap file was created
+sudo swapon -s
+```
 
 sudo nvpmodel -m 0
 sudo jetson_clocks
