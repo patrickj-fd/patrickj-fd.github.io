@@ -2,21 +2,12 @@
 
 ---
 
-# 验证系统环境
-```shell
-cd /usr/src/cudnn_samples_v8/mnistCUDNN
-sudo make
-./mnistCUDNN 
-```
-从运行结果中，可以看到CUDA版本，GPU的信息
 
-# 更换源
-```shell
-mkdir ~/.pip
-echo "[global]" > ~/.pip/pip.conf
-echo "trusted-host = pypi.mirrors.ustc.edu.cn" >> ~/.pip/pip.conf
-echo "index-url = https://pypi.mirrors.ustc.edu.cn/simple/" >> ~/.pip/pip.conf
-```
+# 确认 OpenCV 环境
+ 为了系统和python依赖，做下面的工作。
+ 
+ **注意：** For “protobuf” libraries, instead of doing apt install, I recommend installing the newer version (3.8.0) using my “install_protobuf-3.8.0.sh” script as shown below. The “protobuf” libraries could have a noticeable effect on the performance (inference speed) of tensorflow or else.
+ 
 
 # tensorflow
 > https://docs.nvidia.com/deeplearning/frameworks/install-tf-jetson-platform/index.html

@@ -6,8 +6,8 @@
 - [elinux.org/Jetson_Nano](https://elinux.org/Jetson_Nano
 - [NVIDIA Developer Forum](https://devtalk.nvidia.com/default/board/371/jetson-nano/)
 
-# 1. 初始设置
-## 1.1 初始化环境
+# 1. 必做的工作
+## 1.1 初始化工作环境
 ```shell
 sudo mkdir /mnt/usb1
 echo "sudo mount /dev/sda1 /mnt/usb1" > init && chmod 700 init
@@ -20,7 +20,8 @@ echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ${HOME}/.bashrc
 echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOME}/.bashrc
 ```
 
-#### 增加swap
+## 1.2 修改系统性能配置
+### 增加swap
 ```shell
 su -
 # Create the file for swap.
@@ -38,13 +39,34 @@ echo "/mnt/8GB.swap  none  swap  sw 0  0" >> /etc/fstab
 # vm.swappiness=10
 
 # Check that the swap file was created
-sudo swapon -s
+swapon -s
+
+reboot
 ```
 
-sudo nvpmodel -m 0
-sudo jetson_clocks
+### 设置 10w 功率模式
+默认即为：MaxN（10W）模式。两种模式的主要区别：
 
-## 1.1 清理默认的各种东东
+| Info class   | 10W  | 5W   |
+| :-----       | :--: | :--: |
+| Online CPU   | 4    | 2    |
+| CPU Max Freq | 1479 | 918  |
+| GPU Max Freq | 921  | 640  |
+
+```shell
+# 查看功率模式
+sudo /usr/sbin/nvpmodel -q
+
+# -m 对应的是 mode ID, 比如 0 或 1。
+# 10w模式：
+sudo /usr/sbin/nvpmodel -m 0
+# 5w模式：
+sudo /usr/sbin/nvpmodel -m 1
+
+sudo /usr/bin/jetson_clocks
+```
+
+## 1.3 清理系统默认设置
 ##### 关闭自动更新
 不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
 
@@ -52,13 +74,14 @@ System Settings | Software & Updates，在Updates页，Automatically check for u
 
 ##### 清理不用的软件
 ```shell
-sudo apt-get purge wolfram-engine
+sudo apt remove --purge wolfram-engine
 sudo apt remove --purge libreoffice*
 sudo apt clean
-sudo apt autoremove
+#sudo apt autoremove
 ```
 
-## 1.2 更换源
+## 1.4 更换源
+### apt 源
 ```shell
 su -
 cd /etc/apt && cp sources.list sources.list.orgn && echo "" > sources.list && vi sources.list
@@ -127,7 +150,29 @@ sudo apt-add-repository universe
 sudo apt-get update
 ```
 
-## 1.3 禁止启动时进入桌面
+### python 源
+```shell
+mkdir ~/.pip
+echo "[global]" > ~/.pip/pip.conf
+echo "trusted-host = pypi.mirrors.ustc.edu.cn" >> ~/.pip/pip.conf
+echo "index-url = https://pypi.mirrors.ustc.edu.cn/simple/" >> ~/.pip/pip.conf
+```
+
+## 1.5 设置AI环境
+
+[参见 ai-mkenv](ai-mkenv)
+
+# 其他可选工作
+
+## 验证系统环境
+```shell
+cd /usr/src/cudnn_samples_v8/mnistCUDNN
+sudo make
+./mnistCUDNN 
+```
+从运行结果中，可以看到CUDA版本，GPU的信息
+
+## 禁止启动时进入桌面
 - 编辑配置文件：sudo vi /etc/default/grub   
   * 注释掉：GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"   
   * 修改为：GRUB_CMDLINE_LINUX_DEFAULT="text"   
@@ -147,17 +192,15 @@ sudo service lightdm stop
 sudo service lightdm start
 ```
 
-# 其他
 ## 安装 Frp
 ```shell
 tar xf frp_0.33.0_linux_arm64.tar.gz -C /opt
 cd /opt/ && mv frp_0.33.0_linux_arm64/ frp && cd frp
-
+```
 ## 开启远程桌面访问
 - 服务器：通过RDP（Remote Desktop Protocol）：apt install xrdp
 - 客户机：使用Remmina Remote Desktop Client软件
   * 由于Jetson Nano并不支持两个客户端同时登录，修改/etc/gdm3/custom.conf，注释掉：AutomaticLoginEnable和Automatic Login
-
 
 ---
 
