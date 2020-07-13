@@ -2,9 +2,15 @@
 
 ---
 
+> https://elinux.org/Jetson_Nano
+> https://jkjung-avt.github.io/
+
 # 1. 初始设置
-## 1.0 
+## 1.1 初始化环境
 ```shell
+sudo mkdir /mnt/usb1
+echo "sudo mount /dev/sda1 /mnt/usb1" > init && chmod 700 init
+
 sudo chown -R hyren:hyren /opt
 sudo mkdir -p /data1/python/venv
 sudo chown -R hyren:hyren /data1
@@ -42,9 +48,9 @@ System Settings | Software & Updates，在Updates页，Automatically check for u
 ##### 清理不用的软件
 ```shell
 sudo apt-get purge wolfram-engine
-sudo apt-get purge libreoffice*
-sudo apt-get clean
-sudo apt-get autoremove
+sudo apt remove --purge libreoffice*
+sudo apt clean
+sudo apt autoremove
 ```
 
 ## 1.2 更换源
@@ -99,6 +105,21 @@ apt-get clean
 apt-get update
 
 apt-get upgrade
+```
+
+** 注意 **
+
+如果以后安装软件时，报错类似如下：
+```
+The following packages have unmet dependencies: 
+    xxx : Depends: yyy but it is not going to be installed
+          Depends: zzz but it is not going to be installed
+E: Unable to correct problems, you have held broken packages.
+```
+试试：
+```shell
+sudo apt-add-repository universe
+sudo apt-get update
 ```
 
 ## 1.3 禁止启动时进入桌面
