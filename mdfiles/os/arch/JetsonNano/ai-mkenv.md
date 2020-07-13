@@ -2,22 +2,64 @@
 
 ---
 
+# 设置 OS 软件环境
 
-# 确认 OpenCV 环境
- 为了系统和python依赖，做下面的工作。
- 
- **注意：** For “protobuf” libraries, instead of doing apt install, I recommend installing the newer version (3.8.0) using my “install_protobuf-3.8.0.sh” script as shown below. The “protobuf” libraries could have a noticeable effect on the performance (inference speed) of tensorflow or else.
- 
+以下软件包，对OpenCV，以及后续做Tensorflow/Pytorch编译和运行，都是必须的
 
-# tensorflow
+```shell
+# 最好在官方源上做update和安装。换成国内源后，有可能出现安装失败的情况
+sudo apt update
+sudo apt install -y build-essential make cmake cmake-curses-gui
+sudo apt install -y git g++ pkg-config curl libfreetype6-dev
+sudo apt install -y libcanberra-gtk-module libcanberra-gtk3-module
+sudo apt install -y libpython3.6-dev
+sudo apt install -y python3-dev python3-testresources
+```
+
+# 设置 python 环境
+
+## 安装 pip
+```shell
+# 安装 pip
+wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
+tar xf setuptools-19.6.tar.gz && cd setuptools-19.6/
+python3 setup.py build
+sudo python3 setup.py install
+
+sudo apt install -y python3-pip
+# 若报错： No module named ‘distutils.util’
+sudo apt install -y python3-distutils
+# 若报错： Package python3-distutils has no installation candidate
+sudo apt update
+
+pip3 -V
+# 更新到最新版，要用sudo，否则setuptools是装在当前用户下
+sudo python3 -m pip install -U pip setuptools
+```
+
+## 安装 venv
+```shell
+sudo apt install python3-venv libpython3-dev
+```
+
+# 安装 protobuf
+ 
+**注意：** For “protobuf” libraries, instead of doing apt install, I recommend installing the newer version (3.8.0) using my “install_protobuf-3.8.0.sh” script as shown below. The “protobuf” libraries could have a noticeable effect on the performance (inference speed) of tensorflow or else.
+
+```shell
+cd ${HOME}/project/jetson_nano
+./install_protobuf-3.8.0.sh
+```
+
+# 安装 tensorflow
+参考官方指定：
 > https://docs.nvidia.com/deeplearning/frameworks/install-tf-jetson-platform/index.html
 
 ```shell
+# ==== 安装依赖软件
 sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
 
-# 官方推荐：numpy==1.16.1 future==0.17.1 mock==3.0.5 h5py==2.9.0 keras_preprocessing==1.0.5 keras_applications==1.0.8 gast==0.2.2 futures protobuf pybind11
-
-# 现在tensorflow wheels文件：
+# 下载tensorflow wheels文件：
 # https://developer.download.nvidia.cn/compute/redist/jp/v44/tensorflow/
 axel -n 16 https://developer.download.nvidia.cn/compute/redist/jp/v44/tensorflow/tensorflow-1.15.2+nv20.6-cp36-cp36m-linux_aarch64.whl
 
@@ -30,8 +72,24 @@ $ sudo pip3 install --pre --extra-index-url https://developer.download.nvidia.co
 # TF_VERSION 例如 1.13.1
 # NV_VERSION 例如 20.04
 
-# grpcio 安装非常慢，最好下载下来，用nohup单独装
-sudo nohup python3 -m pip install grpcio &
+# ===== 创建虚拟环境
+python3 -m venv /data1/python/venv/tf-1.15
+cp /data1/python/venv/tf-1.15/bin/activate ~/pyvenv-tf15
+source ~/pyvenv-tf15
+
+# ===== 安装 pip 包
+# 官方推荐：numpy==1.16.1 future==0.17.1 mock==3.0.5 h5py==2.9.0 keras_preprocessing==1.0.5 keras_applications==1.0.8 gast==0.2.2 futures protobuf pybind11
+python3 -m pip install -U pip setuptools
+python3 -m pip install -U testresources
+python3 -m pip install  numpy-1.16.6.zip
+# grpcio 安装非常慢，后台执行
+nohup python3 -m pip install  grpcio-1.30.0.tar.gz &
+python3 -m pip install tensorboard-1.15.0.whl
+nohup python3 -m pip install tensorflow-1.15.2+nv20.6-cp36-cp36m-linux_aarch64.whl &
+
+# scipy 安装非常慢，后台执行
+nohup python3 -m pip install scipy-1.5.1.tar.gz &
+python3 -m pip install keras==2.3.1
 
 # 验证
 python3
@@ -50,18 +108,6 @@ c = sess.run(add, feed_dict=binding)
 print(c)
 sess.close()
 ```
-
-## Best Practices
-Performance model : It is recommended to choose the right performance mode to get the best possible performance given energy usage limitations. There is a command line tool (nvpmodel) that can be used to change the performance mode.
-```shell
-# check the current performance mode
-sudo nvpmodel -q --verbose
-# To change the mode to MAX-N, issue:
-sudo nvpmodel -m 0
-```
-- [How do you switch between max-q and max-p?](https://devtalk.nvidia.com/default/topic/999915/jetson-tx2/how-do-you-switch-between-max-q-and-max-p/post/5109507/#5109507)
-- [Jetson/Performance](https://elinux.org/Jetson/Performance)
-- [Two cores disabled](https://devtalk.nvidia.com/default/topic/1000345/jetson-tx2/two-cores-disabled-/post/5110960/#5110960)
 
 # OpenCV
 ## 安装
@@ -249,29 +295,6 @@ cv2.imwrite('messigray.png', img)
 
 ## 源码编译安装
 > https://forums.developer.nvidia.com/t/pytorch-for-jetson-nano-version-1-5-0-now-available/72048
-
-#### 增加swap (Nano上要做这个)
-在现有swap配置下，增加1G
-```shell
-# 看看现在的大小
-free -m
-
-sudo fallocate -l 1G /mnt/2GB.swap
-# If the fallocate command fails or isn’t installed, run the following command:
-sudo dd if=/dev/zero of=/mnt/1GB.swap bs=1024 count=1048576
-
-# Format the swap file
-sudo mkswap /mnt/1GB.swap
-# Add the file to the system as a swap file
-sudo swapon /mnt/1GB.swap
-
-sudo echo "/mnt/1GB.swap  none  swap  sw 0  0" >> /etc/fstab
-sudo vi /etc/sysctl.conf
-vm.swappiness=10
-
-# Check that the swap file was created
-sudo swapon -s
-```
 
 #### 安装依赖
 ```shell

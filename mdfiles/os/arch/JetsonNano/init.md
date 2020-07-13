@@ -3,7 +3,7 @@
 ---
 
 - [jkjung Blog](https://jkjung-avt.github.io/)
-- [elinux.org/Jetson_Nano](https://elinux.org/Jetson_Nano
+- [elinux.org/Jetson_Nano](https://elinux.org/Jetson_Nano)
 - [NVIDIA Developer Forum](https://devtalk.nvidia.com/default/board/371/jetson-nano/)
 
 # 1. 必做的工作
@@ -135,9 +135,7 @@ apt-get update
 apt-get upgrade
 ```
 
-** 注意 **
-
-如果以后安装软件时，报错类似如下：
+**注意：**如果以后安装软件时，报错类似如下：
 ```
 The following packages have unmet dependencies: 
     xxx : Depends: yyy but it is not going to be installed
