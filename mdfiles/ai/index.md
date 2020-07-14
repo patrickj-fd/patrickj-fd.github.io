@@ -2,6 +2,8 @@
 
 ---
 
+- [编码技巧](usage)
+
 - [GPU]()
   * [安装](gpu-install)
   * [使用中的问题解决](gpu-useof)

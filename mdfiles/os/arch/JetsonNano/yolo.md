@@ -1,4 +1,6 @@
+[首 页](https://patrickj-fd.github.io/index)
 
+---
 
 ### 环境准备
 - 下载框架和权重
@@ -20,3 +22,7 @@
 ```
 
 检测结果默认保存在当前目录下：predictions.png
+
+---
+
+[首 页](https://patrickj-fd.github.io/index)

@@ -10,16 +10,27 @@
 ```shell
 # JetPack 版本信息。 例如 JetPack 4.4： R32 (release), REVISION: 4.3
 head -n 1 /etc/nv_tegra_release
+
+# 查看CPU、GPU的占用、温度，内存占用 等等实时信息
+tegrastats
 ```
 
 # 1. 必做的工作
 ## 1.1 初始化工作环境
 ```shell
+# 设置 root 密码
+sudo passwd root
+# 解决每次sudo都要输入密码
+su -
+echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
+exit
+
+# mount U盘
 sudo mkdir /mnt/usb1
 echo "sudo mount /dev/sda1 /mnt/usb1" > init && chmod 700 init
-
+# 设置各个工作目录
 sudo chown -R hyren:hyren /opt
-sudo mkdir -p /data1/python/venv
+sudo mkdir -p /data1/python/venv /data1/ai/app
 sudo chown -R hyren:hyren /data1
 
 echo "" >> ${HOME}/.bashrc
@@ -173,10 +184,19 @@ echo "index-url = https://pypi.mirrors.ustc.edu.cn/simple/" >> ~/.pip/pip.conf
 
 ## 1.5 安装常用软件
 
-由于在使用时经常查看CPU和共享的内存占用，系统自带的top命令并不好用。使用 htop 可以看到每个CPU核心的使用率、共享内存的使用率，方便直观  
+由于在使用时经常查看CPU和共享的内存占用，系统自带的top命令并不好用。使用 htop 可以看到每个CPU核心的使用率、共享内存的使用率，方便直观
+```shell
 sudo apt install htop
+```
 
-## 1.5 设置AI环境
+官方推出jtop工具，专门用来查看jetson的CPU、GPU等信息，使用方法也很简单
+```shell
+# 装好python环境后再装这个
+sudo python3 -m pip install jetson-stats
+sudo jtop
+```
+
+## 1.6 设置AI环境
 
 - 看看Nano系统自带的软件：
   * TensorRT ： /usr/src/tensorrt/samples/

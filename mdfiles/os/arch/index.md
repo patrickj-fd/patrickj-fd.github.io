@@ -13,6 +13,8 @@
 
 # JetsonNano
 - [系统初始化](JetsonNano/init)
+- [常用操作](JetsonNano/usage)
+
 - [构建ai需要的环境-tf-opencv-torch等](JetsonNano/ai-mkenv)
 - [Yolo使用](JetsonNano/yolo)
 
