@@ -17,6 +17,7 @@ sudo apt install -y python3-dev python3-testresources
 sudo apt install -y autoconf libtool
 
 sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
+sudo apt install -y libopenblas-base libopenmpi-dev cmake libopenblas-dev
 
 ```
 

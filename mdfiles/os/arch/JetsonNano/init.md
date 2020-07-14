@@ -205,24 +205,20 @@ sudo make
 从运行结果中，可以看到CUDA版本，GPU的信息
 
 ## 禁止启动时进入桌面
-- 编辑配置文件：sudo vi /etc/default/grub   
-  * 注释掉：GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"   
-  * 修改为：GRUB_CMDLINE_LINUX_DEFAULT="text"   
-- 执行 “update-grub” 以生效   
-- 重启系统
-
-** Ubuntu 18.04 另外一种方式 (未验证) **
 ```shell
 sudo systemctl set-default multi-user.target   #关闭图形界面
 sudo reboot
 systemctl set-default graphical.target    #打开图形界面
 sudo reboot
-
-# 关闭：在图形界面下 终端输入 
-sudo service lightdm stop
-# 开启：在命令行输入
-sudo service lightdm start
 ```
+
+- 其他Linux的处理方式：
+  - 编辑配置文件：sudo vi /etc/default/grub   
+    * 注释掉：GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"   
+    * 修改为：GRUB_CMDLINE_LINUX_DEFAULT="text"   
+  - 执行 “update-grub” 以生效   
+  - 重启系统
+
 
 ## 安装 Frp
 ```shell
