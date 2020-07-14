@@ -6,6 +6,12 @@
 - [elinux.org/Jetson_Nano](https://elinux.org/Jetson_Nano)
 - [NVIDIA Developer Forum](https://devtalk.nvidia.com/default/board/371/jetson-nano/)
 
+# 查看系统环境
+```shell
+# JetPack 版本信息。 例如 JetPack 4.4： R32 (release), REVISION: 4.3
+head -n 1 /etc/nv_tegra_release
+```
+
 # 1. 必做的工作
 ## 1.1 初始化工作环境
 ```shell

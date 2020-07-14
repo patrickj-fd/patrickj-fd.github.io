@@ -389,8 +389,12 @@ cv2.imwrite('messigray.png', img)
 
 # pytorch
 
+**NOTE :**
+- The JetPack 4.4 production release (L4T R32.4.3) only supports PyTorch 1.6.0 or newer.
+- PyTorch 1.6.0-rc2, matched to torchvision v0.7.0-rc2.
+- [官方发布的预编译whl及讨论](https://forums.developer.nvidia.com/t/pytorch-for-jetson-nano-version-1-5-0-now-available/72048)
+
 ## 源码编译安装
-> https://forums.developer.nvidia.com/t/pytorch-for-jetson-nano-version-1-5-0-now-available/72048
 
 #### 安装依赖
 ```shell
