@@ -23,6 +23,12 @@
 
 检测结果默认保存在当前目录下：predictions.png
 
+Freeze Keras model and convert into TensorRT model
+> https://www.dlology.com/blog/how-to-run-keras-model-on-jetson-nano/
+
+YOLOv4实用训练实践
+> https://www.cnblogs.com/wujianming-110117/p/12934969.html
+
 ---
 
 [首 页](https://patrickj-fd.github.io/index)

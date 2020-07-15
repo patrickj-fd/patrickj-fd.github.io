@@ -389,6 +389,9 @@ cv2.imwrite('messigray.png', img)
 
 # pytorch
 
+Docker
+> https://ngc.nvidia.com/catalog/containers/nvidia:l4t-pytorch
+
 **NOTE :**
 - The JetPack 4.4 production release (L4T R32.4.3) only supports PyTorch 1.6.0 or newer.
 - PyTorch 1.6.0-rc2, matched to torchvision v0.7.0-rc2.
