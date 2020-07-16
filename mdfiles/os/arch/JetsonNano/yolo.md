@@ -2,6 +2,8 @@
 
 ---
 
+# Yolo V4
+## 官方原始模型
 ### 环境准备
 - 下载框架和权重
   * 框架：git clone https://github.com/AlexeyAB/darknet.git
@@ -28,6 +30,17 @@ Freeze Keras model and convert into TensorRT model
 
 YOLOv4实用训练实践
 > https://www.cnblogs.com/wujianming-110117/p/12934969.html
+
+# Yolo V5
+### 准备环境
+- 下载框架和权重
+  * 框架：git clone https://github.com/ultralytics/yolov5.git
+  * 权重：仓库主页上有s/m/l等预训练模型下载（谷歌云盘）
+### 开始检测
+```shell
+ python detect.py --source test/000000000019.jpg  --weights yolov5m.pt
+ ```
+
 
 ---
 
