@@ -28,10 +28,21 @@ exit
 # mount U盘
 sudo mkdir /mnt/usb1
 echo "sudo mount /dev/sda1 /mnt/usb1" > init && chmod 700 init
-# 设置各个工作目录
-sudo chown -R hyren:hyren /opt
+
+# 建立工作用户。 -m: 自动在/home下创建主目录
+sudo useradd -m -s /bin/bash hyren 
+# sudo userdel -r hyren  # 包括主目录一起删除
+sudo passwd hyren
+su - hyren
+vi .bashrc  # uncomment 'force_color_prompt=yes' , PS1's w to W , alias ll='ls -lAh'
+source .bashrc
+exit
+
+# 设置工作目录
+sudo chown -R hyren:sudo /opt
 sudo mkdir -p /data1/python/venv /data1/ai/app
-sudo chown -R hyren:hyren /data1
+sudo chown -R hyren:sudo /data1
+sudo chmod -R g+w /data1
 
 echo "" >> ${HOME}/.bashrc
 echo "export CUBA_HOME=/usr/local/cuda" >> ${HOME}/.bashrc
@@ -45,6 +56,12 @@ nvcc -V  # see CUDA info
 ### 增加swap
 ```shell
 su -
+
+# 省SD，设置为全部用内存
+vi /etc/sysctl.conf
+vm.swappiness=0
+
+# 当进行 OpenCV 等大软件编译时，临时增加交换区。
 # Create the file for swap.
 # If the fallocate command fails or isn’t installed :
 # sudo dd if=/dev/zero of=/mnt/8GB.swap bs=8192 count=1048576
@@ -56,8 +73,6 @@ mkswap /mnt/8GB.swap
 swapon /mnt/8GB.swap
 
 echo "/mnt/8GB.swap  none  swap  sw 0  0" >> /etc/fstab
-# vi /etc/sysctl.conf
-# vm.swappiness=10
 
 # Check that the swap file was created
 swapon -s

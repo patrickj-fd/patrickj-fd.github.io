@@ -2,6 +2,14 @@
 
 ---
 
+# 删除 python2
+```shell
+sudo apt remove --purge python
+sudo apt remove --auto-remove python2.7
+# 确认
+ll /usr/bin/py*
+```
+
 # tensorflow
 ```shell
 sudo apt install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libhdf5-dev  python3-dev gfortran libblas-dev liblapack-dev libopenblas-dev libatlas-base-dev
@@ -230,15 +238,19 @@ sudo apt install -y libopenblas-dev cython3 libatlas-base-dev m4 libblas-dev cma
 
 # 创建虚拟环境
 sudo apt install -y python3-venv
-mkdir -p ~/python/venv && python3 -m venv ~/python/venv/pytorch
-source ~/python/venv/pytorch/bin/activate
+Venv_RootDir=/data1/python/venv
+mkdir -p $Venv_RootDir && python3 -m venv $Venv_RootDir/pytorch-1.5.1
+cp $Venv_RootDir/pytorch-1.5.1/bin/activate ~/pyv.pytorch-1.5.1
+source ~/pyv.pytorch-1.5.1
 python3 -m pip install -U setuptools pip
 
-# 安装依赖包：python3 -m pip -r requirements.txt
-# 因为使用的是旧版本，为了避免numpy可能出现版本太高的问题，最好明确指定版本
+# 安装依赖包：
+python3 -m pip install -r requirements.txt
+# 因为编译的1.5.1不是最新版本，为了避免numpy可能出现版本太高的问题，最好明确指定版本
 # 先安装numpy，否则编译出来的PyTorch不支持numpy。
-# 如果不用虚拟环境，前面加上 sudo
-python3 -m pip install future numpy==1.18.6 pyyaml requests six
+# 在 Debian-Pi-Aarch64-2020-06-15-U3 的64位环境下，不能指定版本号，否则会报mkl找不到的错误
+python3 -m pip install numpy==1.18.5
+python3 -m pip install future pyyaml requests six
 
 # 设置环境变量(树莓派不支持GPU)： vi setup.py 看看应该怎么设置这些参数
 export USE_CUDA=0
@@ -248,16 +260,10 @@ export USE_DISTRIBUTED=0
 export USE_NNPACK=0
 export USE_QNNPACK=0
 echo $USE_CUDA $USE_CUDNN $USE_MKLDNN $USE_DISTRIBUTED $USE_NNPACK $USE_QNNPACK
-# 下面这些参数是旧版本才使用的，比如v1.0.1
-# export NO_CUDA=1
-# export NO_DISTRIBUTED=1
-# export NO_MKLDNN=1 
-# export NO_NNPACK=1
-# export NO_QNNPACK=1
-# echo $NO_CUDA $NO_DISTRIBUTED $NO_MKLDNN
 
 # 编译安装
 # 1) 编译成wheel文件，以便到处安装
+python3 -m pip install wheel
 python3 setup.py bdist_wheel
 # 如果报错： error: invalid command 'bdist_wheel'
 # pip install wheel

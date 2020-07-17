@@ -16,7 +16,7 @@ sudo apt install -y libpython3.6-dev
 sudo apt install -y python3-dev python3-testresources
 sudo apt install -y autoconf libtool
 
-sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
+sudo apt install -y libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg-dev liblapack-dev libblas-dev gfortran
 sudo apt install -y libopenblas-base libopenmpi-dev cmake libopenblas-dev
 
 ```
@@ -39,7 +39,8 @@ sudo apt update
 
 pip3 -V
 # 更新到最新版，要用sudo，否则setuptools是装在当前用户下
-sudo python3 -m pip install -U pip setuptools
+sudo python3 -m pip install -U pip
+sudo python3 -m pip install -U setuptools
 ```
 
 ## 安装 venv
