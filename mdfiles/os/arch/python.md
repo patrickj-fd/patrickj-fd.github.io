@@ -1,6 +1,11 @@
 [首 页](https://patrickj-fd.github.io/index)
 
 ---
+# conda
+官方不提供 aarch64 的安装包，因此，使用别人编译好：
+> https://github.com/Archiconda/build-tools/releases
+
+最终安装好之后，输入python，应该能看到 Anaconda 的字样。
 
 # 更换源
 ```shell
@@ -14,16 +19,14 @@ echo "[global]" > ~/.pip/pip.conf
 echo "trusted-host = pypi.mirrors.ustc.edu.cn" >> ~/.pip/pip.conf
 echo "index-url = https://pypi.mirrors.ustc.edu.cn/simple/" >> ~/.pip/pip.conf
 echo "timeout = 120" >> ~/.pip/pip.conf
-
-# 也配置给root，以便适用sudo pip3 install
-su -
-mkdir ~/.pip
-cp /home/pi/.pip/pip.conf ~/.pip
 ```
 
+也配置给root，以便适用sudo pip3 install？待确认
+
 # 安装 pip
-树莓派版本b4，自带python为3.7.3，无pip。
+对于某些系统（如：树莓派b4），系统自带的python没有pip，需要自己安装上。
 ```shell
+# 先安装 setuptools之后才能安装pip
 wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
 tar -zxvf setuptools-19.6.tar.gz && cd setuptools-19.6/
 python3 setup.py build
@@ -38,11 +41,6 @@ sudo apt update
 pip3 -V
 # 更新到最新版，要用sudo，否则setuptools是装在当前用户下
 sudo python3 -m pip install -U pip setuptools
-
-
-# ========= 另外一种安装方式 =========
-wget https://bootstrap.pypa.io/get-pip.py
-sudo python3 get-pip.py
 ```
 
 ---
