@@ -50,7 +50,7 @@ cd /tmp/Python-$PYTHON_VERSION
 gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"
 ./configure --prefix=$PYTHON_HOME --build="$gnuArch" \
     --enable-loadable-sqlite-extensions --enable-optimizations \
-    --enable-option-checking=fatal --enable-shared \
+    --enable-option-checking=fatal --enable-shared --with-ssl \
     --with-system-expat --with-system-ffi --without-ensurepip
 
 make -j 8 PROFILE_TASK='-m test.regrtest --pgo \
