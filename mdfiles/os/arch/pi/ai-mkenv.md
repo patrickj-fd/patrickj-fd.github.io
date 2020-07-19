@@ -225,6 +225,7 @@ cv2.imwrite('messigray.png', img)
 # 下载源码。必须加上recursive，下载pytorch依赖的各种外部链接库
 git clone --recursive https://github.com/pytorch/pytorch
 cd pytorch
+# 在 aarch64 系统下，要使用最新的1.6。v1.5.1无法编译过去，会停在 [53%] XNNPACK 报错。
 git tag
 git checkout v1.5.1
 # git submodule update --init
@@ -259,15 +260,17 @@ export USE_MKLDNN=0
 export USE_DISTRIBUTED=0
 export USE_NNPACK=0
 export USE_QNNPACK=0
+# armv7l 下，不需要把USE_FBGEMM设置为0
 export USE_FBGEMM=0
 export MAX_JOBS=1
 echo USE_CUDA=$USE_CUDA USE_CUDNN=$USE_CUDNN USE_MKLDNN=$USE_MKLDNN USE_DISTRIBUTED=$USE_DISTRIBUTED
-echo USE_NNPACK=$USE_NNPACK USE_QNNPACK=$USE_QNNPACK USE_FBGEMM=$USE_FBGEMM
+echo USE_NNPACK=$USE_NNPACK USE_QNNPACK=$USE_QNNPACK USE_FBGEMM=$USE_FBGEMM MAX_JOBS=$MAX_JOBS
 
 # 编译安装
 # 1) 编译成wheel文件，以便到处安装
 python3 -m pip install wheel
-python3 setup.py bdist_wheel
+nohup python3 setup.py bdist_wheel &
+tail -f nohup.out
 # 如果报错： error: invalid command 'bdist_wheel'
 # pip install wheel
 # pip install --upgrade setuptools

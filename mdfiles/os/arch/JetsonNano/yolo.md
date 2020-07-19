@@ -32,7 +32,9 @@ YOLOv4实用训练实践
 > https://www.cnblogs.com/wujianming-110117/p/12934969.html
 
 # Yolo V5
+## 复现
 ### 准备环境
+环境要求： Python>=3.7 and PyTorch>=1.5.
 - 下载框架和权重
   * 框架：git clone https://github.com/ultralytics/yolov5.git
   * 权重：仓库主页上有s/m/l等预训练模型下载（谷歌云盘）
@@ -40,6 +42,15 @@ YOLOv4实用训练实践
 ```shell
  python detect.py --source test/000000000019.jpg  --weights yolov5m.pt
  ```
+
+## 训练自己的模型
+> https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data
+> https://blog.csdn.net/laovife/article/details/106802725
+
+
+其他参考（yolo3）：
+> https://blog.csdn.net/yuanlulu/article/details/85254828
+
 
 
 ---
