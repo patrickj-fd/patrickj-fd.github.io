@@ -46,6 +46,7 @@ YOLOv4实用训练实践
 ## 训练自己的模型
 > https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data
 > https://blog.csdn.net/laovife/article/details/106802725
+> https://blog.csdn.net/qq_41562735/article/details/103509034
 
 
 其他参考（yolo3）：
