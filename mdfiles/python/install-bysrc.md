@@ -6,26 +6,86 @@
 ## 慎重！！！ 这会把很多系统级的依赖库都卸载掉!
 apt-get remove python3
 apt-get remove --auto-remove python3
-apt-get purge --auto-remove python3
+# apt-get purge --auto-remove python3
 
 # 编译安装
+## Ubuntu(Debian)
+```shell
+PYTHON_VERSION=3.7.8
+PythonHome=/opt/Python-${PYTHON_VERSION}
+
+wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz"
+
+apt install -y --no-install-recommends \
+   autoconf automake bzip2 dpkg-dev file g++ gcc imagemagick libbz2-dev libc6-dev \
+   libcurl4-openssl-dev libdb-dev libevent-dev libffi-dev libgdbm-dev libglib2.0-dev libgmp-dev \
+   libjpeg-dev libkrb5-dev liblzma-dev libmagickcore-dev libmagickwand-dev libmaxminddb-dev \
+   libncurses5-dev libncursesw5-dev libpng-dev libpq-dev libreadline-dev libsqlite3-dev \
+   libssl-dev libtool libwebp-dev libxml2-dev libxslt-dev libyaml-dev \
+   make patch unzip xz-utils zlib1g-dev tk-dev uuid-dev git
+
+mkdir -p /tmp/src/python
+tar -xJC /tmp/src/python --strip-components=1 -f python.tar.xz
+cd /tmp/src/python
+
+gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"
+./configure --prefix="${PythonHome}" --build="$gnuArch" --enable-loadable-sqlite-extensions \
+   --enable-optimizations --enable-option-checking=fatal \
+   --enable-shared --with-system-expat --with-system-ffi
+[ $? -ne 0 ] && echo "configure ... Failed !" || echo "configure done!"
+
+make -j "$(nproc)" PROFILE_TASK='-m test.regrtest --pgo \
+   test_array test_base64 test_binascii test_binhex test_binop test_bytes test_class \
+   test_c_locale_coercion test_cmath test_codecs test_compile test_complex test_csv \
+   test_decimal test_dict test_float test_fstring test_hashlib test_io test_iter \
+   test_json test_long test_math test_memoryview test_pickle test_re test_set test_slice \
+   test_struct test_threading test_time test_traceback test_unicode'
+[ $? -ne 0 ] && echo "make ... Failed !" || echo "make done!"
+
+make install || echo "make install ... Failed !"
+
+# goto root user
+su
+PYTHON_VERSION=3.7.8
+PythonHome=/opt/Python-${PYTHON_VERSION} && echo ${PythonHome}
+echo "${PythonHome}/lib" > /etc/ld.so.conf.d/python${PYTHON_VERSION}.conf
+ldconfig
+exit
+
+
+ldd ${PythonHome}/bin/python3  # check lib(so)
+
+# delete all test files
+find $PythonHome -depth \
+   \( \
+  \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) \
+  -o \
+  \( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
+   \) -exec rm -rf '{}' +
+
+cd ~ && rm -rf /tmp/src/python
+# check
+${PythonHome}/bin/python3 --version
+${PythonHome}/bin/pip3 --version
+ln -s ${PythonHome}/bin/python3 /usr/bin/python${PYTHON_VERSION}
+ls -l /usr/bin/python*
+
+#ln -s idle3 idle
+#ln -s pydoc3 pydoc
+#ln -s python3 python
+#ln -s python3-config python-config
+
+# 因为系统有python，所以，这种源码方式安装的python，使用时，一定要先创建虚拟环境，并且虚拟环境中工作！
+${PythonHome}/bin/python3 -m venv 虚拟环境目录
+
+```
+
+## CentOS
 ```shell
 # 下载
 wget -c https://www.python.org/ftp/python/3.6.9/Python-3.6.9.tgz
 
 # 安装必要的软件
-# Debain
-apt install -y --no-install-recommends \
-    autoconf automake gcc g++ bzip2 dpkg-dev file imagemagick make patch unzip openssh-client \
-    libbz2-dev libc6-dev libcurl4-openssl-dev libdb-dev libevent-dev libffi-dev libgdbm-dev \
-    libglib2.0-dev libgmp-dev libjpeg-dev libkrb5-dev liblzma-dev libmagickcore-dev libmagickwand-dev \
-    libmaxminddb-dev libncurses5-dev libncursesw5-dev libpng-dev libpq-dev libreadline-dev zlib1g \
-    libsqlite3-dev libssl-dev libtool libwebp-dev libxml2-dev libxslt-dev libyaml-dev zlib1g-dev \
-    libbluetooth-dev tk-dev xz-utils uuid-dev \
-    gfortran libblas-dev liblapack-dev libopenblas-dev libatlas-base-dev llvm-8
-# 最后一行 gfortran 开头的这些库，是为了安装 scripy 需要的库
-
-# CentOS
 yum install -y zlib zlib-devel openssl openssl-devel openssl-static \
 bzip2 bzip2-devel \
 ncurses ncurses-devel \
