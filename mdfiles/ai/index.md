@@ -9,6 +9,8 @@
   * [使用中的问题解决](gpu-useof)
 - [待看的文章](tosee)
 
+- [Yolo](yolo)
+
 ---
 
 [首 页](https://patrickj-fd.github.io)
