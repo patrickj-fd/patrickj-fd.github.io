@@ -41,6 +41,9 @@ YoloV4 系列学习
 YOLOv4实用训练实践
 > https://www.cnblogs.com/wujianming-110117/p/12934969.html
 
+超详细讲解-要经常看
+> https://www.cnblogs.com/lh2n18/p/12986898.html
+
 
 ## 1.2 标注和训练
 ### 1.2.1 使用labelImg标注
