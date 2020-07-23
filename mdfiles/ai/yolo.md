@@ -2,51 +2,98 @@
 
 ---
 
-# Yolo V4
-## 官方原始模型
-### 环境准备
+# 1. Yolo V4
+## 1.1 官方darknet复现
+### 1.1.1 环境准备
 - 下载框架和权重
   * 框架：git clone https://github.com/AlexeyAB/darknet.git
   * 权重：https://drive.google.com/open?id=1cewMfusmPjYWbrnuJRuKhPMwRe_b9PaT
 - Jetson Nano，切换为MAXIN模式（10w）
 - 修改daknet框架的配置
-  * vi Makefile ：
+  * vi Makefile ： （或者cp成自己的文件my-Makefile）
     * CUDA、CUDNN、OPENCV置为 1
-    * 20行开始的 ARCH 全部注释掉，改成：ARCH= -gencode arch=compute_53,code=[sm_53,compute_53]
+    * 20行开始的 ARCH 全部注释掉，按照下面的注释修改
+      * Jetson Nano : ARCH= -gencode arch=compute_53,code=[sm_53,compute_53]
+      * GTX 1660 : ARCH= -gencode arch=compute_61,code=sm_61 -gencode arch=compute_61,code=compute_61
   * vi cfg/yolov4.cfg ：将 "[net]" 组下的 batch 和 subdivisions 都改成1。默认的64和8是做训练时的配置值。
-- 编译 : make
-- 将权重文件yolov4.weights拷贝至darknet目录下
-- 将测试的图片放入data目录下
+- 编译 : make (Or: make -f my-Makefile)
 
-### 开始检测
+### 1.1.2 试试效果
+- 下载权重文件yolov4.weights
 ```shell
 ./darknet detect cfg/yolov4.cfg yolov4.weights data/dog.jpg
 ```
-
 检测结果默认保存在当前目录下：predictions.png
 
+### 1.1.3 参考
 Freeze Keras model and convert into TensorRT model
 > https://www.dlology.com/blog/how-to-run-keras-model-on-jetson-nano/
+
+YoloV4 系列学习
+> https://blog.csdn.net/JIEJINQUANIL/article/details/106459950
+
+训练自己的YOLO V4数据集
+> https://blog.csdn.net/weixin_38353277/article/details/105841023
+
+用YOLOv4训练和测试数据集（保姆级）
+> https://blog.csdn.net/Creama_/article/details/106209388
 
 YOLOv4实用训练实践
 > https://www.cnblogs.com/wujianming-110117/p/12934969.html
 
-# Yolo V4 Pytorch 版实现
+
+## 1.2 标注和训练
+### 1.2.1 使用labelImg标注
+- 选YOLO的存储格式
+- 选择被标注图片所在目录
+- 选择标注结果的存储目标（Ctrl+R）
+
+### 1.2.2 训练-使用官方darnet训练
+
+#### (1) 配置训练环境
+- 官网下载 yolov4.conv.137 文件
+- 以 cfg/yolov4-custom.cfg 为模板修改成自己的配置文件。修改的参数参加官网
+- 把标注的文件存到任意位置（成对的jpg和txt）
+- 定义 names 文件（eg. yijia.names）
+- 定义 data 文件（eg. yijia.data）
+```
+classes= 2                 分类数
+train  = 全路径/train.txt
+valid  = 全路径/test.txt
+names = 全路径/yijia.names
+backup = backup/           生成模型weights文件的目录，必须是这个名字
+```
+- 定义训练集和测试集（即data文件里面定义的两个文件：train和test）。内容是每行一个jpg文件的全路径名
+
+#### (2) 训练
+```shell
+./darknet detector train <data文件位置> <自己定义的custom.cfg文件位置> <yolov4.conv.137文件>
+# 如果终端启动，要加上参数：-dont_show
+```
+
+#### （3） 验证自己的训练出来的模型
+在训练的过程中，backup目录下生成weights文件，可以拿来验证效果
+```shell
+./darknet detector test <data文件> <自己定义的custom.cfg文件> backup/xxx_last.weights jpg文件
+```
+
+## 1.2 Yolo V4 Pytorch 版实现
+WongKinYiu的两个实现版本（基于 ultralytics/yolov3和yolov5）
+> https://github.com/WongKinYiu/PyTorch_YOLOv4
+> https://github.com/WongKinYiu/PyTorch_YOLOv4/tree/u5_preview
 
 - https://blog.csdn.net/c20081052/article/details/105995753
-- https://blog.csdn.net/JIEJINQUANIL/article/details/106458002?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
-- https://blog.csdn.net/weixin_38353277/article/details/105841023?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
 
-## 安装
+### 1.2.1 Pytorch - Tianxiaomo版
 yolov4 pytorch 版: https://github.com/Tianxiaomo/pytorch-YOLOv4
-### 1. 现在 yolov4.Weights
+#### 1. 下载 yolov4.Weights
 
   - baidu(https://pan.baidu.com/s/1dAGEW8cm-dqK14TbhhVetA Extraction code:dm5b)
   - google(https://drive.google.com/open?id=1cewMfusmPjYWbrnuJRuKhPMwRe_b9PaT)
 
 该权重文件yolov4.weights 是在coco数据集上训练的，目标类有80种，当前工程支持推理，不包括训练
 
-### 2. 复现效果
+#### 2. 复现效果
 ```shell
 cd pytorch-YOLOv4
 source 虚拟环境
@@ -55,8 +102,8 @@ python demo.py -cfgfile cfg/yolov4.cfg -weightfile ../yolov4.weights -imgfile da
 ```
 当前目录下生成了预测结果文件：predictions.jpg
 
-## 源码分析
-### 1. demo.py
+#### 源码分析
+- demo.py
 ```python
 def detect(cfgfile, weightfile, imgfile):
     m = Darknet(cfgfile)  # 创建Darknet模型对象
@@ -97,7 +144,7 @@ def detect(cfgfile, weightfile, imgfile):
 
 
 
-# Yolo V5
+# 2. Yolo V5
 ## 复现
 ### 准备环境
 环境要求： Python>=3.7 and PyTorch>=1.5.
