@@ -84,8 +84,13 @@ VS Code的层级设置关系为：
 - setting.json
 ```json
 {
+    "editor.detectIndentation": false,
+    "editor.renderControlCharacters": true,
+    "editor.renderWhitespace": "all",
+    "remote.SSH.showLoginTerminal": true,
     "python.pythonPath": "python的执行全路径（包括虚拟环境）"
 }
+// 前面4个可以没有，只要有最后一句，即可从VS中Run/Debug程序了。最后一句就是“Python: Select Interpreter"配置的
 ```
 
 - launch.json
@@ -99,6 +104,7 @@ VS Code的层级设置关系为：
             "request": "launch",
             "program": "${file}",
             //"args": ["-vid", "data/lp-yijia-2.mp4"], 执行程序时的命令行参数
+            "cwd": "${fileDirname}",  // 如果没有这句，在VS中执行时，不会切换到py文件目录？
             "console": "integratedTerminal"
         }
     ]
