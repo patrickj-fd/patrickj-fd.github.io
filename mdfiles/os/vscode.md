@@ -80,6 +80,31 @@ VS Code的层级设置关系为：
 
 因为不同项目，用到python环境不一样，所以，可以在每个项目下建立一个虚拟环境。
 
+其实，可以手工配置：在任何一个目录下，建立'.vscode'目录，下面存放setting.json和launch.json两个文件。那么，在VS中，从这个目录Run/Debug程序即可。
+- setting.json
+```json
+{
+    "python.pythonPath": "python的执行全路径（包括虚拟环境）"
+}
+```
+
+- launch.json
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            //"args": ["-vid", "data/lp-yijia-2.mp4"], 执行程序时的命令行参数
+            "console": "integratedTerminal"
+        }
+    ]
+}
+```
+
 # 配置
 - 控制面板： Ctrl+Shift+P
 
