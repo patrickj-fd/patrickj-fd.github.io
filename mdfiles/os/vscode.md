@@ -8,6 +8,9 @@
 
 # 定制
 
+### 修改默认shell
+Ctrl+Shift+P，搜索shell，在下拉列表中“select Default shell”选自己要用的shell，比如PowerShell 7、Git Bash等。
+
 ### 全局修改CRLF为LF
 Settings中搜索 'eol'，会定位到：Text Editor -> Files: Eol，下拉框里面选择\n即可
 

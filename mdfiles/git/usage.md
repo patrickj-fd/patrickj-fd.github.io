@@ -32,7 +32,25 @@ git push -u origin master
 
 # 2. 拉取和提交相关
 
-## * 仅拉取指定目录
+## 2.1 强制覆盖
+### 1) 强制覆盖本地 - 与远程仓库保持一致
+```
+git fetch --all 
+git reset --hard origin/master 
+git pull
+```
+### 2) 保留本地的前提下，取远程仓库
+```
+git stash        # 将本地修改保存起来。 这样本地就干净了（git status后看不见修改的文件）
+git pull
+git stash pop    # 恢复最新的进度到工作区
+```
+### 3) 强制覆盖远程仓库
+```
+git push -u -f origin master
+```
+
+## 2.2 仅拉取指定目录
 ```shell
 # 本地目录初始化仓库
 git init
@@ -55,7 +73,7 @@ git pull
 > http://schacon.github.io/git/git-read-tree.html#_sparse_checkout
 
 
-## * 仅拉取最新提交的版本
+## 2.3 仅拉取最新提交的版本
 当项目过大时，git clone会很慢，解决方法很简单，在git clone时加上--depth=1即可解决。
 > depth用于指定克隆深度，为1即表示只克隆最近一次commit.
 
@@ -68,25 +86,7 @@ git fetch --depth 1 origin remote_branch_name
 git checkout remote_branch_name
 ```
 
-## * 更新时的强制覆盖
-### 1) 强制覆盖本地 - 与远程仓库保持一致
-```
-git fetch --all 
-git reset --hard origin/master 
-git pull
-```
-### 2) 保留本地的前提下，取远程仓库
-```
-git stash        # 将本地修改保存起来。 这样本地就干净了（git status后看不见修改的文件）
-git pull
-git stash pop    # 恢复最新的进度到工作区
-```
-### 3) 强制覆盖远程仓库
-```
-git push -u -f origin master
-```
-
-## * 删除服务器文件,但保留本地
+## 2.4 删除服务器文件,但保留本地
 ```
 git rm --cached -r 本地要保留的目录
 git rm --cached file 本地要保留的文件
@@ -158,7 +158,7 @@ git branch -d testing
 - 叹号“!”表示不忽略(跟踪)匹配到的文件或目录
 
 
-** ignore 配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效 **
+**ignore 配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效**
 
 ```
 1. xxx/*
@@ -180,7 +180,25 @@ doc/*.txt
 doc/**/*.txt
 ```
 
-# 99. 其他
+# 9. 其他
+## 查看仓库状态
+查看有哪些文件被修改、添加、删除了，是否在暂存区，等等信息。
+```shell
+git status     # 显示详细的信息
+git status -s  # 显示简短信息
+```
+显示简短信息，可以直观了解变动的文件，并且配合git add来提交指定文件。例如：只提交部分文件的处理方式：
+```shell
+git status -s        # 1. 查看仓库状态
+git add <filepath>   # 2. 添加需要提交的文件名（用上面显示出来文件全路径）
+git stash -u -k      # 3. 忽略其他文件，把现修改的隐藏起来，这样提交的时候就不会提交未被add的文件
+                     #    -k 保持文件的完整。-u 包括无路径的文件(那些新的和未添加到git的)。
+git commit -m "xxx"  # 4.
+git pull             # 5. 拉取合并
+git push             # 6. 推送到远程
+git stash pop        # 7. 恢复之前忽略的文件（非常重要的一步）
+```
+
 ## 删除提交记录
 将最近两次提交的记录合并为一次完美记录为例：
 ```
