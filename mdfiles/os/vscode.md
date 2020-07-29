@@ -69,6 +69,8 @@ VS Code的层级设置关系为：
 
 # 建立Python环境
 
+- [官方说明](https://code.visualstudio.com/docs/python/python-tutorial)
+
 1. 安装 Python 插件
 2. 为新项目生成 setting.json 文件
   按ctrl+shift+p，找到“Python: Select Interpreter"。会跳出系统已经安装的所有python解释器，随便选一个，以便生成setting.json，之后就可以根据实际情况进行修改了
@@ -80,35 +82,82 @@ VS Code的层级设置关系为：
 
 因为不同项目，用到python环境不一样，所以，可以在每个项目下建立一个虚拟环境。
 
-其实，可以手工配置：在任何一个目录下，建立'.vscode'目录，下面存放setting.json和launch.json两个文件。那么，在VS中，从这个目录Run/Debug程序即可。
-- setting.json
+## setting.json和launch.json
+其实，上面4步就是生成setting.json和launch.json，所以，也可以全手工配置：在workspace目录下建立'.vscode'目录，下面存放setting.json和launch.json两个文件。在VS中即可Run/Debug程序了。
+- [官方说明-关于环境变量定义](https://code.visualstudio.com/docs/python/environments#_environment-variable-definitions-file)
+
+### （1）setting.json
 ```json
 {
     "editor.detectIndentation": false,
     "editor.renderControlCharacters": true,
     "editor.renderWhitespace": "all",
     "remote.SSH.showLoginTerminal": true,
-    "python.pythonPath": "python的执行全路径（包括虚拟环境）"
+    "python.pythonPath": "python的执行全路径（包括虚拟环境）",
+    "python.linting.pylintEnabled": false,
+    "python.linting.pep8Enabled": true,
+    "python.linting.lintOnSave": true,
+    "python.formatting.provider": "yapf",
+    "files.autoSave": "onFocusChange",      // 离开页面自动保存
+    "editor.formatOnSave": true,            // 每次保存的时候自动格式化。 Or: formatOnType
+
+    // 启动pytest测试框架。
+    "python.testing.pytestArgs": [
+        "test_suite"   // 当前workspace下，存在测试用例的根目录
+    ],
+    "python.testing.pytestPath": "pytest",  // 要在python执行环境中安装pytest
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
 }
 // 前面4个可以没有，只要有最后一句，即可从VS中Run/Debug程序了。最后一句就是“Python: Select Interpreter"配置的
 ```
+- 前面4个可以没有，有第5句，即可从VS中Run/Debug程序了。这就是“Python: Select Interpreter"配置出来的
+- 也可以不加"python.pythonPath"，在launch.json里面配置pythonPath即可
+- 如果"python.pythonPath"后面的这些配置行不需要，那么这个文件可以没有。因为前4个复用全局配置，第5个在launch里面配置
 
-- launch.json
+### （2）launch.json
 ```json
 {
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "AnyName eg. project name", // 配置名称，会在启动配置的下拉菜单中显示
             "type": "python",
-            "request": "launch",
+            "request": "launch", // launch/attach. launch: VS会打开这个程序然后进入调试, attach:已经打开了程序，然后接通内部调试协议进行调试
+            "pythonPath": "python可执行文件全路径（包括虚拟环境）", // "${command:python.interpreterPath}",
             "program": "${file}",
-            //"args": ["-vid", "data/lp-yijia-2.mp4"], 执行程序时的命令行参数
-            "cwd": "${fileDirname}",  // 如果没有这句，在VS中执行时，不会切换到py文件目录？
+            "args": ["-vid", "test.mp4"],  // 执行程序时的命令行参数
+            // "cwd": "${fileDirname}",  // 如果没有这句，在VS中执行py时自动进入默认目录
+            "cwd": "${workspaceRoot}",  // 把工程添加到workspace并设置这个，以便程序能正确引入包
+            "env": {"HRS_RESOURCES_ROOT": "/....../resources"},
+            "envFile": "${workspaceRoot}/.yours_envfile",
+            "debugOptions": [           // 这个不配置也可以
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput"
+            ],
             "console": "integratedTerminal"
         }
     ]
 }
+```
+#### launch里面的预定义变量
+```
+${workspaceFolder}          - 当前工作目录(根目录)
+${workspaceFolderBasename}  - 当前文件的父目录
+${file}                     - 当前打开的文件名(完整路径)
+${relativeFile}             - 当前根目录到当前打开文件的相对路径(包括文件名)
+${relativeFileDirname}      - 当前根目录到当前打开文件的相对路径(不包括文件名)
+${fileBasename}             - 当前打开的文件名(包括扩展名)
+${fileBasenameNoExtension}  - 当前打开的文件名(不包括扩展名)
+${fileDirname}              - 当前打开文件的目录
+${fileExtname}              - 当前打开文件的扩展名
+${cwd}                      - 启动时task工作的目录
+${lineNumber}               - 当前激活文件所选行
+${selectedText}             - 当前激活文件中所选择的文本
+${execPath}                 - vscode执行文件所在的目录
+${defaultBuildTask}         - 默认编译任务(build task)的名字
 ```
 
 # 配置
