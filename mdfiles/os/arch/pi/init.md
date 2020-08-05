@@ -59,7 +59,60 @@ sudo dpkg-reconfigure tzdata
 # 选择： Asia -> Shanghai
 ```
 
-## 2.3 开启蓝牙并设置开机启动
+## 2.3 系统软件
+### python
+将python改成成python3
+```shell
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 100 
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 150
+```
+
+### docker
+* [Docker官方文档](https://docs.docker.com/)
+```shell
+curl -sSL https://get.docker.com | sh
+# 树莓派专属脚本福利，一句搞定！
+
+sudo docker --version
+# 确认版本号，返回类似：Docker version 19.03.5, build 633a0ea
+
+sudo nano /etc/docker/daemon.json
+# 添加国内镜像，写入如下内容：
+
+{
+  "registry-mirrors": ["https://registry.docker-cn.com"]
+}
+# 保存（ctrl+o）退出（ctrl+x）
+
+sudo systemctl restart docker.service 
+sudo systemctl enable docker.service
+# 重启docker并常驻服务
+
+sudo docker pull portainer/portainer
+# 安装docker图形化UI
+
+sudo docker volume create portainer_data
+sudo docker run -d -p 9000:9000 --name portainer --restart always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+# 创建UI容器，可以在浏览器中输入树莓派IP:9000 访问，设置帐号密码后选择local（本地）
+```
+
+# 3 其他-可选
+## 桌面版设置
+### 中文及输入法
+```shell
+# 字体。不装也行，乱装字体，可能在某些输入框内会出现光标漂移
+sudo apt install -y ttf-wqy-zenhei ttf-wqy-microhei
+# 更改菜单界面语言：选zh_CN.UTF8。
+sudo raspi-config 或 dpkg-reconfigure locales
+reboot
+# 重启后，如果没有中文，选菜单：Preferences->RasPi Configuration->Localisation->Set Locale，选中文的语言国家等
+
+# 输入法
+sudo apt install fcitx fcitx-googlepinyin  # fcitx-module-cloudpinyin fcitx-sunpinyin
+# Preferences(首选项)->Fcitx配置->InputMethod(输入法)，添加"Google拼音"
+```
+
+## 开启蓝牙并设置开机启动
 ```shell
 sudo service bluetooth start
 sudo update-rc.d bluetooth enable
@@ -110,10 +163,8 @@ bt-adapter --set Discoverable 1
 ```
 reboot 重启可以用手机蓝牙找到 raspberrypi 的蓝牙设备，并且通过 172.20.1.1 可以访问到树莓派的服务
 
-## 2.9 （可选）
-### 设置固定IP
-
-编辑文件： /etc/dhcpcd.conf
+## 设置固定IP
+vi /etc/dhcpcd.conf
 ```ini
 interface wlan0
  
