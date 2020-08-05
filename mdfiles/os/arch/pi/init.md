@@ -29,6 +29,30 @@ scan_ssid=1
 
 （开机后，可编辑文件： /etc/wpa_supplicant/wpa_supplicant.conf）
 
+### Ubuntu IOT 配置wifi
+连上显示器和键盘开机
+```shell
+su
+echo "network: {config: disabled}" > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+vi /etc/netplan/01-netcfg.yaml
+# -------
+network:
+  version: 2
+  wifis:
+    wlan0:
+      dhcp4: true
+      dhcp6: true
+      optional: true
+      access-points: 
+        "wifi名":
+          password: "密码"
+# ------- 也可以把上面内容写到TF卡的network-config文件中，试试是不是直接就可以用wifi了
+
+netplan generate
+netplan apply    # 可能会报错：netplan-wpa-wlan0.service not found。不用管，重启就可以了
+reboot
+```
+
 ## 1.2 开启 SSH 服务
 
 在SD卡根新建文件：ssh。
