@@ -121,6 +121,20 @@ sudo docker run -d -p 9000:9000 --name portainer --restart always -v /var/run/do
 ```
 
 # 3 其他-可选
+## 安装CSI摄像头
+1. 把CSI接口上的黑色横条向上提起
+2. 把摄像头蓝色面对着USB接口端（也就是摄像头对着USB接口），轻轻插进去
+3. 把黑色横条下压，即可固定了
+4. 执行raspi-config，把Camera设置成Enable，重启即可
+
+重启后，执行以下命令验证摄像头是否可用
+```shell
+raspistill -o test.jpg -t 5000    # 5秒后拍摄一张照片，保存为test.jpg
+
+raspivid -o test.n264 -t 5000 -w 1280 -h 720     # 拍摄一段时长5秒，分辨率1280x720的视频
+```
+- 在/dev/video中创建节点
+
 ## 桌面版设置
 ### 中文及输入法
 ```shell
