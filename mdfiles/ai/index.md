@@ -9,7 +9,9 @@
   * [使用中的问题解决](gpu-useof)
 - [待看的文章](tosee)
 
-- [Yolo](yolo)
+- Yolo
+  * [概述](summary)
+  * [cfg配置文件详解](cfg-detail)
 
 ---
 

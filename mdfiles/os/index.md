@@ -2,6 +2,10 @@
 
 ---
 
+- 更换清华源：
+  > https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
+  * 该页面可根据操作系统选择source.list里面的内容
+
 - [常用命令](usage)
 - [编写shell](shell)
 

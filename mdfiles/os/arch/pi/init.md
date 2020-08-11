@@ -30,25 +30,25 @@ scan_ssid=1
 （开机后，可编辑文件： /etc/wpa_supplicant/wpa_supplicant.conf）
 
 ### Ubuntu IOT 配置wifi
-连上显示器和键盘开机
+自ubuntu17开始使用netplan配置网络了。连上显示器和键盘开机
 ```shell
 su
 echo "network: {config: disabled}" > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
-vi /etc/netplan/01-netcfg.yaml
+vi /etc/netplan/01-netcfg.yaml 或 50-cloud-init.yaml
 # -------
 network:
   version: 2
   wifis:
     wlan0:
       dhcp4: true
-      dhcp6: true
-      optional: true
+      dhcp6: true       # 可以没有
+      optional: true    # 可以没有
       access-points: 
         "wifi名":
           password: "密码"
 # ------- 也可以把上面内容写到TF卡的network-config文件中，试试是不是直接就可以用wifi了
 
-netplan generate
+netplan generate    # 或许可以不用执行这个命令
 netplan apply    # 可能会报错：netplan-wpa-wlan0.service not found。不用管，重启就可以了
 reboot
 ```
@@ -61,6 +61,7 @@ reboot
 
 # 2. 开机后的初始化
 ## 2.1 换源
+### raspi
 ```shell
 # 切换到root
 su -
@@ -77,6 +78,12 @@ echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui" >
 apt update
 apt upgrade
 ```
+### ubuntu iot
+```shell
+cp sources.list sources.list.orgn
+sed -i "s%http://ports.ubuntu.com/ubuntu-ports%https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports%g" sources.list
+```
+
 ## 2.2 修改系统时间
 ```shell
 sudo dpkg-reconfigure tzdata
@@ -84,6 +91,30 @@ sudo dpkg-reconfigure tzdata
 ```
 
 ## 2.3 系统软件
+### Ubuntu IOT
+#### 关闭apt自动更新
+```shell
+sudo systemctl stop apt-daily.service
+sudo systemctl stop apt-daily.timer
+sudo systemctl stop apt-daily-upgrade.service
+sudo systemctl stop apt-daily-upgrade.timer
+sudo systemctl disable apt-daily.service
+sudo systemctl disable apt-daily.timer
+sudo systemctl disable apt-daily-upgrade.service
+sudo systemctl disable apt-daily-upgrade.timer
+```
+#### 安装桌面
+```shell
+sudo apt-get install -y xubuntu-desktop
+# ----> 选择 lightDM 作为桌面管理器
+
+# 卸载office
+sudo dpkg -l | grep office
+sudo apt remove --purge libreoffice-逐个卸载
+sudo apt autoremove
+```
+安装好桌面后，如果wifi没了，需要将先前netplan中的wifis配置全部注释掉，重启后通过图形页面打开网络连接WiFi。
+
 ### python
 将python改成成python3
 ```shell
