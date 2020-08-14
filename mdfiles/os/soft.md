@@ -20,6 +20,36 @@
 - asciinema ： 终端会话录制。https://asciinema.org
 - litecli 和 pgcli ： 分别用于sqlite和pgsql的cli优秀工具
 
+## httpie
+```shell
+sudo apt isntall -y httpie
+```
+用法：
+```shell
+http https://httpie.org/hello
+# submit forms:
+http -f POST httpbin.org/post hello=World
+# Upload a file using redirected input:
+http httpbin.org/post < files/data.json
+# Download a file and save it via redirected output:
+http httpbin.org/image/png > image.png
+# Download a file wget style:
+http --download httpbin.org/image/png
+# Use named sessions
+http --session=logged-in -a username:password httpbin.org/get API-Key:123
+http --session=logged-in httpbin.org/headers
+# Set a custom Host header to work around missing DNS records:
+http localhost:8000 Host:example.com
+# Custom HTTP method, HTTP headers and JSON data:
+http PUT httpbin.org/put X-API-Token:123 name=John
+# See the request that is being sent using one of the output options:
+http -v httpbin.org/get
+# Build and print a request without sending it using offline mode: 
+http --offline httpbin.org/post hello=offline
+# Use Github API to post a comment on an issue with authentication:
+http -a USERNAME POST https://api.github.com/repos/jakubroztocil/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
+```
+
 # Trash-cli
 代替 rm
 ```
