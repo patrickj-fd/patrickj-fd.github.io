@@ -2,8 +2,23 @@
 
 ---
 
-# Terminator
-最好用的终端
+# 必备工具软件
+- Terminator ： 最好用的终端
+- htop 和 glances
+- bat ： 代替cat。github.com/sharkdp/bat
+  * [下载](https://github.com/sharkdp/bat/releases/download/v0.15.4/bat_0.15.4_amd64.deb)
+- Starship ： 为shell扩展出很多优秀的能力。https://starship.rs
+  * 根据仓库中增改文件等情况，用相应的符号表示 git 仓库的状态
+  * 根据所在的 Python 项目目录，展示 Python 的版本号（也适用Go/Rust/Node等）
+  * 显示上个命令的执行时间
+  * 如果上个命令失败，显示错误提示符
+- ripgrep ： 代替grep。github.com/BurntSushi/ripgrep
+- fd : 代替find。github.com/sharkdp/fd
+- httpie ： 终端下适用，完美代替curl。https://httpie.org/
+- lazydocker ： github.com/jesseduffield/lazydocker
+- Aria2 ： 多线程下载，支持磁力/BT/HTTPS/FTP/Metalink等等
+- asciinema ： 终端会话录制。https://asciinema.org
+- litecli 和 pgcli ： 分别用于sqlite和pgsql的cli优秀工具
 
 # Trash-cli
 代替 rm
@@ -15,11 +30,6 @@ restore-trash 恢复文件
 trash-empty 清空回收站
 trash-list 回收站文件列表
 ```
-
-# Aria2
-下载工具，可下载磁力链接。支持： HTTP/HTTPS, FTP, SFTP, BitTorrent and Metalink
-- AriaNg-Native  
-提供GUI使用界面
 
 # DBeaver
 数据库管理工具，稍逊于Navicat
