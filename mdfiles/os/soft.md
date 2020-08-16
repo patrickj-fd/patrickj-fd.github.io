@@ -9,10 +9,6 @@
 - bat ： 代替cat。github.com/sharkdp/bat
   * [下载](https://github.com/sharkdp/bat/releases/download/v0.15.4/bat_0.15.4_amd64.deb)
 - Starship ： 为shell扩展出很多优秀的能力。https://starship.rs
-  * 根据仓库中增改文件等情况，用相应的符号表示 git 仓库的状态
-  * 根据所在的 Python 项目目录，展示 Python 的版本号（也适用Go/Rust/Node等）
-  * 显示上个命令的执行时间
-  * 如果上个命令失败，显示错误提示符
 - ripgrep ： 代替grep。github.com/BurntSushi/ripgrep
 - fd : 代替find。github.com/sharkdp/fd
 - httpie ： 终端下适用，完美代替curl。https://httpie.org/
@@ -69,6 +65,12 @@ http --offline httpbin.org/post hello=offline
 # Use Github API to post a comment on an issue with authentication:
 http -a USERNAME POST https://api.github.com/repos/jakubroztocil/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
+
+## Starship
+* 根据仓库中增改文件等情况，用相应的符号表示 git 仓库的状态
+* 根据所在的 Python 项目目录，展示 Python 的版本号（也适用Go/Rust/Node等）
+* 显示上个命令的执行时间
+* 如果上个命令失败，显示错误提示符
 
 # Trash-cli
 代替 rm
