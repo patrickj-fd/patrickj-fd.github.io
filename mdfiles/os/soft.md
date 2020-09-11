@@ -4,14 +4,11 @@
 
 # 必备工具软件
 - Terminator ： 最好用的终端
+- tmux ： 
 - htop 和 glances
 - bat ： 代替cat。github.com/sharkdp/bat
   * [下载](https://github.com/sharkdp/bat/releases/download/v0.15.4/bat_0.15.4_amd64.deb)
 - Starship ： 为shell扩展出很多优秀的能力。https://starship.rs
-  * 根据仓库中增改文件等情况，用相应的符号表示 git 仓库的状态
-  * 根据所在的 Python 项目目录，展示 Python 的版本号（也适用Go/Rust/Node等）
-  * 显示上个命令的执行时间
-  * 如果上个命令失败，显示错误提示符
 - ripgrep ： 代替grep。github.com/BurntSushi/ripgrep
 - fd : 代替find。github.com/sharkdp/fd
 - httpie ： 终端下适用，完美代替curl。https://httpie.org/
@@ -50,6 +47,15 @@ http --offline httpbin.org/post hello=offline
 http -a USERNAME POST https://api.github.com/repos/jakubroztocil/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
 
+<<<<<<< HEAD
+=======
+## Starship
+* 根据仓库中增改文件等情况，用相应的符号表示 git 仓库的状态
+* 根据所在的 Python 项目目录，展示 Python 的版本号（也适用Go/Rust/Node等）
+* 显示上个命令的执行时间
+* 如果上个命令失败，显示错误提示符
+
+>>>>>>> dbfbedcad4764a7369a4c517424bb5da877c89e2
 # Trash-cli
 代替 rm
 ```
