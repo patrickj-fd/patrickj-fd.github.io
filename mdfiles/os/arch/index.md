@@ -14,6 +14,7 @@
 - [编译安装Hadoop](pi/hadoop)
 
 # JetsonNano
+- [硬件安装](JetsonNano/ware-setup)
 - [系统初始化](JetsonNano/init)
 - [常用操作](JetsonNano/usage)
 
