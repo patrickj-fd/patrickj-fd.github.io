@@ -5,6 +5,7 @@
 - [jkjung Blog](https://jkjung-avt.github.io/)
 - [elinux.org/Jetson_Nano](https://elinux.org/Jetson_Nano)
 - [NVIDIA Developer Forum](https://devtalk.nvidia.com/default/board/371/jetson-nano/)
+- [系统安装教程](https://developer.nvidia.com/zh-cn/embedded/learn/get-started-jetson-nano-devkit)
 
 # 查看系统环境
 ```shell
