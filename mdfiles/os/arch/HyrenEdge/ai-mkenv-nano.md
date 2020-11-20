@@ -2,44 +2,193 @@
 
 ---
 
-# 删除 python2
+# 设置 OS 软件环境
+
+以下软件包，对OpenCV，以及后续做Tensorflow/Pytorch编译和运行，都是必须的
+
 ```shell
-sudo apt remove --purge python
-sudo apt remove --auto-remove python2.7
-sudo apt clean
-# 确认
-ll /usr/bin/py*
+cd /data
+
+# 最好在官方源上做update和安装。换成国内源后，有可能出现安装失败的情况
+sudo apt update
+sudo apt install -y build-essential make cmake cmake-curses-gui
+sudo apt install -y git g++ pkg-config curl libfreetype6-dev
+sudo apt install -y libcanberra-gtk-module libcanberra-gtk3-module
+sudo apt install -y libpython3.6-dev
+sudo apt install -y python3-dev python3-testresources
+sudo apt install -y autoconf libtool
+
+sudo apt install -y libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg-dev liblapack-dev libblas-dev gfortran
+sudo apt install -y libopenblas-base libopenmpi-dev cmake libopenblas-dev
+
 ```
 
-# tensorflow
+# 设置 python 环境
+
+## 安装 pip
 ```shell
-sudo apt install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libhdf5-dev  python3-dev gfortran libblas-dev liblapack-dev libopenblas-dev libatlas-base-dev
+# 安装 pip
+wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
+tar xf setuptools-19.6.tar.gz && cd setuptools-19.6/
+python3 setup.py build
+sudo python3 setup.py install
 
-# grpcio 安装非常慢，最好下载下来，用nohup单独装
-sudo nohup python3 -m pip install grpcio &
-# grpcio 安装时可能报错：command: 'install_requires' must string or list of strings containing ...
+sudo apt install -y python3-pip
+# 若报错： No module named ‘distutils.util’
+sudo apt install -y python3-distutils
+# 若报错： Package python3-distutils has no installation candidate
+sudo apt update
+
+pip3 -V
+# 更新到最新版，要用sudo，否则setuptools是装在当前用户下
+sudo python3 -m pip install -U pip
 sudo python3 -m pip install -U setuptools
+```
 
-# 安装 numpy 因为旧版本的TF不支持高版本的numpy，所以干脆装一个最后的一个py2.7兼容版 1.16.6
-sudo python3 -m pip install numpy==1.16.6
+## 安装 venv
+```shell
+sudo apt install -y python3-venv
+```
 
-# 截止到 2020年7月1日 ，还是不要装1.14。因为不能和opencv3共存，keras会报错：找不到libhdfs.so
-# sudo pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow==1.13.1
-wget -c https://www.piwheels.org/simple/tensorflow/tensorflow-1.13.1-cp37-none-linux_armv7l.whl
-sudo python3 -m pip install tensorflow-1.13.1-cp37-none-linux_armv7l.whl
+# 安装 protobuf
+ 
+**注意：** 不要使用apt安装。应该基于源码编译安装较新的版本，比如3.8.0。 protobuf libraries 对tensorflow等软件产生巨大的性能影响。
 
-sudo python3 -m pip install h5py pandas
-# wget -c https://www.piwheels.org/simple/pandas/pandas-1.0.5-cp37-cp37m-linux_armv7l.whl
+```shell
+mkdir -p /data1/protobuf/src && cd /data1/protobuf/src
+# Install protoc
+wget -c https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protobuf-python-3.8.0.zip
+wget -c https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protoc-3.8.0-linux-aarch_64.zip
+unzip protobuf-python-3.8.0.zip
+unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0
+sudo cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc
 
-sudo python3 -m pip install keras==2.3.1
+# Build and install protobuf-3.8.0 libraries
+export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
+cd protobuf-3.8.0/
+./autogen.sh
+./configure --prefix=/usr/local
+make -j4
+# 检查make编译结果。这一步非常耗时(半个多小时)。最后应该是7个项目都是PASS
+make check
+sudo make install
+sudo ldconfig
 
-# 验证
-python3
+# 卸载系统protobuf
+sudo pip3 uninstall -y protobuf
+```
 
+#### 安装python运行库
+
+用下面命令，是安装在系统环境中。对于使用py虚拟环境的情况，是否还有执行一遍，待确认！
+
+```shell
+# Update python3 protobuf module
+sudo python3 -m pip install Cython
+cd /data1/protobuf/src/protobuf-3.8.0/python/
+python3 setup.py build --cpp_implementation
+python3 setup.py test --cpp_implementation
+sudo python3 setup.py install --cpp_implementation
+```
+
+- 验证
+
+1) vi app/people.proto
+```txt
+syntax = "proto3";
+message people
+{
+    string name = 1;
+    int32 height = 2;
+}
+```
+
+2) 编译
+```shell
+protoc -I=./app --python_out=./app_out/ app/people.proto
+```
+
+3) vi app_out/test.py
+```python
+import people_pb2
+
+pbFirstPeople = people_pb2.people()
+pbFirstPeople.name = "joey"
+pbFirstPeople.height = 160
+print(pbFirstPeople)
+```
+
+4) 结果
+```shell
+cd app_out
+python3 test.py
+
+# 结果显示：
+name: "joey"
+height: 160
+```
+
+# 安装 tensorflow
+参考官方指定：
+> https://docs.nvidia.com/deeplearning/frameworks/install-tf-jetson-platform/index.html
+
+## 1) 安装依赖软件
+```shell
+sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
+
+# 下载tensorflow wheels文件：
+# https://developer.download.nvidia.cn/compute/redist/jp/v44/tensorflow/
+axel -n 16 https://developer.download.nvidia.cn/compute/redist/jp/v44/tensorflow/tensorflow-1.15.2+nv20.6-cp36-cp36m-linux_aarch64.whl
+
+# 官方提供的安装方式：
+# TF-2.x
+$ sudo pip3 install --pre --extra-index-url https://developer.download.nvidia.com/compute/redist/jp/v44 tensorflow==2.2.0+nv20.6
+# TF-1.15
+$ sudo pip3 install --pre --extra-index-url https://developer.download.nvidia.com/compute/redist/jp/v44 ‘tensorflow<2’
+# 指定版本安装： https://..../v44 tensorflow==$TF_VERSION+nv$NV_VERSION
+# TF_VERSION 例如 1.13.1
+# NV_VERSION 例如 20.04
+```
+
+## 2) 创建虚拟环境
+```shell
+python3 -m venv /data1/python/venv/tf-1.15
+cp /data1/python/venv/tf-1.15/bin/activate ~/pyvenv-tf15
+source ~/pyvenv-tf15
+
+# ===== 安装 pip 包
+# 官方推荐：numpy==1.16.1 future==0.17.1 mock==3.0.5 h5py==2.9.0 keras_preprocessing==1.0.5 keras_applications==1.0.8 gast==0.2.2 futures protobuf pybind11
+python3 -m pip install -U pip setuptools
+python3 -m pip install -U testresources
+# 把系统中安装的opencv拷贝到虚拟环境中
+cp -r /usr/lib/python3.6/dist-packages/cv2 /data1/python/venv/tf-1.15/lib/python3.6/site-packages/
+python3 -c "import cv2; print(cv2.__version__)"
+```
+
+## 3) 安装 protobuf
+
+使用上面《安装 protobuf》章节中的 “安装python运行库” 的命令进行安装！
+
+## 4) 安装 tensorflow
+```shell
+python3 -m pip install  numpy-1.16.6.zip
+# grpcio 安装非常慢，后台执行
+nohup python3 -m pip install grpcio-1.30.0.tar.gz &
+python3 -m pip install tensorboard-1.15.0.whl
+nohup python3 -m pip install tensorflow-1.15.2+nv20.6-cp36-cp36m-linux_aarch64.whl &
+
+# scipy 安装非常慢，后台执行
+nohup python3 -m pip install scipy-1.5.1.tar.gz &
+python3 -m pip install keras==2.3.1
+```
+
+## 5) 验证
+```python
 import keras
 print(keras.__version__)
 
 import tensorflow as tf
+tf.__version__
 a = tf.placeholder(tf.float32)
 b = tf.placeholder(tf.float32)
 add = tf.add(a, b)
@@ -50,9 +199,16 @@ print(c)
 sess.close()
 ```
 
-如果要同时安装Opencv3和tensorflow，那么只能用python3.7安装tensorflow1.13版本的！
-
 # OpenCV
+## 检查系统opencv情况
+```shell
+# 查看opencv版本
+pkg-config opencv --modversion
+
+# 查看opencv安装库
+pkg-config opencv --libs
+```
+
 ## 安装
 ### 1) OpenCV3
 - 方式1
@@ -97,6 +253,12 @@ sudo python3 -m pip install opencv-python
 ```
 
 ## 编译安装
+[参考](https://github.com/jkjung-avt/jetson_nano)
+
+### 准备工作
+
+** 把swap设置成4G，被各种人强烈建议 **
+
 ```shell
 # 确保已经换了源：/etc/apt/sources.list 和 /etc/apt/sources.list.d/raspi.list
 # 安装OpenCV的相关工具：gtk等
@@ -124,13 +286,24 @@ cd opencv_contrib
 git checkout 3.4.10 && git branch   # 自己要的版本
 cd ../opencv
 git checkout 3.4.10 && git branch   # 自己要的版本
+```
 
-# ======= 开始编译 =======
+Then make sure Jetson Nano is in 10W (maximum) performance mode so the building process could finish as soon as possible.
+```shell
+sudo nvpmodel -m 0
+sudo jetson_clocks
+```
+
+### 开始编译
+```shell
 # 避免编译过程下载文件失败。通过www.ipaddress.com查出来IP
 sudo echo "199.232.28.133 raw.githubusercontent.com" >> /etc/hosts
 
 # 创建一个临时构建目录
 mkdir build && cd build
+
+# Jetson TX2: CUDA_ARCH_BIN="6.2"
+# Jetson AGX Xavier: CUDA_ARCH_BIN="7.2"
 
 # == 配置 ==
 # ENABLE_NEON ENABLE_VFPV3 针对ARM架构CPU的。 cat /proc/cpuinfo 能看到支持什么
@@ -170,7 +343,8 @@ vi modules/face/CMakeLists.txt
 # 改："file:///这个文件的全路径"（不带文件名）
 
 # == 编译 ==
-make -j4
+# 为了避免怪异问题发生，不用并行编译
+make -j1
 
 # == 安装 == 安装到前面指定的目录（CMAKE_INSTALL_PREFIX）
 make install
@@ -218,15 +392,32 @@ cv2.imwrite('messigray.png', img)
 
 # pytorch
 
-官网上已经有了aarch64版，如果在armv7l下，只能源码编译安装。
+Docker
+> https://ngc.nvidia.com/catalog/containers/nvidia:l4t-pytorch
 
-### python 3.7 下源码编译安装
+**NOTE :**
+- The JetPack 4.4 production release (L4T R32.4.3) only supports PyTorch 1.6.0 or newer.
+- PyTorch 1.6.0-rc2, matched to torchvision v0.7.0-rc2.
+- [官方发布的预编译whl及讨论](https://forums.developer.nvidia.com/t/pytorch-for-jetson-nano-version-1-5-0-now-available/72048)
 
+## 源码编译安装
+
+#### 安装依赖
+```shell
+sudo apt install -y python3-dev
+# sudo apt install -y libopenblas-dev cython3 libatlas-base-dev m4 libblas-dev cmake
+sudo apt install -y libopenblas-base libopenmpi-dev cmake libopenblas-dev
+
+# Max Performance
+sudo nvpmodel -m 0     # on Xavier NX, use -m 2  instead
+sudo jetson_clocks
+```
+
+#### 编译
 ```shell
 # 下载源码。必须加上recursive，下载pytorch依赖的各种外部链接库
 git clone --recursive https://github.com/pytorch/pytorch
 cd pytorch
-# 在 aarch64 系统下，要使用最新的1.6。v1.5.1无法编译过去，会停在 [53%] XNNPACK 报错。
 git tag
 git checkout v1.5.1
 # git submodule update --init
@@ -235,46 +426,35 @@ git submodule update --init --recursive
 # 解决协议缓冲区的一个bug。否则编译到caffe2会出错
 git submodule update --remote third_party/protobuf
 
-# 安装依赖软件
-sudo apt install -y libopenblas-dev cython3 libatlas-base-dev m4 libblas-dev cmake
-
 # 创建虚拟环境
 sudo apt install -y python3-venv
-Venv_RootDir=/data1/python/venv
-mkdir -p $Venv_RootDir && python3 -m venv $Venv_RootDir/pytorch-1.5.1
-cp $Venv_RootDir/pytorch-1.5.1/bin/activate ~/pyv.pytorch-1.5.1
-source ~/pyv.pytorch-1.5.1
+mkdir -p /data1/python/venv && python3 -m venv /data1/python/venv/pytorch-1.5.1
+source /data1/python/venv/pytorch-1.5.1/bin/activate
 python3 -m pip install -U setuptools pip
 
-# 安装依赖包：
-python3 -m pip install -r requirements.txt
-# 因为编译的1.5.1不是最新版本，为了避免numpy可能出现版本太高的问题，最好明确指定版本
-# 先安装numpy，否则编译出来的PyTorch不支持numpy。
-# 在 Debian-Pi-Aarch64-2020-06-15-U3 的64位环境下，不能指定版本号，否则会报mkl找不到的错误
-python3 -m pip install numpy==1.18.5
-python3 -m pip install future pyyaml requests six
-
-# 设置环境变量(树莓派不支持GPU)： vi setup.py 看看应该怎么设置这些参数
-export USE_CUDA=0
-export USE_CUDNN=0
-export USE_MKLDNN=0
-export USE_DISTRIBUTED=0
-export USE_NNPACK=0
+# 设置环境变量： vi setup.py 看看应该怎么设置这些参数
+export USE_NCCL=0
+export USE_DISTRIBUTED=0                # skip setting this if you want to enable OpenMPI backend
 export USE_QNNPACK=0
-# armv7l 下，不需要把USE_FBGEMM设置为0
-export USE_FBGEMM=0
-export MAX_JOBS=1
-echo USE_CUDA=$USE_CUDA USE_CUDNN=$USE_CUDNN USE_MKLDNN=$USE_MKLDNN USE_DISTRIBUTED=$USE_DISTRIBUTED
-echo USE_NNPACK=$USE_NNPACK USE_QNNPACK=$USE_QNNPACK USE_FBGEMM=$USE_FBGEMM MAX_JOBS=$MAX_JOBS
+export USE_PYTORCH_QNNPACK=0
+export TORCH_CUDA_ARCH_LIST="5.3;6.2;7.2"
+echo "$USE_NCCL $USE_DISTRIBUTED $USE_QNNPACK $USE_PYTORCH_QNNPACK | $TORCH_CUDA_ARCH_LIST"
+
+export PYTORCH_BUILD_VERSION=1.5.1      # without the leading 'v'
+export PYTORCH_BUILD_NUMBER=1
+
+# 先安装numpy，否则编译出来的PyTorch不支持numpy。
+cat requirements.txt   # 看看版本有什么问题
+python3 -m pip install -r requirements.txt
+python3 -m pip install scikit-build
+python3 -m pip install ninja
 
 # 编译安装
 # 1) 编译成wheel文件，以便到处安装
-python3 -m pip install wheel
-nohup python3 setup.py bdist_wheel &
-tail -f nohup.out
+python3 setup.py bdist_wheel
 # 如果报错： error: invalid command 'bdist_wheel'
-# pip install wheel
-# pip install --upgrade setuptools
+# python3 -m pip install wheel
+# python3 -m pip install --upgrade setuptools
 
 # -- 安装
 python3 -m pip install dist/yours.whl
