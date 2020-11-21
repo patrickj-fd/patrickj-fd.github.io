@@ -115,6 +115,7 @@ java -version
 ### 安装AI环境
 - [参考](../pi/ai-mkenv)
 
+#### 以下作废
 #### 删除 python2
 ```shell
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 100 
@@ -321,9 +322,10 @@ source .bashrc
 nvcc -V  # see CUDA info
 ```
 
-### 换源
+### 换源-装完tf后再考虑换
 ```shell
-# 清华源对于 nano 来说，是最好的
+# 清华源对于 nano 来说，是最好的。
+# 为了避免后面安装tf出问题，先不要换源！
 su
 cd /etc/apt && cp sources.list sources.list.orgn && echo "" > sources.list && vi sources.list
 # 加入以下内容
