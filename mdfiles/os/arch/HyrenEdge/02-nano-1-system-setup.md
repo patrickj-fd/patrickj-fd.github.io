@@ -17,15 +17,18 @@ echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
 exit
 
 sudo mkdir /data  # 放各种软件
+sudo chown -R hyren /data
+sudo chown -R hyren /opt
 ```
 
 ## 1.1 配置网络
 ```shell
 # 解决ssh缓慢/卡顿问题
-sudo vi /etc/ssh/ssh_config
+sudo vi /etc/ssh/sshd_config
 # 最后修改为：
     GSSAPIAuthentication no
     UseDNS no
+service sshd restart
 ```
 
 ## 1.2 修改系统性能配置
@@ -80,17 +83,29 @@ sudo apt clean
 ### mount U盘
 ```shell
 sudo mkdir /mnt/usb1 /mnt/usb2
-echo "sudo mount /dev/sda1 /mnt/usb1 && ls /mnt/usb1" > ~/mount
+cat > ~/mount << EOF
+#! /bin/bash
+
+USB_NO=\$1
+if [ "x\$USB_NO" == "x" ]; then
+  echo "Missing usb number."
+  exit 1
+fi
+
+sudo mount /dev/sda\$USB_NO /mnt/usb\$USB_NO
+echo
+echo USB : /mnt/usb\$USB_NO
+ls /mnt/usb\$USB_NO
+echo
+EOF
 chmod 700 ~/mount
 ```
 
 ### 建立工作用户
 ```shell
-sudo mkdir /hyren /data # hyren放项目的东西, data放各种软件
+sudo mkdir /hyren # hyren放项目的东西, data放各种软件
 sudo chown -R hyren:sudo /hyren
 sudo chmod -R g+w /hyren
-sudo chown -R hyren:sudo /data
-sudo chmod -R g+w /data
 
 vi ~/.bashrc  # uncomment 'force_color_prompt=yes' , PS1's w to W , alias ll='ls -lAh'
 
@@ -118,15 +133,6 @@ deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse
 deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe
 deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe
 deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe
-
-apt update
-# 可能报错： Failed to fetch https://repo.download.nvidia.cn/jetson/t210/dists/r32.4/main/binary-arm64/Packages.gz  File has unexpected size ...
-# 解决办法： clean一下
-apt-get clean
-apt-get update
-
-apt-get upgrade
-# 更新过程中，会要求选择X，随便选gdm3即可，后面会关闭X的。
 exit
 ```
 **注意：**
@@ -141,6 +147,18 @@ E: Unable to correct problems, you have held broken packages.
 ```shell
 sudo apt-add-repository universe
 sudo apt-get update
+```
+
+### 更新系统
+```shell
+sudo apt update
+# 可能报错： Failed to fetch https://repo.download.nvidia.cn/jetson/t210/dists/r32.4/main/binary-arm64/Packages.gz  File has unexpected size ...
+# 解决办法： clean一下
+sudo apt-get clean
+sudo apt-get update
+
+sudo apt-get upgrade
+# 更新过程中，会要求选择X，随便选gdm3即可，后面会关闭X的。
 ```
 
 ### python 源
@@ -160,6 +178,16 @@ sudo apt install htop
 # 装好python环境后再装这个
 sudo python3 -m pip install jetson-stats
 sudo jtop
+```
+
+### 设置Pi的免密
+
+**在Pi主机上执行！**
+```shell
+ssh-keygen -t rsa
+NANO_IP=nano的ip
+ssh-copy-id -i ~/.ssh/id_rsa.pub hyren@${NANO_IP}
+ssh hyren@${NANO_IP}  # for check
 ```
 
 ### 禁止启动时进入桌面
@@ -185,6 +213,10 @@ lshw    # 查看硬件
 # 2. AI环境安装
 
 [参 见](02-nano-2-ai-env)
+
+# 3. 安装 Frp
+
+[参 见](03-frp)
 
 ---
 

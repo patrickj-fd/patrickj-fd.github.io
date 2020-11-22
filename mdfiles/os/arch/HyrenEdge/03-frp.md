@@ -40,11 +40,12 @@ tail -f log/running.log
 cd ~
 HRETNC_NAME=HRETNC
 
-# 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/pi/frp_0.34.3_linux_arm.tar.gz
 # Pi
+# 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/pi/frp_0.34.3_linux_arm.tar.gz
 FRP_DIST_PATH=/mnt/usb1/hre/pi
 FRP_DIST_NAME=frp_0.34.3_linux_arm
 # Nano
+# 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/nano/frp_0.34.3_linux_arm64.tar.gz
 FRP_DIST_PATH=/mnt/usb1/hre/nano
 FRP_DIST_NAME=frp_0.34.3_linux_arm64
 
@@ -115,7 +116,7 @@ chmod 700 start*.sh && ll
 # 验证
 ./start.sh
 cat log/ssh.log
-ssh -oPort=40000 pi@139.9.126.19
+ssh -oPort=${HRE_ORG_NO}${PortSuffix} pi/hyren@139.9.126.19
 
 # 设置开机启动
 echo HRETNC_NAME=${HRETNC_NAME}

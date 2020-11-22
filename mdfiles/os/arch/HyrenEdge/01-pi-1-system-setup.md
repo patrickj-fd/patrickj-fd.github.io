@@ -65,7 +65,21 @@ vi .bashrc  # alias ll = 'ls -lhF'
 ### mount U盘
 ```shell
 sudo mkdir /mnt/usb1 /mnt/usb2
-echo "sudo mount /dev/sda1 /mnt/usb1 && ls /mnt/usb1" > ~/mount
+cat > ~/mount << EOF
+#! /bin/bash
+
+USB_NO=\$1
+if [ "x\$USB_NO" == "x" ]; then
+  echo "Missing usb number."
+  exit 1
+fi
+
+sudo mount /dev/sda\$USB_NO /mnt/usb\$USB_NO
+echo
+echo USB : /mnt/usb\$USB_NO
+ls /mnt/usb\$USB_NO
+echo
+EOF
 chmod 700 ~/mount
 ```
 
