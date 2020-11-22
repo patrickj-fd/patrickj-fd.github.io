@@ -13,6 +13,7 @@ ip=192.168.137.100 console=seria10,115200 console=tty1 ......
 用网线把电脑和pi直连后即可通过该ip连接pi了。
 
 ### WiFi
+在SD卡根新建文件：wpa_supplicant.conf
 ```ini
 country=CN
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -403,104 +404,14 @@ lshw    # 查看硬件
 
 ## 2.5 设置AI环境
 
-[参 见](ai-mkenv-nano)
+[参 见](../pi/ai-mkenv-nano)
 
-# 3. 安装 Frp
+# 清理工作
 ```shell
-# Pi上：
-tar -xf /mnt/usb1/hre/pi/frp_0.33.0_linux_arm.tar.gz -C /opt
-mv /opt/frp_0.33.0_linux_arm/ /opt/frp_0.33.0/
-# Nano上：
-tar xf frp_0.33.0_linux_arm64.tar.gz -C /opt
-mv /opt/frp_0.33.0_linux_arm64/ /opt/frp_0.33.0/
-
-cd /opt/frp_0.33.0/
-rm -rf frps* && ls
-rm -rf *.ini && ls
-mkdir log
-
-# ----- ssh.ini ----- Start
-Server_Port=39002
-HRE_ORG_NO=400  # 3位企业编号。该企业使用的端口会后缀两位数字，即每个企业可以有99个端口。
-EdgeName="pi"  # 该端口在哪台设备上，可用名字为：pi , nano1 , nano2
-cat > ssh.ini << EOF
-[common]
-server_addr = 139.9.126.19
-server_port = ${Server_Port}
-log_file = /opt/frp_0.33.0/log/ssh.log
-log_level = info
-log_max_days = 100
-
-[hre${HRE_ORG_NO}-${EdgeName}-ssh]
-type = tcp
-local_ip = 127.0.0.1
-local_port = 22
-remote_port = ${HRE_ORG_NO}00
-EOF
-
-# 以下是给除了pi上面的ssh之外，需要开放出去的端口。
-cat > apps.ini << EOF
-[common]
-server_addr = 139.9.126.19
-server_port = ${Server_Port}
-log_file = /opt/frp_0.33.0/log/apps.log
-log_level = info
-log_max_days = 100
-
-EOF
-
-# 有多个需要开放的端口，顺序递增PortSuffix变量的值，执行以下脚本代码
-EdgeName="pi"    # 该端口在哪台设备上，可用名字为：pi , nano1 , nano2
-PortSuffix="01"
-cat >> apps.ini << EOF
-[hre${HRE_ORG_NO}-${EdgeName}-app${PortSuffix}]
-type = tcp
-local_ip = 127.0.0.1
-local_port = ${HRE_ORG_NO}${PortSuffix}
-remote_port = ${HRE_ORG_NO}${PortSuffix}
-
-EOF
-# ----- ssh.ini ----- End
-
-echo "#! /bin/bash" > start.sh
-echo "nohup /opt/frp_0.33.0/frpc -c /opt/frp_0.33.0/ssh.ini &" >> start.sh
-echo "#! /bin/bash" > start-apps
-echo "nohup /opt/frp_0.33.0/frpc -c /opt/frp_0.33.0/apps.ini &" > start-apps.sh
-chmod 700 start*.sh
-# 验证
-./start.sh
-cat log/ssh.log
-ssh -oPort=40000 pi@139.9.126.19
-ps -ef|grep frpc
-# kill -9 PID
-
-
-# 设置开机启动
-su
-cat > /etc/systemd/system/frpc.service << EOF
-[Unit]
-Description=HyrenEdgeNetServer
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=/opt/frp_0.33.0/frpc -c /opt/frp_0.33.0/ssh.ini
-ExecReload=/opt/frp_0.33.0/frpc reload -c /opt/frp_0.33.0/ssh.ini
-Restart=on-failure
-RestartSec=5s
-User=nobody
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl start frpc
-systemctl enable frpc
-
-reboot
+history -c
+echo > ~/.bash_history
+history -r
 ```
-
-## 登录 Nano
 
 ---
 
