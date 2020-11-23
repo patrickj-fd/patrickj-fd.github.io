@@ -138,124 +138,33 @@ su - pi
 java -version
 ```
 
-### 安装AI环境
+# 2. 安装AI环境
 - [参考](../pi/ai-mkenv)
 
-#### 以下作废
-#### 删除 python2
-```shell
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 100 
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 150
-python -V
-# ----- 或者彻底卸载python2
-sudo apt remove --purge python
-sudo apt remove --auto-remove python2.7
-sudo apt clean
-# 确认
-ll /usr/bin/py*
-# ----- 卸载方式暂时没有试
-```
+# 3. 安装 Frp
 
-#### 安装tensorflow
-```shell
-#sudo apt install -y --no-install-recommends python3-dev python3-pip python3-setuptools  # 这样好像会吧默认的3.7破坏掉，所以，应该创建虚拟环境来搞
-sudo apt install -y build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libhdf5-dev  python3-dev gfortran libblas-dev liblapack-dev libopenblas-dev libatlas-base-dev
+[参 见](03-frp)
 
-# grpcio 安装非常慢，最好下载下来，用nohup单独装
-# https://pypi.tuna.tsinghua.edu.cn/packages/cc/1e/5d65ae830536fdb67f10f4bcedca6eb59190ad60d20d796ef3ccdfda4797/grpcio-1.33.2.tar.gz
-nohup python3 -m pip install grpcio &
-# grpcio 安装时可能报错：command: 'install_requires' must string or list of strings containing ...
-sudo python3 -m pip install -U setuptools
-
-# 安装 numpy 因为旧版本的TF不支持高版本的numpy，所以干脆装一个最后的一个py2.7兼容版 1.16.6
-python3 -m pip install numpy==1.16.6
-
-# 截止到 2020年7月1日 ，还是不要装1.14。因为不能和opencv3共存，keras会报错：找不到libhdfs.so
-# sudo pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow==1.13.1
-cd /data
-wget -c https://www.piwheels.org/simple/tensorflow/tensorflow-1.13.1-cp37-none-linux_armv7l.whl
-sudo python3 -m pip install tensorflow-1.13.1-cp37-none-linux_armv7l.whl
-
-sudo python3 -m pip install h5py pandas
-# wget -c https://www.piwheels.org/simple/pandas/pandas-1.0.5-cp37-cp37m-linux_armv7l.whl
-
-sudo python3 -m pip install keras==2.3.1
-
-# 验证
-python3
-
-import keras
-print(keras.__version__)
-
-import tensorflow as tf
-a = tf.placeholder(tf.float32)
-b = tf.placeholder(tf.float32)
-add = tf.add(a, b)
-sess = tf.Session()
-binding = {a: 1.5, b: 2.5}
-c = sess.run(add, feed_dict=binding)
-print(c)
-sess.close()
-```
-
-如果要同时安装Opencv3和tensorflow，那么只能用python3.7安装tensorflow1.13版本的！
-
-#### OpenCV3
-- 方式1
-```shell
-sudo apt install -y python3-opencv
-```
-
-- 方式2
-
-用方式1，安装的是3.2.0（截止2020年6月），而且，创建虚拟环境时，默认无法使用cv。  
-可以直接下载指定版本的whl文件进行安装。[下载地址](https://www.piwheels.org/simple/opencv-python/)  
-```shell
-sudo apt install -y libqtgui4 libqt4-test
-sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng-dev -y
-python3 -m pip install opencv_python-3.4.7.28-cp37-cp37m-linux_armv7l.whl
-```
-
-如果 import cv2 报错类似： ImportError: ... undefined symbol: ... arm-linux-gnueabihf.so __atomic_fetch_add_8。 这是一个bug，需要加载一个库文件来解决：
-```shell
-sudo find / -name "libatomic.so*"  # 找到 libatomic.so.1.2.0 的路径，导入环境变量
-echo "export LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libatomic.so.1.2.0" >> ~/.bashrc
-source ~/.bashrc
-# 或者，把 LD_PRELOAD 加到虚拟环境的启动脚本中（bin/activate）
-```
-
-用这种方式，或者也可以装OpenCV4。（未验证）
-
-#### OpenCV4
-```shell
-sudo apt-get update && sudo apt-get upgrade
-sudo apt-get install build-essential cmake pkg-config -y
-sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng-dev -y
-sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev -y
-sudo apt-get install libxvidcore-dev libx264-dev -y
-sudo apt-get install libfontconfig1-dev libcairo2-dev -y
-sudo apt-get install libgdk-pixbuf2.0-dev libpango1.0-dev -y
-sudo apt-get install libgtk2.0-dev libgtk-3-dev -y
-sudo apt-get install libatlas-base-dev gfortran -y
-sudo apt-get install libhdf5-dev libhdf5-serial-dev libhdf5-103 -y
-sudo apt-get install -y libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5
-sudo python3 -m pip install opencv-python
-```
-
-### 工具软件
-```shell
-sudo apt install htop
-```
-
-## 2.5 设置AI环境
-
-[参 见](../pi/ai-mkenv-nano)
-
-# 清理工作
+# 4. 清理工作
 ```shell
 history -c
 echo > ~/.bash_history
 history -r
+```
+
+# 5. 系统设置
+## 4.1 连接wifi（命令行下）
+```shell
+# 查看wifi列表
+sudo iwlist wlan0 scan | grep SSID
+
+# 配置wifi
+# 如果网络没有密码，则添加一行：key_mgmt=NONE
+# 如果网络是隐藏的，则添加一行：scan_ssid=1
+sudo vi /etc/wpa_supplicant/wpa_supplicant.conf
+sudo wpa_cli -i wlan0 reconfigure
+
+ifconfig
 ```
 
 ---

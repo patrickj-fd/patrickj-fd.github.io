@@ -218,6 +218,24 @@ lshw    # 查看硬件
 
 [参 见](03-frp)
 
+# 4. 清理工作
+```shell
+history -c
+echo > ~/.bash_history
+history -r
+```
+
+# 5. 系统设置
+## 4.1 连接wifi（命令行下）
+```shell
+# 查看wifi列表
+sudo nmcli device wifi list
+# 连接
+sudo nmcli device wifi connect 'boyan-dev-5G' password 'hongzhitech'
+
+ifconfig
+```
+
 ---
 
 [首 页](https://patrickj-fd.github.io/index)

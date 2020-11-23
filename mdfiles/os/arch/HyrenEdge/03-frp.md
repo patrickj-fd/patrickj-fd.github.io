@@ -118,13 +118,16 @@ chmod 700 start*.sh && ll
 cat log/ssh.log
 ssh -oPort=${HRE_ORG_NO}${PortSuffix} pi/hyren@139.9.126.19
 
-# 设置开机启动
+```
+
+### 设置开机启动
+```shell
 echo HRETNC_NAME=${HRETNC_NAME}
 su
 HRETNC_NAME=上面echo的值！！！
 cat > /etc/systemd/system/${HRETNC_NAME}.service << EOF
 [Unit]
-Description=HyrenEdgeNetServer
+Description=HyrenEdgeNetClient
 After=network.target
 
 [Service]
