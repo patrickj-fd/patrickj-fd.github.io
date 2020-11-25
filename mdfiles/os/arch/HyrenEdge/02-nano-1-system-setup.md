@@ -5,20 +5,20 @@
 # 1. 系统环境安装
 烧录后开机，按照画面步骤填写内容：
 - 语言选择英语
-- 初始用户创建为hyren，密码hre118
-- 主机名设置为：hre400-n1 | 后面的数字400，是每个设备的编号，依次增加即可。第2个nano后缀为n2。
+- 用户：pi，密码：Hre2188
+- 主机名设置为：hre${HRE_CODE}-nano1 | HRE_CODE：400，是每个设备的编号，每个设备依次增加即可。第2个nano后缀为nano2。
 
-## 设置密码
+## 设置初始值
 ```shell
 sudo echo "root:Hre2188" | sudo chpasswd
 # 解决每次sudo都要输入密码
 su
-echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
+echo "pi ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
 exit
 
 sudo mkdir /data  # 放各种软件
-sudo chown -R hyren /data
-sudo chown -R hyren /opt
+sudo chown -R pi /data
+sudo chown -R pi /opt
 ```
 
 ## 1.1 配置网络
@@ -80,9 +80,37 @@ sudo apt clean
 ```
 
 ## 1.3 初始化系统环境
+
+### 建立工作用户
+```shell
+sudo mkdir /hyren  # 放项目的东西
+sudo useradd -d /hyren -s /bin/bash hyren
+# sudo userdel -r hyren  # 包括主目录一起删除
+sudo echo "hyren:hre118" | sudo chpasswd
+
+sudo chown -R hyren:sudo /hyren
+sudo chmod -R g+w /hyren
+
+su - hyren
+
+vi ~/.bashrc  # uncomment 'force_color_prompt=yes' , PS1's w to W , alias ll='ls -lAhF'
+
+echo "" >> ${HOME}/.bashrc
+echo "export CUBA_HOME=/usr/local/cuda" >> ${HOME}/.bashrc
+echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ${HOME}/.bashrc
+echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOME}/.bashrc
+
+source .bashrc
+nvcc -V  # see CUDA info
+```
+
 ### mount U盘
 ```shell
-sudo mkdir /mnt/usb1 /mnt/usb2
+su
+mkdir /mnt/usb1 /mnt/usb2
+chown -R hyren /mnt/usb1 /mnt/usb2
+
+su - hyren
 cat > ~/mount << EOF
 #! /bin/bash
 
@@ -99,23 +127,6 @@ ls /mnt/usb\$USB_NO
 echo
 EOF
 chmod 700 ~/mount
-```
-
-### 建立工作用户
-```shell
-sudo mkdir /hyren # hyren放项目的东西, data放各种软件
-sudo chown -R hyren:sudo /hyren
-sudo chmod -R g+w /hyren
-
-vi ~/.bashrc  # uncomment 'force_color_prompt=yes' , PS1's w to W , alias ll='ls -lAhF'
-
-echo "" >> ${HOME}/.bashrc
-echo "export CUBA_HOME=/usr/local/cuda" >> ${HOME}/.bashrc
-echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ${HOME}/.bashrc
-echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOME}/.bashrc
-
-source .bashrc
-nvcc -V  # see CUDA info
 ```
 
 ### 换源-装完tf后再考虑换
@@ -180,7 +191,7 @@ sudo python3 -m pip install jetson-stats
 sudo jtop
 ```
 
-### 设置Pi的免密
+### 设置Pi过来的免密
 
 **在Pi主机上执行！**
 ```shell

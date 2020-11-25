@@ -5,7 +5,7 @@
 
 
 # 安装 Frp
-## Server端
+## 1. Server端
 ```shell
 HRETNS_NAME=HRETNS
 FRPS_DIST_NAME=frp_0.34.3_linux_amd64
@@ -35,9 +35,9 @@ chmod 700 start.sh
 tail -f log/running.log
 ```
 
-## Client端
+## 2. Client端
 ```shell
-cd ~
+su -
 HRETNC_NAME=HRETNC
 
 # Pi
@@ -62,8 +62,8 @@ mkdir log && ls
 Server_Port=49901
 HRE_ORG_NO=400  # 3位设备编号。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。
 # ----- ini ----- Start
-EdgeName="pi"    # 该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
-PortSuffix="00"  # 当设置两外两个nano的ssh时，分别设置为：01/02
+EdgeName=""    # 该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
+PortSuffix=""  # pi设置为00；两个nano分别设置为：01/02
 if [ "$EdgeName" == "pi" ]; then PortSuffix="00"; elif [ "$EdgeName" == "nano1" ]; then PortSuffix="01"; elif [ "$EdgeName" == "nano2" ]; then PortSuffix="02"; else echo "========== ERROR EdgeName=$EdgeName =========="; fi
 echo PortSuffix=$PortSuffix
 cat > ssh.ini << EOF
@@ -97,7 +97,7 @@ log_max_days = 100
 EOF
 
 # 有多个需要开放的端口，顺序递增PortSuffix变量的值，执行以下脚本代码
-EdgeName="pi"    # 该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
+EdgeName=""    # 该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
 PortSuffix="10"  # 0-9保留，其中0-3分别是3个设备的ssh端口。所以从10开始分配给app使用
 cat >> apps.ini << EOF
 [hre${HRE_ORG_NO}-${EdgeName}-app${PortSuffix}]

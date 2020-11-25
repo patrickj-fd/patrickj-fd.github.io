@@ -60,7 +60,7 @@ sudo vi /etc/vim/vimrc.tiny
 set nocompatible
 set backspace=2
 ```
-### 设置密码
+### 设置初始值
 ```shell
 # 设置密码不要用特殊符号，USB键盘直接操作时，这些符合是全乱套的，导致无法输入正确的密码
 sudo echo "root:Hre2188" | sudo chpasswd
