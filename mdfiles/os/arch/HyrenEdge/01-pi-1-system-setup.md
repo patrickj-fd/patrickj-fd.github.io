@@ -147,6 +147,10 @@ exit
 su - pi
 java -version
 ```
+### 工具软件
+```shell
+sudo apt install -y htop nmap
+```
 
 # 2. 安装AI环境
 - [参考](../pi/ai-mkenv)
