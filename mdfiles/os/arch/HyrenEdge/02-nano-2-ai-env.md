@@ -2,13 +2,11 @@
 
 ---
 
-# 设置 OS 软件环境
+# 1. 操作系统级 OS 软件环境安装
 
 以下软件包，对OpenCV，以及后续做Tensorflow/Pytorch编译和运行，都是必须的
 
 ```shell
-cd /data
-
 # 最好在官方源上做update和安装。换成国内源后，有可能出现安装失败的情况
 sudo apt update
 sudo apt upgrade
@@ -24,44 +22,48 @@ sudo apt install -y libopenblas-base libopenmpi-dev cmake libopenblas-dev
 
 ```
 
-# 设置 python 环境
+# 2. 操作系统级 python 环境安装
 
-## 安装 pip
+## 2.1 安装 pip
 ```shell
+cd /data
 # 安装 pip
-wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
+# wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/setuptools-19.6.tar.gz
-# sudo python3 -m pip install -U U盘/hre/setuptools-19.6.tar.gz
+cp /mnt/usb1/hre/setuptools-19.6.tar.gz .
 tar xf setuptools-19.6.tar.gz && cd setuptools-19.6/
 python3 setup.py build
 sudo python3 setup.py install
 
 sudo apt install -y python3-pip
-# 若报错： No module named ‘distutils.util’
-sudo apt install -y python3-distutils
-# 若报错： Package python3-distutils has no installation candidate
-sudo apt update
+# 【若报错】： No module named ‘distutils.util’ ：
+# sudo apt install -y python3-distutils
+# 【若报错】： Package python3-distutils has no installation candidate ：
+# sudo apt update
 
 pip3 -V
 # 更新到最新版，要用sudo，否则setuptools是装在当前用户下
 sudo python3 -m pip install -U pip
-sudo python3 -m pip install -U /mnt/usb1/hre/setuptools-49.6.0-py3-none-any.whl --use-feature=2020-resolver
+sudo python3 -m pip install -U testresources /mnt/usb1/hre/setuptools-49.6.0-py3-none-any.whl --use-feature=2020-resolver
 ```
 
-## 安装 venv
+## 2.2 安装 venv
 ```shell
 sudo apt install -y python3-venv
 ```
 
-# 安装 protobuf
+# 3. 操作系统级 protobuf安装
  
 **注意：** 不要使用apt安装。应该基于源码编译安装较新的版本，比如3.8.0。 protobuf libraries 对tensorflow等软件产生巨大的性能影响。
 
+## 3.1 源码编译安装
 ```shell
 mkdir -p /data/protobuf/src && cd /data/protobuf/src
 # Install protoc
-wget -c https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protobuf-python-3.8.0.zip
-wget -c https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protoc-3.8.0-linux-aarch_64.zip
+# wget -c https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protobuf-python-3.8.0.zip
+# wget -c https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protoc-3.8.0-linux-aarch_64.zip
+cp /mnt/usb1/hre/protobuf-python-3.8.0.zip .
+cp /mnt/usb1/hre/protoc-3.8.0-linux-aarch_64.zip .
 unzip protobuf-python-3.8.0.zip
 unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0
 sudo cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc
@@ -72,19 +74,21 @@ cd protobuf-3.8.0/
 ./autogen.sh
 ./configure --prefix=/usr/local
 make -j4
-# 检查make编译结果。这一步非常耗时(半个多小时)。最后应该是7个项目都是PASS
+# 检查make编译结果。这一步非常耗时(半个多小时)。最后应该是7个项目都是PASS。
+# 可不做，一般不会有问题，以后有问题了再做。
 make check
 sudo make install
 sudo ldconfig
+```
 
-# 卸载系统protobuf
+## 3.2 卸载系统protobuf
+```shell
 sudo pip3 uninstall -y protobuf
 ```
 
-#### 安装python运行库
+## 3.3 安装python运行库
 
-用下面命令，是安装在系统环境中。对于使用py虚拟环境的情况，是否还有执行一遍，待确认！
-
+**解压nano.pyvenv.tar.gz方式，本步骤(3.3)跳过**
 ```shell
 # Update python3 protobuf module
 sudo python3 -m pip install Cython
@@ -94,7 +98,7 @@ python3 setup.py test --cpp_implementation
 sudo python3 setup.py install --cpp_implementation
 ```
 
-- 验证
+## 3.4 验证
 
 ```shell
 cd /tmp && mkdir app
@@ -135,11 +139,10 @@ name: "joey"
 height: 160
 ```
 
-# 安装 tensorflow
-参考官方指定：
-> https://docs.nvidia.com/deeplearning/frameworks/install-tf-jetson-platform/index.html
+# 4. 安装 tensorflow 在虚拟环境中
+- [官方安装文档](https://docs.nvidia.com/deeplearning/frameworks/install-tf-jetson-platform/index.html)
 
-## 1) 安装依赖软件
+## 4.1 安装依赖软件
 ```shell
 cd /data
 sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
@@ -149,20 +152,38 @@ sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip li
 SOFT_ROOT=/mnt/usb1/hre/nano/tensorflow
 ```
 
-## 2) 创建虚拟环境
+## 4.2 创建虚拟环境
+- 解压nano.pyvenv.tar.gz方式
+```shell
+cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /hyren
+tar xf nano-pyvenv.tar.gz
+mkdir python
+mv venv/ python/ && ls -l python
+```
+
+- 从零安装方式
 ```shell
 mkdir -p /hyren/python/venv
 python3 -m venv /hyren/python/venv/tf-1.15
-cp /hyren/python/venv/tf-1.15/bin/activate ~/pyvenv-tf15
-source ~/pyvenv-tf15
-
-# ===== 安装 pip 包
-python3 -m pip install -U pip
-python3 -m pip install -U /mnt/usb1/hre/setuptools-49.6.0-py3-none-any.whl --use-feature=2020-resolver
-python3 -m pip install -U testresources
 ```
 
-## 3) 安装 protobuf
+- 进入虚拟环境：
+```shell
+cp /hyren/python/venv/tf-1.15/bin/activate ~/pyvenv-tf15
+source ~/pyvenv-tf15
+```
+
+## 4.3 虚拟环境中安装AI软件包
+
+**解压nano.pyvenv.tar.gz方式，本步骤(4.3)全部跳过**
+
+### 安装 pip
+```shell
+python3 -m pip install -U pip
+python3 -m pip install -U testresources /mnt/usb1/hre/setuptools-49.6.0-py3-none-any.whl --use-feature=2020-resolver
+```
+
+### 安装 protobuf
 ```shell
 python3 -m pip install Cython
 cd /data/protobuf/src/protobuf-3.8.0/python/
@@ -175,7 +196,7 @@ protoc --version
 python3 -c "import google.protobuf as p; print(p.__version__)"
 ```
 
-## 4) 安装 tensorflow
+### 安装 tensorflow
 ```shell
 # ----- 官方命令 ----- 网络不好容易出错，所以可以先下载下来再安装
 # TF-2.x
@@ -207,13 +228,25 @@ pip3 install --extra-index-url https://developer.download.nvidia.com/compute/red
 # scipy 安装非常慢，后台执行
 python3 -m pip install ${SOFT_ROOT}/scipy-1.5.1.tar.gz
 python3 -m pip install keras==2.3.1
-
-# 验证
-python3 -c "import keras; print(keras.__version__)"
-python3 -c "import tensorflow as tf; print(tf.__version__)"
 ```
 
-## 5) 验证
+### 安装 OpenCV
+```shell
+# 把系统中安装的opencv拷贝到虚拟环境中即可
+cp -r /usr/lib/python3.6/dist-packages/cv2 /hyren/python/venv/tf-1.15/lib/python3.6/site-packages/
+```
+
+## 4.4 验证
+```shell
+protoc --version   # show : 3.8.0
+python3 -c "import google.protobuf as p; print(p.__version__)"  # show : 3.8.0
+
+python3 -c "import keras; print(keras.__version__)"
+python3 -c "import tensorflow as tf; print(tf.__version__)"
+
+python3 -c "import cv2; print(cv2.__version__)"  # show : 4.1.1
+```
+
 ```python
 import keras
 print(keras.__version__)
@@ -230,14 +263,7 @@ print(c)
 sess.close()
 ```
 
-## 6) OpenCV
-```shell
-# 把系统中安装的opencv拷贝到虚拟环境中
-cp -r /usr/lib/python3.6/dist-packages/cv2 /hyren/python/venv/tf-1.15/lib/python3.6/site-packages/
-python3 -c "import cv2; print(cv2.__version__)"  # show : 4.1.1
-```
-
-## 结束
+## 4.5 退出虚拟环境
 ```shell
 deactivate
 ```

@@ -4,6 +4,7 @@
 
 # 1. Pi
 ## 1.1 配置网络
+
 ### 网线直连
 打开SD卡根文件cmdline.txt，在第一行最前面添加用于网线直连的ip：
 ```txt
@@ -23,6 +24,12 @@ network={
     psk="hongzhitech"
 }
 ```
+如果出现连接不成功的情况，有很大的可能是由于配置文件配置错误的原因
+```shell
+sudo wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant.conf  -i wlan0
+```
+通过wpa_supplicant的直接连接，如果配置文件出现问题，则会直接提示配置文件的错误详情
+
 ### 开启 SSH 服务
 在SD卡根新建文件：ssh。（也可以在树莓派开机后创建：sudo touch /boot/ssh）
 
@@ -55,8 +62,9 @@ set backspace=2
 ```
 ### 设置密码
 ```shell
-sudo echo "root:hre@188" | sudo chpasswd
-sudo echo "pi:hre@188" | sudo chpasswd
+# 设置密码不要用特殊符号，USB键盘直接操作时，这些符合是全乱套的，导致无法输入正确的密码
+sudo echo "root:Hre2188" | sudo chpasswd
+sudo echo "pi:Hre2188" | sudo chpasswd
 sudo mkdir /data  # 放各种软件
 sudo chown -R pi /data
 sudo chown -R pi /opt
@@ -89,6 +97,8 @@ sudo mkdir /hyren  # 放项目的东西
 sudo useradd -d /hyren -s /bin/bash hyren
 # sudo userdel -r hyren  # 包括主目录一起删除
 sudo echo "hyren:hre118" | sudo chpasswd
+
+vi ~/.bashrc  # uncomment 'force_color_prompt=yes' , PS1's w to W , alias ll='ls -lAhF'
 
 sudo cp /home/pi/.bashrc /hyren
 sudo cp /home/pi/.profile /hyren
@@ -162,9 +172,11 @@ sudo iwlist wlan0 scan | grep SSID
 # 如果网络没有密码，则添加一行：key_mgmt=NONE
 # 如果网络是隐藏的，则添加一行：scan_ssid=1
 sudo vi /etc/wpa_supplicant/wpa_supplicant.conf
+# 该文件保存后，一般等待几秒就可以连上网络了，如果不行试试：
+sudo ifdown wlan0
+sudo ifup wlan0     # or reboot 
+# 也可以试试下面这个：
 sudo wpa_cli -i wlan0 reconfigure
-
-ifconfig
 ```
 
 ---
