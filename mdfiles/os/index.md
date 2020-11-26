@@ -18,7 +18,7 @@
 
 - [VS Code](vscode)
 
-- [Arch 架构](arch/index)
+- [arm](arm/index)
 
 ---
 
