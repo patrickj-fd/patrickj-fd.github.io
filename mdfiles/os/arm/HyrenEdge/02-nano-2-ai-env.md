@@ -155,6 +155,7 @@ SOFT_ROOT=/mnt/usb1/hre/nano/tensorflow
 ## 4.2 创建虚拟环境
 - 解压nano.pyvenv.tar.gz方式
 ```shell
+su - hyren
 cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /hyren
 tar xf nano-pyvenv.tar.gz
 mkdir python
@@ -163,6 +164,7 @@ mv venv/ python/ && ls -l python
 
 - 从零安装方式
 ```shell
+su - hyren
 mkdir -p /hyren/python/venv
 python3 -m venv /hyren/python/venv/tf-1.15
 ```

@@ -14,31 +14,33 @@ sudo echo "root:Hre2188" | sudo chpasswd
 # 解决每次sudo都要输入密码
 su
 echo "pi ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
-exit
 
-sudo mkdir /data  # 放各种软件
-sudo chown -R pi /data
-sudo chown -R pi /opt
+# data 放各种软件
+mkdir /data
+chown -R pi /data
+chown -R pi /opt
 ```
 
 ## 1.1 配置网络
 ```shell
 # 解决ssh缓慢/卡顿问题
-sudo vi /etc/ssh/sshd_config
+vi /etc/ssh/sshd_config
 # 最后修改为：
     GSSAPIAuthentication no
     UseDNS no
-service sshd restart
+# service sshd restart
+systemctl restart sshd
 ```
 
 ## 1.2 修改系统性能配置
 ### 增加swap
 ```shell
-su
 # 省SD，设置为全部用内存
 echo "vm.swappiness = 0" >> /etc/sysctl.conf
-swapoff -a && swapon -a   # 将SWAP里的数据转储回内存，并清空SWAP里的数据
-reboot  # 不重启生效的方式：sysctl -p
+# 将SWAP里的数据转储回内存，并清空SWAP里的数据
+swapoff -a && swapon -a
+# 不重启生效的方式：sysctl -p
+reboot
 
 # 验证交换区是否可用
 sudo swapon --show
@@ -74,7 +76,7 @@ System Settings | Software & Updates，在Updates页，Automatically check for u
 ### 清理不用的软件
 ```shell
 sudo apt remove --purge wolfram-engine
-sudo apt remove --purge libreoffice*    # 如果不行，就对每个软件用本命令逐个卸载
+sudo apt remove --purge libreoffice*
 sudo apt clean
 #sudo apt autoremove
 ```
@@ -83,10 +85,13 @@ sudo apt clean
 
 ### 建立工作用户
 ```shell
-sudo mkdir /hyren  # 放项目的东西
+sudo mkdir /hyren
 sudo useradd -d /hyren -s /bin/bash hyren
 # sudo userdel -r hyren  # 包括主目录一起删除
 sudo echo "hyren:hre118" | sudo chpasswd
+
+sudo cp /home/pi/.bashrc /hyren
+sudo cp /home/pi/.profile /hyren
 
 sudo chown -R hyren:sudo /hyren
 sudo chmod -R g+w /hyren
@@ -108,7 +113,7 @@ nvcc -V  # see CUDA info
 ```shell
 su
 mkdir /mnt/usb1 /mnt/usb2
-chown -R hyren /mnt/usb1 /mnt/usb2
+chown -R hyren:sudo /mnt/usb1 /mnt/usb2
 
 su - hyren
 cat > ~/mount << EOF
@@ -162,23 +167,15 @@ sudo apt-get update
 
 ### 更新系统
 ```shell
+su - pi
 sudo apt update
 # 可能报错： Failed to fetch https://repo.download.nvidia.cn/jetson/t210/dists/r32.4/main/binary-arm64/Packages.gz  File has unexpected size ...
-# 解决办法： clean一下
-sudo apt-get clean
-sudo apt-get update
+# 解决办法： clean一下，再重新update：
+# sudo apt clean
+# sudo apt update
 
-sudo apt-get upgrade
+sudo apt upgrade
 # 更新过程中，会要求选择X，随便选gdm3即可，后面会关闭X的。
-```
-
-### python 源
-```shell
-mkdir ~/.pip
-echo "[global]" > ~/.pip/pip.conf
-echo "trusted-host = pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
-echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple/" >> ~/.pip/pip.conf
-echo "timeout = 150" >> ~/.pip/pip.conf
 ```
 
 ### 安装常用软件
@@ -187,8 +184,18 @@ sudo apt install htop
 
 # 官方推出jtop工具，专门用来查看jetson的CPU、GPU等信息，使用方法也很简单
 # 装好python环境后再装这个
-sudo python3 -m pip install jetson-stats
-sudo jtop
+# sudo python3 -m pip install jetson-stats
+# sudo jtop
+```
+
+### python 源
+```shell
+su - hyren
+mkdir ~/.pip
+echo "[global]" > ~/.pip/pip.conf
+echo "trusted-host = pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
+echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple/" >> ~/.pip/pip.conf
+echo "timeout = 150" >> ~/.pip/pip.conf
 ```
 
 ### 设置Pi过来的免密
@@ -203,7 +210,9 @@ ssh hyren@${NANO_IP}  # for check
 
 ### 禁止启动时进入桌面
 ```shell
-sudo systemctl set-default multi-user.target   #关闭图形界面
+su - pi
+# 关闭图形界面
+sudo systemctl set-default multi-user.target
 sudo reboot
 systemctl set-default graphical.target    #打开图形界面
 sudo reboot

@@ -60,10 +60,13 @@ mv frpc ${HRETNC_NAME}
 mkdir log && ls
 
 Server_Port=49901
-HRE_ORG_NO=400  # 3位设备编号。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。
+# 3位设备编号。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。
+HRE_ORG_NO=400
 # ----- ini ----- Start
-EdgeName=""    # 该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
-PortSuffix=""  # pi设置为00；两个nano分别设置为：01/02
+# 该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
+EdgeName=""
+# pi设置为00；两个nano分别设置为：01/02
+PortSuffix=""
 if [ "$EdgeName" == "pi" ]; then PortSuffix="00"; elif [ "$EdgeName" == "nano1" ]; then PortSuffix="01"; elif [ "$EdgeName" == "nano2" ]; then PortSuffix="02"; else echo "========== ERROR EdgeName=$EdgeName =========="; fi
 echo PortSuffix=$PortSuffix
 cat > ssh.ini << EOF
