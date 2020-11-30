@@ -8,7 +8,14 @@
 - 用户：pi，密码：Hre2188
 - 主机名设置为：hre${HRE_CODE}-nano1 | HRE_CODE：400，是每个设备的编号，每个设备依次增加即可。第2个nano后缀为nano2。
 
+- **首次登陆图形界面 - 关闭自动更新**
+不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
+```
+System Settings | Software & Updates，在Updates页，Automatically check for updates，选择Never。
+```
+
 ## 设置初始值
+
 ```shell
 sudo echo "root:Hre2188" | sudo chpasswd
 # 解决每次sudo都要输入密码
@@ -56,8 +63,8 @@ sudo swapon --show
 | GPU Max Freq | 921  | 640  |
 
 ```shell
-# 查看功率模式
-sudo /usr/sbin/nvpmodel -q
+# 查看功率模式，应该是：MAXN
+sudo /usr/sbin/nvpmodel -q  # show : MAXN
 # 查看处理器状态
 sudo jetson_clocks --show
 
@@ -67,11 +74,6 @@ sudo /usr/sbin/nvpmodel -m 0
 # 5w模式：
 sudo /usr/sbin/nvpmodel -m 1
 ```
-
-### 关闭自动更新
-不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
-
-System Settings | Software & Updates，在Updates页，Automatically check for updates，选择Never。
 
 ### 清理不用的软件
 ```shell
@@ -107,15 +109,13 @@ echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOM
 
 source .bashrc
 nvcc -V  # see CUDA info
+exit
 ```
 
 ### mount U盘
 ```shell
-su
-mkdir /mnt/usb1 /mnt/usb2
-chown -R hyren:sudo /mnt/usb1 /mnt/usb2
+sudo mkdir /mnt/usb1 /mnt/usb2
 
-su - hyren
 cat > ~/mount << EOF
 #! /bin/bash
 

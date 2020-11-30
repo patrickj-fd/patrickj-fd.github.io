@@ -7,12 +7,13 @@
 以下软件包，对OpenCV，以及后续做Tensorflow/Pytorch编译和运行，都是必须的
 
 ```shell
+su - pi
 # 最好在官方源上做update和安装。换成国内源后，有可能出现安装失败的情况
 sudo apt update
 sudo apt upgrade
-sudo apt install -y build-essential make cmake cmake-curses-gui
-sudo apt install -y git g++ pkg-config curl libfreetype6-dev
-sudo apt install -y libcanberra-gtk-module libcanberra-gtk3-module
+sudo apt install -y build-essential make cmake cmake-curses-gui \
+         git g++ pkg-config curl libfreetype6-dev \
+         libcanberra-gtk-module libcanberra-gtk3-module
 sudo apt install -y libpython3.6-dev
 sudo apt install -y python3-dev python3-testresources
 sudo apt install -y autoconf libtool
@@ -41,10 +42,10 @@ sudo apt install -y python3-pip
 # 【若报错】： Package python3-distutils has no installation candidate ：
 # sudo apt update
 
-pip3 -V
+pip3 -V  # show : pip 9.0.1
 # 更新到最新版，要用sudo，否则setuptools是装在当前用户下
 sudo python3 -m pip install -U pip
-sudo python3 -m pip install -U testresources /mnt/usb1/hre/setuptools-49.6.0-py3-none-any.whl --use-feature=2020-resolver
+sudo python3 -m pip install -U testresources setuptools==49.6.0 --use-feature=2020-resolver
 ```
 
 ## 2.2 安装 venv
@@ -88,7 +89,6 @@ sudo pip3 uninstall -y protobuf
 
 ## 3.3 安装python运行库
 
-**解压nano.pyvenv.tar.gz方式，本步骤(3.3)跳过**
 ```shell
 # Update python3 protobuf module
 sudo python3 -m pip install Cython
@@ -112,13 +112,13 @@ message people
 EOF
 ```
 
-2) 编译
+### 编译
 ```shell
 mkdir app_out
 protoc -I=./app --python_out=./app_out/ app/people.proto
 ```
 
-3) vi app_out/test.py
+### vi app_out/test.py
 ```python
 cat > app_out/test.py << EOF
 import people_pb2
@@ -130,7 +130,7 @@ print(pbFirstPeople)
 EOF
 ```
 
-4) 结果
+### 查看结果
 ```shell
 python3 app_out/test.py
 
@@ -144,15 +144,12 @@ height: 160
 
 ## 4.1 安装依赖软件
 ```shell
-cd /data
 sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
 # sudo apt-get install python3-pip 官方步骤有这个
-
-# 预先下载好的软件包的根目录
-SOFT_ROOT=/mnt/usb1/hre/nano/tensorflow
 ```
 
 ## 4.2 创建虚拟环境
+### 构建环境
 - 解压nano.pyvenv.tar.gz方式
 ```shell
 su - hyren
@@ -169,15 +166,19 @@ mkdir -p /hyren/python/venv
 python3 -m venv /hyren/python/venv/tf-1.15
 ```
 
-- 进入虚拟环境：
+### 拷贝虚拟环境启动文件方便后续使用
 ```shell
 cp /hyren/python/venv/tf-1.15/bin/activate ~/pyvenv-tf15
-source ~/pyvenv-tf15
 ```
 
 ## 4.3 虚拟环境中安装AI软件包
 
 **解压nano.pyvenv.tar.gz方式，本步骤(4.3)全部跳过**
+
+### 进入虚拟环境
+```shell
+source ~/pyvenv-tf15
+```
 
 ### 安装 pip
 ```shell
@@ -217,6 +218,7 @@ wget -c https://developer.download.nvidia.cn/compute/redist/jp/v44/tensorflow/te
 # for 1.15.4+nv20.10
 python3 -m pip install numpy==1.16.1 future==0.18.2 mock==3.0.5 h5py==2.10.0 keras_preprocessing==1.1.1 keras_applications==1.0.8 gast==0.2.2 futures protobuf pybind11
 
+SOFT_ROOT=/mnt/usb1/hre/nano/tensorflow
 # python3 -m pip install ${SOFT_ROOT}/tensorboard-1.15.0-py3-none-any.whl
 python3 -m pip install -U tensorboard==1.15.0
 # 装tensorboard时会同时安装 grpcio-1.33.2.tar.gz。如果失败了，就下载下载再装一次
@@ -240,11 +242,13 @@ cp -r /usr/lib/python3.6/dist-packages/cv2 /hyren/python/venv/tf-1.15/lib/python
 
 ## 4.4 验证
 ```shell
+source ~/pyvenv-tf15
+
 protoc --version   # show : 3.8.0
 python3 -c "import google.protobuf as p; print(p.__version__)"  # show : 3.8.0
 
-python3 -c "import keras; print(keras.__version__)"
-python3 -c "import tensorflow as tf; print(tf.__version__)"
+python3 -c "import keras; print(keras.__version__)"  # show : 2.3.1
+python3 -c "import tensorflow as tf; print(tf.__version__)"  # show : 1.15.4
 
 python3 -c "import cv2; print(cv2.__version__)"  # show : 4.1.1
 ```
