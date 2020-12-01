@@ -16,13 +16,15 @@ rm -rf frpc* && ls
 mv frps ${HRETNS_NAME}
 mkdir log
 
+# 给企业用的端口：40000-49899
+# 内部测试用的端口：49910-49929,7456
 cat > server.ini << EOF
 [common]
 bind_port = 49901
 dashboard_port = 49911
 dashboard_user = aoot
 dashboard_pwd = lhy1025
-allow_ports = 40000-49899,7456
+allow_ports = 40000-49899,49910-49929,7456
 log_file = log/running.log
 log_level = info
 log_max_days = 300
@@ -60,12 +62,13 @@ mv frpc ${HRETNC_NAME}
 mkdir log && ls
 
 Server_Port=49901
-# 3位设备编号。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。
+# 3位设备编号。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。 内部测试用 499
 HRE_ORG_NO=400
 # ----- ini ----- Start
 # 该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
 EdgeName=""
-# pi设置为00；两个nano分别设置为：01/02
+# pi设置为00；两个nano分别设置为：01/02。
+# [ 内部测试的机器用：pi/10, nano1/11, nano2/12 ...... 并且，不要执行下面的if语句 ]
 PortSuffix=""
 if [ "$EdgeName" == "pi" ]; then PortSuffix="00"; elif [ "$EdgeName" == "nano1" ]; then PortSuffix="01"; elif [ "$EdgeName" == "nano2" ]; then PortSuffix="02"; else echo "========== ERROR EdgeName=$EdgeName =========="; fi
 echo PortSuffix=$PortSuffix
@@ -120,14 +123,12 @@ chmod 700 start*.sh && ll
 ./start.sh
 cat log/ssh.log
 ssh -oPort=${HRE_ORG_NO}${PortSuffix} pi/hyren@139.9.126.19
-
+exit
 ```
 
 ### 设置开机启动
 ```shell
-echo HRETNC_NAME=${HRETNC_NAME}
-su
-HRETNC_NAME=上面echo的值！！！
+echo HRETNC_NAME=${HRETNC_NAME}  # for check : HRETNC_NAME=HRETNC
 cat > /etc/systemd/system/${HRETNC_NAME}.service << EOF
 [Unit]
 Description=HyrenEdgeNetClient
@@ -150,7 +151,7 @@ systemctl enable ${HRETNC_NAME}
 
 reboot
 
-# 验证
+# 验证（hyren 登陆）
 ssh -oPort=${HRE_ORG_NO}${PortSuffix} hyren@139.9.126.19
 ```
 

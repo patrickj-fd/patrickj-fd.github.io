@@ -45,7 +45,8 @@ sudo apt install -y python3-pip
 pip3 -V  # show : pip 9.0.1
 # 更新到最新版，要用sudo，否则setuptools是装在当前用户下
 sudo python3 -m pip install -U pip
-sudo python3 -m pip install -U testresources setuptools==49.6.0 --use-feature=2020-resolver
+sudo python3 -m pip install -U testresources 
+sudo python3 -m pip install -U setuptools==49.6.0 --use-feature=2020-resolver
 ```
 
 ## 2.2 安装 venv
@@ -146,6 +147,9 @@ height: 160
 ```shell
 sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
 # sudo apt-get install python3-pip 官方步骤有这个
+
+# 挂上U盘，以便hyren用户能访问
+~/mount 1
 ```
 
 ## 4.2 创建虚拟环境
