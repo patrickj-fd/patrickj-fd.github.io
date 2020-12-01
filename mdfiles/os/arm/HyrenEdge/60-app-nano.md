@@ -44,8 +44,9 @@ cd ${PROJECT_ROOT}/python/yolov4-keras
 # 进入python环境执行以上代码的方式：
 # HRS_RESOURCES_ROOT=${PROJECT_ROOT}/python/resources python3
 
-HRS_RESOURCES_ROOT=${PROJECT_ROOT}/python/resources \
-    python3 test.py
+HRS_RESOURCES_ROOT=${PROJECT_ROOT}/python/resources python3 test.py
+# input : /hyren/app/zhihuinongan/test/pic/*.jpg
+# 把 *-result.jpg 取出来看结果
 ```
 
 - test.py中的代码逻辑如下
