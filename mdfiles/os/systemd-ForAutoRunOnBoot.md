@@ -7,7 +7,7 @@
 
 对于开机执行的命令，从ubuntu18.04开始，推荐使用systemd而不是initd了。
 
-### 1. 创建一个service文件
+## 1. 创建一个service文件
 vi /etc/systemd/system/frpc.service
 ```ini
 [Unit]
@@ -29,11 +29,41 @@ User=nobody                           Or other user name
 WantedBy=multi-user.target
 ```
 
-### 2. 开启服务
+## 2. 启停服务
 ```shell
-# sudo systemctl daemon-reload      service文件改动后要重新装载一下 
-sudo systemctl start frpc   立即开启该服务（立即执行该脚本）
-sudo systemctl enable frpc  设置成开机启动（下次开机时生效）
+# 立即开启该服务（立即执行该脚本）
+sudo systemctl start frpc
+# 设置成开机启动（下次开机时生效）
+sudo systemctl enable frpc
+
+# service文件改动后要重新装载一下 
+sudo systemctl daemon-reload
+
+
+# 停止
+sudo systemctl stop frpc.service
+# 有时候，该命令可能没有响应，服务停不下来，就不得不"杀进程"了
+sudo systemctl kill frpc.service
+```
+
+## 3. 问题排查
+
+### * 查看服务状态
+```shell
+sudo systemctl status frpc
+```
+该命令输出结果说明：
+```txt
+   Loaded行：配置文件的位置，是否设为开机启动
+   Active行：表示正在运行
+ Main PID行：主进程ID
+   Status行：由应用本身（这里是 httpd ）提供的软件当前状态
+   CGroup块：应用的所有子进程
+```
+
+### * 查看服务的配置文件
+```shell
+systemctl cat sshd.service
 ```
 
 ---
