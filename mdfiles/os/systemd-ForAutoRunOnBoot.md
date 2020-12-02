@@ -36,9 +36,11 @@ sudo systemctl start frpc
 # 设置成开机启动（下次开机时生效）
 sudo systemctl enable frpc
 
-# service文件改动后要重新装载一下 
-sudo systemctl daemon-reload
-
+# 修改配置文件后，必须重新加载一次后，才能重启服务
+# 重新加载配置文件
+$ sudo systemctl daemon-reload
+# 重启相关服务
+$ sudo systemctl restart frpc
 
 # 停止
 sudo systemctl stop frpc.service

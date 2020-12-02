@@ -55,13 +55,13 @@ FRP_DIST_NAME=frp_0.34.3_linux_arm64
 
 FRP_DIST_PATH=${FRP_DIST_PATH:+"${FRP_DIST_PATH}/"} && echo FRP_DIST_PATH=$FRP_DIST_PATH
 tar -xf ${FRP_DIST_PATH}${FRP_DIST_NAME}.tar.gz -C /opt
-mv /opt/${FRP_DIST_NAME}/ /opt/${HRETNC_NAME}/
-chown -R root:root /opt/${HRETNC_NAME}/ && ls -l
+mv /opt/${FRP_DIST_NAME}/ /opt/HRETNC/
+chown -R root:root /opt/HRETNC/ && ls -l
 
-cd /opt/${HRETNC_NAME}/
+cd /opt/HRETNC/
 rm -rf frps* && ls
 rm -rf *.ini LICENSE systemd && ls
-mv frpc ${HRETNC_NAME}
+mv frpc HRETNC
 mkdir log && ls -l
 
 # 1. 设置server端的端口
@@ -87,13 +87,13 @@ echo PortSuffix=$PortSuffix
 而在最后创建的开机启动service文件中，会设置：User=nobody。
 为避免开机启动时无权限写日志，所以在ini文件中把log文件放到了tmp目录下。
 
-#### ssh.ini
+#### 配置 ssh.ini
 ```ini
 # cat > ssh.ini << EOF
 [common]
 server_addr = 139.9.126.19
 server_port = ${Server_Port}
-log_file = /tmp/${HRETNC_NAME}-ssh.log
+log_file = /tmp/HRETNC-ssh.log
 log_level = info
 log_max_days = 100
 
@@ -105,47 +105,34 @@ remote_port = ${HRE_ORG_NO}${PortSuffix}
 # EOF
 ```
 
-#### ssh-start.sh for start ssh
+#### 临时启动验证是否可用
 ```shell
-cat > ssh-start.sh << EOF
-#! /bin/bash
+nohup /opt/HRETNC/HRETNC -c /opt/HRETNC/ssh.ini &
 
-# just for show process
-if [ "x\$1" == "xshow" ]; then
-    ps -ef | grep "HRETNC" | grep "ssh.ini" | grep -v grep
-    exit
-fi
+tail -f /tmp/HRETNC-ssh.log
+ps -ef | grep "HRETNC" | grep "ssh.ini" | grep -v grep
 
-nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/ssh.ini &
-sleep 1
-echo
-tail -f /opt/${HRETNC_NAME}/log/ssh.log
-EOF
-
-# 临时启动验证是否可用
-chmod 700 ssh-start.sh && ls -l
-./ssh-start.sh
 # 验证
-ssh -oPort= hyren@139.9.126.19
+ssh -oPort=40000 hyren@139.9.126.19
 ```
 
 ### 2.2 配置 apps
-#### apps.ini
-- 是给除了pi上面的ssh之外，需要开放出去的端口。
+#### 配置 apps.ini
+- 这是给各个app，需要开放出去的端口。
 - 创建前，先确认 **HRETNC_NAME** 环境变量是否正确（等于前面设置的值 HRETNC）
 ```ini
 # cat > apps.ini << EOF
 [common]
 server_addr = 139.9.126.19
 server_port = ${Server_Port}
-log_file = /tmp/${HRETNC_NAME}-apps.log
+log_file = /tmp/HRETNC-apps.log
 log_level = info
 log_max_days = 100
 
 # EOF
 ```
 
-#### apps.ini 追加写入每个要开放出去的端口
+#### 给 apps.ini 追加写入每个要开放出去的端口
 有多个需要开放的端口，顺序递增PortSuffix变量的值，执行以下脚本代码
 ```ini
 # (1) 确认：[ EdgeName ] 是否正确。该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
@@ -161,56 +148,28 @@ remote_port = ${HRE_ORG_NO}${PortSuffix}
 # EOF
 ```
 
-#### 启动apps的脚本 apps-start.sh
+#### 临时启动验证是否可用
 ```shell
-cat >> apps-start.sh << EOF
-#! /bin/bash
+nohup /opt/HRETNC/HRETNC -c /opt/HRETNC/apps.ini &
 
-# just for show process
-if [ "x\$1" == "xshow" ]; then
-    ps -ef | grep "HRETNC" | grep "apps.ini" | grep -v grep
-    exit
-fi
-
-nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/apps.ini &
-sleep 1
-echo
-tail -f /opt/${HRETNC_NAME}/log/apps.log
-EOF
-
-# 临时启动验证是否可用
-chmod 700 apps-start.sh && ls -l
-./apps-start.sh
+tail -f /tmp/HRETNC-apps.log
+ps -ef | grep "HRETNC" | grep "apps.ini" | grep -v grep
 ```
 
 ### 2.3 设置开机启动
+
+##### For ssh
 ```shell
-echo HRETNC_NAME=${HRETNC_NAME}  # for check : HRETNC_NAME=HRETNC
-
-# 以下startAll.sh方式没有成功，所以后面要分别创建两个文件
-cat > startAll.sh << EOF
-#! /bin/bash
-
-nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} \$1 -c /opt/${HRETNC_NAME}/ssh.ini &
-
-if [ -f /opt/${HRETNC_NAME}/apps.ini ]; then
-    nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} \$1 -c /opt/${HRETNC_NAME}/apps.ini &
-fi
-EOF
-chmod 755 startAll.sh
-
-# 分别赋值为：ssh , apps。各执行一次
-TYPE=
-
-cat > /etc/systemd/system/${HRETNC_NAME}-${TYPE}.service << EOF
+# for ssh port
+cat > /etc/systemd/system/HRETNC-ssh.service << EOF
 [Unit]
-Description=HyrenEdgeNet${TYPE}
+Description=HyrenEdgeNetSSH
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/${TYPE}.ini
-ExecReload=/opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/${TYPE}.ini
+ExecStart=/opt/HRETNC/HRETNC -c /opt/HRETNC/ssh.ini
+ExecReload=/opt/HRETNC/HRETNC -c /opt/HRETNC/ssh.ini
 Restart=on-failure
 RestartSec=5s
 User=nobody
@@ -219,13 +178,49 @@ User=nobody
 WantedBy=multi-user.target
 EOF
 
-systemctl start ${HRETNC_NAME}-${TYPE}
-systemctl enable ${HRETNC_NAME}-${TYPE}
+systemctl start HRETNC-ssh
+systemctl enable HRETNC-ssh
+```
 
-# systemctl stop ${HRETNC_NAME}-${TYPE}
-# systemctl disable ${HRETNC_NAME}-${TYPE}
+##### For apps
+```shell
+cat > /opt/HRETNC/startApps.sh << EOF
+#! /bin/bash
 
+if [ -f /opt/HRETNC/apps.ini ]; then
+    /opt/HRETNC/HRETNC \$1 -c /opt/HRETNC/apps.ini
+else
+    echo "no HRETNC apps"
+fi
+EOF
+chmod 755 startApps.sh
 
+cat > /etc/systemd/system/HRETNC-apps.service << EOF
+[Unit]
+Description=HyrenEdgeNetApps
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/HRETNC/startApps.sh
+ExecReload=/opt/HRETNC/startApps.sh reload
+Restart=on-failure
+RestartSec=5s
+User=nobody
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl start HRETNC-apps
+systemctl enable HRETNC-apps
+
+# systemctl stop HRETNC-apps
+# systemctl disable HRETNC-apps
+```
+
+##### 重启主机并验证
+```shell
 reboot
 
 # 查看服务是否启动了
@@ -234,7 +229,7 @@ ps -ef|grep HRE
 journalctl | grep HRE
 
 # 验证ssh（hyren 登陆）
-ssh -oPort= hyren@139.9.126.19
+ssh -oPort=40000 hyren@139.9.126.19
 ```
 
 ---
