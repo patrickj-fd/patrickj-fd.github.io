@@ -2,6 +2,9 @@
 
 ---
 
+- [参考文章](http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html)
+- [参考文章](http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html)
+
 对于开机执行的命令，从ubuntu18.04开始，推荐使用systemd而不是initd了。
 
 ### 1. 创建一个service文件
@@ -32,9 +35,6 @@ WantedBy=multi-user.target
 sudo systemctl start frpc   立即开启该服务（立即执行该脚本）
 sudo systemctl enable frpc  设置成开机启动（下次开机时生效）
 ```
-
-详细讲解service文件参考：
-> http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html
 
 ---
 

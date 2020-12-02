@@ -80,13 +80,20 @@ echo PortSuffix=$PortSuffix
 ```
 
 ### 2.1 配置 ssh
+
+**关于frpc的日志文件**
+
+因为本操作使用root，会用root用户临时启动用于验证，会生成root权限的日志文件。
+而在最后创建的开机启动service文件中，会设置：User=nobody。
+为避免开机启动时无权限写日志，所以在ini文件中把log文件放到了tmp目录下。
+
 #### ssh.ini
 ```ini
 # cat > ssh.ini << EOF
 [common]
 server_addr = 139.9.126.19
 server_port = ${Server_Port}
-log_file = /opt/${HRETNC_NAME}/log/ssh.log
+log_file = /tmp/${HRETNC_NAME}-ssh.log
 log_level = info
 log_max_days = 100
 
@@ -115,7 +122,7 @@ echo
 tail -f /opt/${HRETNC_NAME}/log/ssh.log
 EOF
 
-# 启动
+# 临时启动验证是否可用
 chmod 700 ssh-start.sh && ls -l
 ./ssh-start.sh
 # 验证
@@ -131,7 +138,7 @@ ssh -oPort= hyren@139.9.126.19
 [common]
 server_addr = 139.9.126.19
 server_port = ${Server_Port}
-log_file = /opt/${HRETNC_NAME}/log/apps.log
+log_file = /tmp/${HRETNC_NAME}-apps.log
 log_level = info
 log_max_days = 100
 
@@ -141,8 +148,9 @@ log_max_days = 100
 #### apps.ini 追加写入每个要开放出去的端口
 有多个需要开放的端口，顺序递增PortSuffix变量的值，执行以下脚本代码
 ```ini
-# 确认：[ EdgeName ] 是否正确。该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
-# 设置：[ PortSuffix= ]  从10开始分配给app使用。0-9保留，其中0-3分别是3个设备的ssh端口
+# (1) 确认：[ EdgeName ] 是否正确。该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
+# (2) 设置：[ PortSuffix= ]  从10开始分配给app使用。0-9保留，其中0-3分别是3个设备的ssh端口
+
 # cat >> apps.ini << EOF
 [hre${HRE_ORG_NO}-${EdgeName}-app${PortSuffix}]
 type = tcp
@@ -170,8 +178,7 @@ echo
 tail -f /opt/${HRETNC_NAME}/log/apps.log
 EOF
 
-# ==============================
-# 启动
+# 临时启动验证是否可用
 chmod 700 apps-start.sh && ls -l
 ./apps-start.sh
 ```
@@ -179,7 +186,6 @@ chmod 700 apps-start.sh && ls -l
 ### 2.3 设置开机启动
 ```shell
 echo HRETNC_NAME=${HRETNC_NAME}  # for check : HRETNC_NAME=HRETNC
-cd /opt/${HRETNC_NAME}/
 
 # 以下startAll.sh方式没有成功，所以后面要分别创建两个文件
 cat > startAll.sh << EOF
@@ -195,6 +201,7 @@ chmod 755 startAll.sh
 
 # 分别赋值为：ssh , apps。各执行一次
 TYPE=
+
 cat > /etc/systemd/system/${HRETNC_NAME}-${TYPE}.service << EOF
 [Unit]
 Description=HyrenEdgeNet${TYPE}
@@ -215,9 +222,18 @@ EOF
 systemctl start ${HRETNC_NAME}-${TYPE}
 systemctl enable ${HRETNC_NAME}-${TYPE}
 
+# systemctl stop ${HRETNC_NAME}-${TYPE}
+# systemctl disable ${HRETNC_NAME}-${TYPE}
+
+
 reboot
 
-# 验证（hyren 登陆）
+# 查看服务是否启动了
+ps -ef|grep HRE
+# 查看开发服务的启动日志是否有错误
+journalctl | grep HRE
+
+# 验证ssh（hyren 登陆）
 ssh -oPort= hyren@139.9.126.19
 ```
 
