@@ -38,8 +38,10 @@ tail -f log/running.log
 ```
 
 ## 2. Client端
+### 2.0 环境变量
 ```shell
 su -
+
 HRETNC_NAME=HRETNC
 
 # Pi
@@ -54,25 +56,33 @@ FRP_DIST_NAME=frp_0.34.3_linux_arm64
 FRP_DIST_PATH=${FRP_DIST_PATH:+"${FRP_DIST_PATH}/"} && echo FRP_DIST_PATH=$FRP_DIST_PATH
 tar -xf ${FRP_DIST_PATH}${FRP_DIST_NAME}.tar.gz -C /opt
 mv /opt/${FRP_DIST_NAME}/ /opt/${HRETNC_NAME}/
+chown -R root:root /opt/${HRETNC_NAME}/ && ls -l
 
 cd /opt/${HRETNC_NAME}/
 rm -rf frps* && ls
 rm -rf *.ini LICENSE systemd && ls
 mv frpc ${HRETNC_NAME}
-mkdir log && ls
+mkdir log && ls -l
 
+# 1. 设置server端的端口
 Server_Port=49901
-# 3位设备编号。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。 内部测试用 499
+# 2. 设置3位设备编号。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。 内部测试用 499
 HRE_ORG_NO=400
-# ----- ini ----- Start
-# 该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
-EdgeName=""
+
+# 3. 设置该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
+EdgeName=
+
+# 4. 设置端口最后两位数字
 # pi设置为00；两个nano分别设置为：01/02。
 # [ 内部测试的机器用：pi/10, nano1/11, nano2/12 ...... 并且，不要执行下面的if语句 ]
-PortSuffix=""
 if [ "$EdgeName" == "pi" ]; then PortSuffix="00"; elif [ "$EdgeName" == "nano1" ]; then PortSuffix="01"; elif [ "$EdgeName" == "nano2" ]; then PortSuffix="02"; else echo "========== ERROR EdgeName=$EdgeName =========="; fi
 echo PortSuffix=$PortSuffix
-cat > ssh.ini << EOF
+```
+
+### 2.1 配置 ssh
+#### ssh.ini
+```ini
+# cat > ssh.ini << EOF
 [common]
 server_addr = 139.9.126.19
 server_port = ${Server_Port}
@@ -85,14 +95,39 @@ type = tcp
 local_ip = 127.0.0.1
 local_port = 22
 remote_port = ${HRE_ORG_NO}${PortSuffix}
+# EOF
+```
+
+#### ssh-start.sh for start ssh
+```shell
+cat > ssh-start.sh << EOF
+#! /bin/bash
+
+# just for show process
+if [ "x\$1" == "xshow" ]; then
+    ps -ef | grep "HRETNC" | grep "ssh.ini" | grep -v grep
+    exit
+fi
+
+nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/ssh.ini &
+sleep 1
+echo
+tail -f /opt/${HRETNC_NAME}/log/ssh.log
 EOF
-cat ssh.ini
 
-echo "#! /bin/bash" > start.sh
-echo "nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/ssh.ini &" >> start.sh
+# 启动
+chmod 700 ssh-start.sh && ls -l
+./ssh-start.sh
+# 验证
+ssh -oPort= hyren@139.9.126.19
+```
 
-# 以下是给除了pi上面的ssh之外，需要开放出去的端口。
-cat > apps.ini << EOF
+### 2.2 配置 apps
+#### apps.ini
+- 是给除了pi上面的ssh之外，需要开放出去的端口。
+- 创建前，先确认 **HRETNC_NAME** 环境变量是否正确（等于前面设置的值 HRETNC）
+```ini
+# cat > apps.ini << EOF
 [common]
 server_addr = 139.9.126.19
 server_port = ${Server_Port}
@@ -100,44 +135,75 @@ log_file = /opt/${HRETNC_NAME}/log/apps.log
 log_level = info
 log_max_days = 100
 
-EOF
+# EOF
+```
 
-# 有多个需要开放的端口，顺序递增PortSuffix变量的值，执行以下脚本代码
-EdgeName=""    # 该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
-PortSuffix="10"  # 0-9保留，其中0-3分别是3个设备的ssh端口。所以从10开始分配给app使用
-cat >> apps.ini << EOF
+#### apps.ini 追加写入每个要开放出去的端口
+有多个需要开放的端口，顺序递增PortSuffix变量的值，执行以下脚本代码
+```ini
+# 确认：[ EdgeName ] 是否正确。该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
+# 设置：[ PortSuffix= ]  从10开始分配给app使用。0-9保留，其中0-3分别是3个设备的ssh端口
+# cat >> apps.ini << EOF
 [hre${HRE_ORG_NO}-${EdgeName}-app${PortSuffix}]
 type = tcp
 local_ip = 127.0.0.1
 local_port = ${HRE_ORG_NO}${PortSuffix}
 remote_port = ${HRE_ORG_NO}${PortSuffix}
 
-EOF
-
-echo "#! /bin/bash" > start-apps
-echo "nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/apps.ini &" > start-apps.sh
-# ----- ini ----- End
-
-chmod 700 start*.sh && ll
-# 验证
-./start.sh
-cat log/ssh.log
-ssh -oPort=${HRE_ORG_NO}${PortSuffix} pi/hyren@139.9.126.19
-exit
+# EOF
 ```
 
-### 设置开机启动
+#### 启动apps的脚本 apps-start.sh
+```shell
+cat >> apps-start.sh << EOF
+#! /bin/bash
+
+# just for show process
+if [ "x\$1" == "xshow" ]; then
+    ps -ef | grep "HRETNC" | grep "apps.ini" | grep -v grep
+    exit
+fi
+
+nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/apps.ini &
+sleep 1
+echo
+tail -f /opt/${HRETNC_NAME}/log/apps.log
+EOF
+
+# ==============================
+# 启动
+chmod 700 apps-start.sh && ls -l
+./apps-start.sh
+```
+
+### 2.3 设置开机启动
 ```shell
 echo HRETNC_NAME=${HRETNC_NAME}  # for check : HRETNC_NAME=HRETNC
-cat > /etc/systemd/system/${HRETNC_NAME}.service << EOF
+cd /opt/${HRETNC_NAME}/
+
+# 以下startAll.sh方式没有成功，所以后面要分别创建两个文件
+cat > startAll.sh << EOF
+#! /bin/bash
+
+nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} \$1 -c /opt/${HRETNC_NAME}/ssh.ini &
+
+if [ -f /opt/${HRETNC_NAME}/apps.ini ]; then
+    nohup /opt/${HRETNC_NAME}/${HRETNC_NAME} \$1 -c /opt/${HRETNC_NAME}/apps.ini &
+fi
+EOF
+chmod 755 startAll.sh
+
+# 分别赋值为：ssh , apps。各执行一次
+TYPE=
+cat > /etc/systemd/system/${HRETNC_NAME}-${TYPE}.service << EOF
 [Unit]
-Description=HyrenEdgeNetClient
+Description=HyrenEdgeNet${TYPE}
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/ssh.ini
-ExecReload=/opt/${HRETNC_NAME}/${HRETNC_NAME} reload -c /opt/${HRETNC_NAME}/ssh.ini
+ExecStart=/opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/${TYPE}.ini
+ExecReload=/opt/${HRETNC_NAME}/${HRETNC_NAME} -c /opt/${HRETNC_NAME}/${TYPE}.ini
 Restart=on-failure
 RestartSec=5s
 User=nobody
@@ -146,13 +212,13 @@ User=nobody
 WantedBy=multi-user.target
 EOF
 
-systemctl start ${HRETNC_NAME}
-systemctl enable ${HRETNC_NAME}
+systemctl start ${HRETNC_NAME}-${TYPE}
+systemctl enable ${HRETNC_NAME}-${TYPE}
 
 reboot
 
 # 验证（hyren 登陆）
-ssh -oPort=${HRE_ORG_NO}${PortSuffix} hyren@139.9.126.19
+ssh -oPort= hyren@139.9.126.19
 ```
 
 ---

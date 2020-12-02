@@ -83,5 +83,50 @@ while True:
 yolo.close_session()
 ```
 
+- 启动服务的工具脚本
+```shell
+#! /bin/bash
+
+set -e
+
+BINDIR=$(cd $(dirname $0); pwd)
+
+# for kill process
+if [ "x$1" == "xstop" ]; then
+    PID=$(cat ${BINDIR}/service.pid)
+    kill $PID && sleep 1
+    ps -ef | grep "python3 service.py" | grep -v grep
+    exit
+fi
+
+# just for show process
+if [ "x$1" == "xshow" ]; then
+    ps -ef | grep "python3 service.py" | grep -v grep
+    exit
+fi
+
+# start new process
+cd /hyren/app/zhihuinongan/python/yolov4-keras > /dev/null
+
+export HRS_RESOURCES_ROOT=/hyren/app/zhihuinongan/python/resources
+
+echo "" >> ${BINDIR}/service.log
+echo "========== $(date) ==========" >> ${BINDIR}/service.log
+
+nohup python3 service.py >> ${BINDIR}/service.log 2>&1 &
+sleep 1
+PID=$(ps -ef | grep "python3 service.py" | grep -v grep | awk '{print $2}')
+if ps -p $PID > /dev/null
+then
+    echo "$PID" > ${BINDIR}/service.pid
+    echo
+    tail -f -n100 /hyren/app/zhihuinongan/service.log
+else
+    echo "service.py PID(=$PID) not exist!"
+fi
+
+cd - > /dev/null
+```
+
 ---
 
