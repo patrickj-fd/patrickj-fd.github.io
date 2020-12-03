@@ -140,43 +140,14 @@ git clone http://139.9.126.19:38111/.....
 ```
 
 ## 3. 把项目配置成开机启动
-```shell
-su -
-cat > /etc/systemd/system/hre-appmis.service << EOF
-[Unit]
-Description=HyrenEdgeAppMis
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=/hyren/hrsapp/bin/zhna.sh start
-User=hyren
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# 启用服务
-systemctl start hre-appmis
-systemctl status hre-appmis  # show : RunType, date and java version
-systemctl enable hre-appmis
-
-# 以下为调试用命令
-systemctl daemon-reload
-systemctl restart hre-appmis
-systemctl status hre-appmis
-tail /hyren/zhna-console.log
-ps -ef|grep java
-
-systemctl stop hre-appmis
-systemctl disable hre-appmis
-```
 
 ### 应用脚本文件zhna.sh
 **除非必要，zhna.sh永远不用直接执行，应该通过systemctl进行启停**
 ```shell
 # cat > ${PROJECT_ROOT}/bin/zhna.sh << EOF
 #!/bin/bash
+
+set -e
 
 RunType="$1"
 
@@ -213,6 +184,42 @@ if [ "x$RunType" == "xstart" ]; then
     echo "" >> $LOGFILE
     java -jar /hyren/hrsapp/dist/java/zhna/zhna-1.0.jar >> $LOGFILE 2>&1
 fi
+```
+
+### 开机启动配置文件
+```shell
+su -
+# 要和上面设置保持一致！！！
+PROJECT_ROOT=/hyren/hrsapp
+cat > /etc/systemd/system/hre-appmis.service << EOF
+[Unit]
+Description=HyrenEdgeAppMis
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=${PROJECT_ROOT}/bin/zhna.sh start
+User=hyren
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 启用服务
+systemctl start hre-appmis
+systemctl status hre-appmis  # show : RunType, date and java version
+systemctl enable hre-appmis
+
+# 以下为调试用命令
+systemctl daemon-reload
+systemctl restart hre-appmis
+systemctl status hre-appmis
+# 这个日志文件位置，通过上条命令(status)能看到
+tail /hyren/hrsapp/bin/zhna-console.log
+ps -ef|grep java
+
+systemctl stop hre-appmis
+systemctl disable hre-appmis
 ```
 
 ---
