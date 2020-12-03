@@ -65,7 +65,7 @@ set backspace=2
 ### 设置初始值
 ```shell
 # 设置密码不要用特殊符号，USB键盘直接操作时，这些符合是全乱套的，导致无法输入正确的密码
-sudo echo "root:Hre2188" | sudo chpasswd
+sudo echo "root:Hre1088" | sudo chpasswd
 sudo echo "pi:Hre2188" | sudo chpasswd
 sudo mkdir /data  # 放各种软件
 sudo chown -R pi /data

@@ -13,7 +13,7 @@
 
 - 关闭自动更新
 
-第一进入系统就先关了它。不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
+第一次进入系统时，首先先关了它。不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
 ```
 System Settings -> Software & Updates -> Updates tab :
 Automatically check for updates : change to 'Never' and then close.
@@ -23,7 +23,7 @@ Automatically check for updates : change to 'Never' and then close.
 
 ```shell
 # >>>>> 设置 root 密码
-sudo echo "root:Hre2188" | sudo chpasswd
+sudo echo "root:Hre1088" | sudo chpasswd
 
 # >>>>> 解决每次sudo都要输入密码
 su

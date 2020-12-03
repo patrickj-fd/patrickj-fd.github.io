@@ -10,7 +10,7 @@
 
 ## 设置密码
 ```shell
-sudo echo "root:Hre2188" | sudo chpasswd
+sudo echo "root:Hre1088" | sudo chpasswd
 # 解决每次sudo都要输入密码
 su
 echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
