@@ -157,9 +157,10 @@ sudo apt install -y htop nmap
 # 2. 安装AI环境
 - [参考](../pi/ai-mkenv)
 
-# 3. 安装 Frp
+# 3. 安装项目
 
-[参 见](03-frp)
+1. [安装frpc ssh](03-frp)
+2. [安装项目运行环境](50-app-pi)
 
 # 4. 清理工作
 ```shell

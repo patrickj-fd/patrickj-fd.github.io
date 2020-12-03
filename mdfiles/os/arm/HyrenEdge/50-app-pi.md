@@ -3,15 +3,19 @@
 
 ---
 
-## 1. 说明
+# 总体说明
 
 1. 配置frpc（如果用户环境有公网IP，或者不需要通过公网直接访问mis端，则不需要配置frpc）
 2. 安装项目
 3. 把项目配置成开机启动
 
-## 2. 配置frpc
+# 操作步骤
 
-### 2.1 应用的frpc配置文件
+## 1. 配置frpc
+
+**如果用户环境有公网IP，或者不需要通过公网直接访问mis端，则不需要配置frpc**
+
+### 1.1 应用的frpc配置文件
 #### 配置 apps.ini
 ```shell
 su -
@@ -72,21 +76,22 @@ rm /tmp/HRETNC-apps*.log
 ls -l /tmp/HRETNC*.log
 ```
 
-### 2.2 编写开机启动的脚本
+### 1.2 开机启动的脚本
 ```shell
 cat > /opt/HRETNC/startApps.sh << EOF
 #!/bin/bash
 
 if [ -f /opt/HRETNC/apps.ini ]; then
+    echo HRETNC-apps Start At : $(date)
     /opt/HRETNC/HRETNC \$1 -c /opt/HRETNC/apps.ini
 else
-    echo "Missing apps.ini"
+    echo "HRETNC-apps failed : Missing apps.ini"
 fi
 EOF
 chmod 755 startApps.sh && ls -l
 ```
 
-### 2.3 开机服务配置文件
+### 1.3 开机服务配置文件
 ```shell
 cat > /etc/systemd/system/HRETNC-apps.service << EOF
 [Unit]
@@ -106,26 +111,24 @@ WantedBy=multi-user.target
 EOF
 
 systemctl start HRETNC-apps
+systemctl status HRETNC-apps
 systemctl enable HRETNC-apps
 
 systemctl stop HRETNC-apps
 systemctl disable HRETNC-apps
 ```
 
-### 2.4 重启主机并验证
+### 1.4 重启主机并验证
 ```shell
 reboot
 su -
 # 查看服务是否启动了
 ps -ef|grep HRE
-# 查看开发服务的启动日志是否有错误
+# 查看开机服务的启动日志是否有错误
 journalctl | grep HRE
-
-# 验证
-ssh -oPort=40000 hyren@139.9.126.19
 ```
 
-## 3. 安装项目
+## 2. 安装项目
 ```shell
 su - hyren
 
@@ -139,7 +142,6 @@ git clone http://139.9.126.19:38111/.....
 ## 3. 把项目配置成开机启动
 ```shell
 su -
-# java -jar /hyren/hrsapp/dist/java/zhna/zhna-1.0.jar
 cat > /etc/systemd/system/hre-appmis.service << EOF
 [Unit]
 Description=HyrenEdgeAppMis
@@ -147,70 +149,69 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=java -version
-ExecReload=echo reload
-Restart=on-failure
-RestartSec=5s
+ExecStart=/hyren/hrsapp/bin/zhna.sh start
 User=hyren
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-su - pi
-sudo systemctl start hre-appmis
-sudo systemctl enable hre-appmis
+# 启用服务
+systemctl start hre-appmis
+systemctl status hre-appmis  # show : RunType, date and java version
+systemctl enable hre-appmis
 
-sudo systemctl restart hre-appmis
-sudo systemctl status hre-appmis
+# 以下为调试用命令
+systemctl daemon-reload
+systemctl restart hre-appmis
+systemctl status hre-appmis
+tail /hyren/zhna-console.log
+ps -ef|grep java
 
-sudo systemctl stop hre-appmis
-sudo systemctl disable hre-appmis
+systemctl stop hre-appmis
+systemctl disable hre-appmis
 ```
 
-
-
-# 调试用的启动应用的脚本
-因为应用是开机启动的，所有这个脚本仅仅是临时debug时用一下。
+### 应用脚本文件zhna.sh
+**除非必要，zhna.sh永远不用直接执行，应该通过systemctl进行启停**
 ```shell
-# cat > ${PROJECT_ROOT}/start-for-debug.sh << EOF
+# cat > ${PROJECT_ROOT}/bin/zhna.sh << EOF
 #!/bin/bash
 
+RunType="$1"
+
+JAVA_HOME=/usr/java/default
+PATH=$JAVA_HOME/bin:$PATH
+
 BINDIR=$(cd $(dirname $0); pwd)
+echo RunType=$RunType
+echo PATH=$PATH
 
 # [ Func 1 ] : kill process
-if [ "x$1" == "xstop" ]; then
-    PID=$(cat ${BINDIR}/zhna.pid)
-    kill $PID && sleep 1
-    echo
-    ps -ef | grep "java" | grep "zhna-1.0.jar" | grep -v grep
-    echo
-    exit
-fi
+# if [ "x$RunType" == "xstop" ]; then
+#     PID=$(cat ${BINDIR}/zhna.pid)
+#     kill $PID && sleep 1
+#     echo
+#     ps -ef | grep "java" | grep "zhna-1.0.jar" | grep -v grep
+#     echo
+#     exit
+# fi
 
 # [ Func 2 ] : just show process
-if [ "x$1" == "xshow" ]; then
+if [ "x$RunType" == "xshow" ]; then
     echo 
     ps -ef | grep "java" | grep "zhna-1.0.jar" | grep -v grep
     echo
     exit
 fi
 
-# [ Func 3 ] : start process and show log
-LOGFILE=${BINDIR}/zhna.log
-echo "" >> $LOGFILE
-echo "========== $(date) ==========" >> $LOGFILE
-nohup java -jar /hyren/hrsapp/dist/java/zhna/zhna-1.0.jar >> $LOGFILE 2>&1 &
-sleep 2
-PID=$(ps -ef | grep "java" | grep "zhna-1.0.jar" | grep -v grep | awk '{print $2}')
-if ps -p $PID > /dev/null
-then
-    echo "$PID" > ${BINDIR}/zhna.pid
-    echo
-    tail -f -n100 $LOGFILE
-else
-    echo "[ java ... zhna-1.0.jar ] PID(=$PID) not exist!"
-    exit 1
+# [ Func 3 ] : start process
+if [ "x$RunType" == "xstart" ]; then
+    LOGFILE=${BINDIR}/zhna-console.log
+    echo Start At : $(date), LOGFILE=$LOGFILE
+    java -version
+    echo "" >> $LOGFILE
+    java -jar /hyren/hrsapp/dist/java/zhna/zhna-1.0.jar >> $LOGFILE 2>&1
 fi
 ```
 

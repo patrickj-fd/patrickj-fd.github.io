@@ -61,20 +61,22 @@ chown -R root:root /opt/HRETNC/ && ls -l
 cd /opt/HRETNC/
 rm -rf frps* && ls
 rm -rf *.ini LICENSE systemd && ls
-mv frpc HRETNC
-mkdir log && ls -l
+mv frpc HRETNC && ls -l
 
 # 1. 设置server端的端口
 Server_Port=49901
-# 2. 设置3位设备编号。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。 内部测试用 499
-HRE_ORG_NO=400
+# 2. 设置3位设备编号。和主机名的编号相同。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。
+# [ 内部测试的机器设置为：499 ]
+HRE_ORG_NO=$(hostname)
+HRE_ORG_NO=${HRE_ORG_NO:3:3}
+echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......
 
-# 3. 设置该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
+# 3. 设置设备名。可用名字为：pi , nano1 , nano2。
 EdgeName=
 
-# 4. 设置端口最后两位数字
+# 4. 设置对外端口最后两位数字
 # pi设置为00；两个nano分别设置为：01/02。
-# [ 内部测试的机器用：pi/10, nano1/11, nano2/12 ...... 并且，不要执行下面的if语句 ]
+# [ 内部测试的机器设置为：pi/10, nano1/11, nano2/12 ...... 并且，不要执行下面的if语句 ]
 if [ "$EdgeName" == "pi" ]; then PortSuffix="00"; elif [ "$EdgeName" == "nano1" ]; then PortSuffix="01"; elif [ "$EdgeName" == "nano2" ]; then PortSuffix="02"; else echo "========== ERROR EdgeName=$EdgeName =========="; fi
 echo PortSuffix=$PortSuffix
 ```
@@ -109,56 +111,23 @@ remote_port = ${HRE_ORG_NO}${PortSuffix}
 ```shell
 nohup /opt/HRETNC/HRETNC -c /opt/HRETNC/ssh.ini &
 
+# 查看启动日志。最后一行应该类似： ...... [hre400-pi-ssh] start proxy success
 tail -f /tmp/HRETNC-ssh.log
+
+# 显示该进程，并且 kill 掉
 ps -ef | grep "HRETNC" | grep "ssh.ini" | grep -v grep
 
 # 验证
-ssh -oPort=40000 hyren@139.9.126.19
+ssh -oPort=${HRE_ORG_NO}${PortSuffix} hyren@139.9.126.19
+
+# 务必要删除掉日志文件，否则后续设置完开机启动后，会因为没有权限写这个日志文件导致启动失败！！！！
+rm /tmp/HRETNC-ssh*.log
+# 看看是不是已经没有apps的日志文件了
+ls -l /tmp/HRETNC*.log
 ```
 
-### 2.2 配置 apps
-#### 配置 apps.ini
-- 这是给各个app，需要开放出去的端口。
-- 创建前，先确认 **HRETNC_NAME** 环境变量是否正确（等于前面设置的值 HRETNC）
-```ini
-# cat > apps.ini << EOF
-[common]
-server_addr = 139.9.126.19
-server_port = ${Server_Port}
-log_file = /tmp/HRETNC-apps.log
-log_level = info
-log_max_days = 100
+### 2.2 设置开机启动 ssh
 
-# EOF
-```
-
-#### 给 apps.ini 追加写入每个要开放出去的端口
-有多个需要开放的端口，顺序递增PortSuffix变量的值，执行以下脚本代码
-```ini
-# (1) 确认：[ EdgeName ] 是否正确。该端口开放在哪台设备上。可用名字为：pi , nano1 , nano2
-# (2) 设置：[ PortSuffix= ]  从10开始分配给app使用。0-9保留，其中0-3分别是3个设备的ssh端口
-
-# cat >> apps.ini << EOF
-[hre${HRE_ORG_NO}-${EdgeName}-app${PortSuffix}]
-type = tcp
-local_ip = 127.0.0.1
-local_port = ${HRE_ORG_NO}${PortSuffix}
-remote_port = ${HRE_ORG_NO}${PortSuffix}
-
-# EOF
-```
-
-#### 临时启动验证是否可用
-```shell
-nohup /opt/HRETNC/HRETNC -c /opt/HRETNC/apps.ini &
-
-tail -f /tmp/HRETNC-apps.log
-ps -ef | grep "HRETNC" | grep "apps.ini" | grep -v grep
-```
-
-### 2.3 设置开机启动
-
-##### For ssh
 ```shell
 # for ssh port
 cat > /etc/systemd/system/HRETNC-ssh.service << EOF
@@ -179,50 +148,14 @@ WantedBy=multi-user.target
 EOF
 
 systemctl start HRETNC-ssh
+systemctl status HRETNC-ssh
 systemctl enable HRETNC-ssh
-```
-
-##### For apps
-```shell
-cat > /opt/HRETNC/startApps.sh << EOF
-#! /bin/bash
-
-if [ -f /opt/HRETNC/apps.ini ]; then
-    /opt/HRETNC/HRETNC \$1 -c /opt/HRETNC/apps.ini
-else
-    echo "no HRETNC apps"
-fi
-EOF
-chmod 755 startApps.sh
-
-cat > /etc/systemd/system/HRETNC-apps.service << EOF
-[Unit]
-Description=HyrenEdgeNetApps
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=/opt/HRETNC/startApps.sh
-ExecReload=/opt/HRETNC/startApps.sh reload
-Restart=on-failure
-RestartSec=5s
-User=nobody
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl start HRETNC-apps
-systemctl enable HRETNC-apps
-
-# systemctl stop HRETNC-apps
-# systemctl disable HRETNC-apps
 ```
 
 ##### 重启主机并验证
 ```shell
 reboot
-
+su -
 # 查看服务是否启动了
 ps -ef|grep HRE
 # 查看开发服务的启动日志是否有错误
