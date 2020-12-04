@@ -37,6 +37,8 @@ sudo wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant.conf  -i wlan0
 
 ## 1.2 初始化系统环境
 
+pi/raspberry 登陆机器
+
 ### 设置设备编号
 ```shell
 HRE_CODE=400
@@ -47,10 +49,11 @@ HRE_CODE=400
 sudo hostnamectl set-hostname hre${HRE_CODE}-pi
 cp /etc/hosts ./hosts.bak # backup
 # 把里面的raspberrypi修改为：hre400-pi (127.0.1.1 开头的一行)
-sudo sed -i "s/raspberrypi/hre${HRE_CODE}-pi/g'" /etc/hosts
+sudo sed -i "s/raspberrypi/hre${HRE_CODE}-pi/g" /etc/hosts
 cat /etc/hosts
 sudo reboot
-hostname  # check
+hostname  # show : hre400-pi
+# 再次确认 hosts 中 127.0.1.1 开头的一行是否已经修改为 hre400-pi
 cat /etc/hosts
 ```
 
@@ -67,10 +70,12 @@ set backspace=2
 # 设置密码不要用特殊符号，USB键盘直接操作时，这些符合是全乱套的，导致无法输入正确的密码
 sudo echo "root:Hre1088" | sudo chpasswd
 sudo echo "pi:Hre2188" | sudo chpasswd
-sudo mkdir /data  # 放各种软件
+sudo mkdir /data
 sudo chown -R pi /data
 sudo chown -R pi /opt
-vi .bashrc  # alias ll = 'ls -lhF'
+
+vi .bashrc
+# 46行： 把 force_color_prompt=yes 注释掉。以便从颜色上，让 pi 用户区别于其他用户。注意：如果用vscode连接上，这个颜色依然会有。
 ```
 ### mount U盘
 ```shell
@@ -95,26 +100,34 @@ chmod 700 ~/mount
 
 ### 建立工作用户
 ```shell
-sudo mkdir /hyren  # 放项目的东西
+sudo mkdir /hyren
 sudo useradd -d /hyren -s /bin/bash hyren
 # sudo userdel -r hyren  # 包括主目录一起删除
 sudo echo "hyren:hre118" | sudo chpasswd
 
-vi ~/.bashrc  # uncomment 'force_color_prompt=yes' , PS1's w to W , alias ll='ls -lAhF'
-
 sudo cp /home/pi/.bashrc /hyren
 sudo cp /home/pi/.profile /hyren
 
+# 修改环境
+vi .bashrc
+# 46行： 把 force_color_prompt=yes 打开
+# 60行： PS1 最后 [\w ... '] 改为：[\W\[\033[00m\]\$ '] 。即 w 改成大写，并且把 $ 挪到最后。
+# 62行： PS1 把 w 改成大写。
+# 91行： alias ll = 'ls -lAhF'
+
 sudo chown -R hyren:sudo /hyren
 sudo chmod -R g+w /hyren
-# 验证hyren用的环境
+
+# 验证hyren用户的环境
 su - hyren
+# 登陆后，执行：ll看权限 , pwd看主目录位置
+exit  # back to pi
 ```
 
 ### 换源
 ```shell
 # 切换到root
-su
+su -
 cp /etc/apt/sources.list /etc/apt/sources.list.bak
 cp /etc/apt/sources.list.d/raspi.list /etc/apt/sources.list.d/raspi.list.bak
 #修改成国内源
@@ -124,33 +137,33 @@ echo "deb http://mirrors.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui" > /et
 echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui" >> /etc/apt/sources.list.d/raspi.list
 
 apt update
-apt upgrade
-exit
+apt upgrade -y
 ```
 
 ### 修改系统时间
 ```shell
-sudo dpkg-reconfigure tzdata
+dpkg-reconfigure tzdata
 # 选择： Asia -> Shanghai
-date
+date  # show : CST time and equal yours time
 ```
 
 ## 1.3 系统软件安装
 ### java
 ```shell
-su
 mkdir /usr/java
+/home/pi/mount 1
 tar -xf /mnt/usb1/hre/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz -C /usr/java
-ln -s /usr/java/jdk8u275-b01 /usr/java/default
+ln -s /usr/java/jdk8u275-b01 /usr/java/default && ls -l /usr/java
 echo "export JAVA_HOME=/usr/java/default" >> /etc/profile
 echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile
-exit
+
 # 验证java
 su - hyren
 java -version
 ```
 ### 工具软件
 ```shell
+su - pi
 sudo apt install -y htop nmap
 ```
 
@@ -159,7 +172,7 @@ sudo apt install -y htop nmap
 
 # 3. 安装项目
 
-1. [安装frpc ssh](03-frp)
+1. [安装frp Client端-ssh](03-frp)
 2. [安装项目运行环境](50-app-pi)
 
 # 4. 清理工作

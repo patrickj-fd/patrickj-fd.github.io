@@ -23,7 +23,7 @@ cd /opt/HRETNC
 
 # 从ssh.ini中得到frp server的服务端口
 Server_Port=$(cat ssh.ini|grep server_port|awk '{print $3}')
-echo Server_Port=${Server_Port}
+echo Server_Port=${Server_Port}  # show : 49901
 
 cat > apps.ini << EOF
 [common]
@@ -64,7 +64,8 @@ cat apps.ini
 ```shell
 nohup /opt/HRETNC/HRETNC -c /opt/HRETNC/apps.ini &
 
-# 查看启动日志。最后一行应该类似： ...... [hre400-pi-app10] start proxy success
+# 查看启动日志。最后一行应该类似 :
+# ...... [hre400-pi-app10] start proxy success
 tail -f /tmp/HRETNC-apps.log
 
 # 显示该进程，并且 kill 掉
@@ -111,20 +112,27 @@ WantedBy=multi-user.target
 EOF
 
 systemctl start HRETNC-apps
+
+# 查看服务是否启动成功
 systemctl status HRETNC-apps
+# 第2行显示： Active: active (running)
+# 最后两行类似如下输出：
+# Dec 04 11:56:28 hre401-pi systemd[1]: Started HyrenEdgeNetApps.
+# Dec 04 11:56:28 hre401-pi startApps.sh[682]: HRETNC-apps Start At : Fri 4 Dec 11:55:49 CST 2020
+
 systemctl enable HRETNC-apps
 
-systemctl stop HRETNC-apps
-systemctl disable HRETNC-apps
+# systemctl stop HRETNC-apps
+# systemctl disable HRETNC-apps
 ```
 
 ### 1.4 重启主机并验证
 ```shell
 reboot
 su -
-# 查看服务是否启动了
+# 查看服务是否启动了。应该有3个进程：ssh.ini, startApps.sh, apps.ini
 ps -ef|grep HRE
-# 查看开机服务的启动日志是否有错误
+# 查看开机服务的启动日志是否有错误。正常会显示startApps.sh脚本里面echo出来的时间
 journalctl | grep HRE
 ```
 
@@ -158,31 +166,24 @@ BINDIR=$(cd $(dirname $0); pwd)
 echo RunType=$RunType
 echo PATH=$PATH
 
-# [ Func 1 ] : kill process
-# if [ "x$RunType" == "xstop" ]; then
-#     PID=$(cat ${BINDIR}/zhna.pid)
-#     kill $PID && sleep 1
-#     echo
-#     ps -ef | grep "java" | grep "zhna-1.0.jar" | grep -v grep
-#     echo
-#     exit
-# fi
+# [ Func 1 ] : start process
+if [ "x$RunType" == "xstart" ]; then
+    APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-systemout.log
+    echo Start At : $(date), APP_SYSTEMOUT_LOGFILE=$APP_SYSTEMOUT_LOGFILE
+    java -version
+    echo "" >> $APP_SYSTEMOUT_LOGFILE
+    java -jar /hyren/hrsapp/dist/java/zhna/zhna-1.0.jar >> $APP_SYSTEMOUT_LOGFILE 2>&1
+fi
 
 # [ Func 2 ] : just show process
 if [ "x$RunType" == "xshow" ]; then
-    echo 
-    ps -ef | grep "java" | grep "zhna-1.0.jar" | grep -v grep
-    echo
-    exit
+    echo && ps -ef | grep "java" | grep "zhna-1.0.jar" | grep -v grep && echo
 fi
 
-# [ Func 3 ] : start process
-if [ "x$RunType" == "xstart" ]; then
-    LOGFILE=${BINDIR}/zhna-console.log
-    echo Start At : $(date), LOGFILE=$LOGFILE
-    java -version
-    echo "" >> $LOGFILE
-    java -jar /hyren/hrsapp/dist/java/zhna/zhna-1.0.jar >> $LOGFILE 2>&1
+# [ Func 3 ] : kill process. For 'ExecStop=' in hre-appmis.service
+if [ "x$RunType" == "xstop" ]; then
+    # TODO
+    echo "Stopped"
 fi
 ```
 

@@ -2,8 +2,6 @@
 
 ---
 
-
-
 # 安装 Frp
 ## 1. Server端
 ```shell
@@ -42,8 +40,8 @@ tail -f log/running.log
 ```shell
 su -
 
-HRETNC_NAME=HRETNC
-
+/home/pi/mount 1
+# 1. 定义环境
 # Pi
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/pi/frp_0.34.3_linux_arm.tar.gz
 FRP_DIST_PATH=/mnt/usb1/hre/pi
@@ -53,32 +51,36 @@ FRP_DIST_NAME=frp_0.34.3_linux_arm
 FRP_DIST_PATH=/mnt/usb1/hre/nano
 FRP_DIST_NAME=frp_0.34.3_linux_arm64
 
-FRP_DIST_PATH=${FRP_DIST_PATH:+"${FRP_DIST_PATH}/"} && echo FRP_DIST_PATH=$FRP_DIST_PATH
+# 2. 安装 Frpc
+FRP_DIST_PATH=${FRP_DIST_PATH:+"${FRP_DIST_PATH}/"}
+echo FRP_DIST_PATH=$FRP_DIST_PATH  # check
+echo FRP_DIST_NAME=$FRP_DIST_NAME  # check
 tar -xf ${FRP_DIST_PATH}${FRP_DIST_NAME}.tar.gz -C /opt
 mv /opt/${FRP_DIST_NAME}/ /opt/HRETNC/
-chown -R root:root /opt/HRETNC/ && ls -l
+chown -R root:root /opt/HRETNC/ && ls -l /opt/HRETNC/
 
 cd /opt/HRETNC/
 rm -rf frps* && ls
 rm -rf *.ini LICENSE systemd && ls
 mv frpc HRETNC && ls -l
 
-# 1. 设置server端的端口
+# 3. 设置server端的端口
 Server_Port=49901
-# 2. 设置3位设备编号。和主机名的编号相同。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。
+
+# 4. 设置3位设备编号。和主机名的编号相同。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。
 # [ 内部测试的机器设置为：499 ]
 HRE_ORG_NO=$(hostname)
 HRE_ORG_NO=${HRE_ORG_NO:3:3}
 echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......
 
-# 3. 设置设备名。可用名字为：pi , nano1 , nano2。
+# 5. 设置设备名。可用名字为：pi , nano1 , nano2。
 EdgeName=
 
-# 4. 设置对外端口最后两位数字
+# 6. 设置对外端口最后两位数字
 # pi设置为00；两个nano分别设置为：01/02。
 # [ 内部测试的机器设置为：pi/10, nano1/11, nano2/12 ...... 并且，不要执行下面的if语句 ]
 if [ "$EdgeName" == "pi" ]; then PortSuffix="00"; elif [ "$EdgeName" == "nano1" ]; then PortSuffix="01"; elif [ "$EdgeName" == "nano2" ]; then PortSuffix="02"; else echo "========== ERROR EdgeName=$EdgeName =========="; fi
-echo PortSuffix=$PortSuffix
+echo PortSuffix=$PortSuffix  # should be [ pi : 00 , nano : 01 , 02 ]
 ```
 
 ### 2.1 配置 ssh
@@ -90,8 +92,8 @@ echo PortSuffix=$PortSuffix
 为避免开机启动时无权限写日志，所以在ini文件中把log文件放到了tmp目录下。
 
 #### 配置 ssh.ini
-```ini
-# cat > ssh.ini << EOF
+```shell
+cat > ssh.ini << EOF
 [common]
 server_addr = 139.9.126.19
 server_port = ${Server_Port}
@@ -104,21 +106,24 @@ type = tcp
 local_ip = 127.0.0.1
 local_port = 22
 remote_port = ${HRE_ORG_NO}${PortSuffix}
-# EOF
+EOF
+cat ssh.ini
 ```
 
 #### 临时启动验证是否可用
 ```shell
 nohup /opt/HRETNC/HRETNC -c /opt/HRETNC/ssh.ini &
 
-# 查看启动日志。最后一行应该类似： ...... [hre400-pi-ssh] start proxy success
+# 查看启动日志。最后一行应该类似 :
+# ...... [hre400-pi/nano-ssh] start proxy success
 tail -f /tmp/HRETNC-ssh.log
-
-# 显示该进程，并且 kill 掉
-ps -ef | grep "HRETNC" | grep "ssh.ini" | grep -v grep
 
 # 验证
 ssh -oPort=${HRE_ORG_NO}${PortSuffix} hyren@139.9.126.19
+exit
+
+# 显示该进程，并且 kill 掉
+ps -ef | grep "HRETNC" | grep "ssh.ini" | grep -v grep
 
 # 务必要删除掉日志文件，否则后续设置完开机启动后，会因为没有权限写这个日志文件导致启动失败！！！！
 rm /tmp/HRETNC-ssh*.log
@@ -148,21 +153,20 @@ WantedBy=multi-user.target
 EOF
 
 systemctl start HRETNC-ssh
-systemctl status HRETNC-ssh
+systemctl status HRETNC-ssh  # check : Active: active (running)
 systemctl enable HRETNC-ssh
-```
 
-##### 重启主机并验证
-```shell
+# 重启主机并验证
 reboot
-su -
-# 查看服务是否启动了
-ps -ef|grep HRE
-# 查看开发服务的启动日志是否有错误
-journalctl | grep HRE
+# 自己笔记本上验证可以ssh上去（hyren 登陆）
+ssh hyren@139.9.126.19 -oPort=40101
 
-# 验证ssh（hyren 登陆）
-ssh -oPort=40000 hyren@139.9.126.19
+# 登陆到该设备上
+su -
+# 查看服务是否启动了，所属用户应该是：nobody
+ps -ef|grep HRE
+# 查看开发服务的启动日志是否有错误。应该没有任何输出
+journalctl | grep HRE
 ```
 
 ---

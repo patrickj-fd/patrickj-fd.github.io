@@ -11,6 +11,8 @@
     * HRE_CODE(400, 401, ...)，是每个设备的编号，每安装一个新设备，依次增加即可
     * 第2个nano后缀为nano2
 
+- 首次进入系统时，显示的Clipit保存历史的提示框，选择：No
+
 - 关闭自动更新
 
 第一次进入系统时，首先先关了它。不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
@@ -26,7 +28,7 @@ Automatically check for updates : change to 'Never' and then close.
 sudo echo "root:Hre1088" | sudo chpasswd
 
 # >>>>> 解决每次sudo都要输入密码
-su
+su -
 echo "pi ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
 
 # >>>>> 目录权限
@@ -54,7 +56,7 @@ reboot
 
 ## 1.2 检查和清理
 
-**重启后，以下工作，使用 pi 用户登录**
+**重启后，以下工作，使用 pi 用户操作**
 
 ```shell
 # 可以先看看前面修改的交换区是否可用
@@ -86,8 +88,8 @@ sudo /usr/sbin/nvpmodel -m 1
 
 ### * 清理不用的软件
 ```shell
-sudo apt remove --purge wolfram-engine
-sudo apt remove --purge libreoffice*
+sudo apt remove -y --purge wolfram-engine
+sudo apt remove -y --purge libreoffice*
 sudo apt clean
 #sudo apt autoremove
 ```
@@ -100,40 +102,13 @@ sudo apt update
 # sudo apt clean
 # sudo apt update
 
-sudo apt upgrade
+sudo apt upgrade -y
 # 更新过程中，会要求选择X，随便选gdm3即可，后面会关闭X的。
 ```
 
 ## 1.3 初始化工作环境
 
-### * 建立工作用户
-```shell
-sudo mkdir /hyren
-sudo useradd -d /hyren -s /bin/bash hyren
-# sudo userdel -r hyren  # 包括主目录一起删除
-sudo echo "hyren:hre118" | sudo chpasswd
-
-sudo cp /home/pi/.bashrc /hyren
-sudo cp /home/pi/.profile /hyren
-
-sudo chown -R hyren:sudo /hyren
-sudo chmod -R g+w /hyren
-
-su - hyren
-
-vi ~/.bashrc  # uncomment 46 line 'force_color_prompt=yes' , PS1's w to W , alias ll='ls -lAhF'
-
-echo "" >> ${HOME}/.bashrc
-echo "export CUBA_HOME=/usr/local/cuda" >> ${HOME}/.bashrc
-echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ${HOME}/.bashrc
-echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOME}/.bashrc
-
-source .bashrc
-nvcc -V  # see CUDA info
-exit  # for going to pi
-```
-
-### * mount U盘的脚本
+### 1.3.1 mount U盘的脚本
 ```shell
 sudo mkdir /mnt/usb1 /mnt/usb2
 
@@ -156,7 +131,7 @@ chmod 700 ~/mount
 ```
 
 
-### * 安装常用软件
+### 1.3.2 安装常用软件
 ```shell
 sudo apt install htop
 
@@ -166,20 +141,52 @@ sudo apt install htop
 # sudo jtop
 ```
 
-### * 设置 python 源
+### 1.3.3 建立工作用户
+```shell
+sudo mkdir /hyren
+sudo useradd -d /hyren -s /bin/bash hyren
+# sudo userdel -r hyren  # 包括主目录一起删除
+sudo echo "hyren:hre118" | sudo chpasswd
+
+sudo cp /home/pi/.bashrc /hyren
+sudo cp /home/pi/.profile /hyren
+
+sudo chown -R hyren:sudo /hyren
+sudo chmod -R g+w /hyren
+```
+
+#### 设置工作用户 hyren 的环境
 ```shell
 su - hyren
+
+# 修改环境参数
+# 46行：去掉 force_color_prompt 注释
+# 60行：PS1's w to W
+# 91行：alias ll='ls -lAhF'
+# 删除 92 和 93 行的两个 alias la / l
+vi ~/.bashrc
+
+echo "" >> ${HOME}/.bashrc
+echo "export CUBA_HOME=/usr/local/cuda" >> ${HOME}/.bashrc
+echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ${HOME}/.bashrc
+echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOME}/.bashrc
+
+source .bashrc
+nvcc -V  # see CUDA info
+
+# 设置 python 源
 mkdir ~/.pip
 echo "[global]" > ~/.pip/pip.conf
 echo "trusted-host = pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
 echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple/" >> ~/.pip/pip.conf
 echo "timeout = 150" >> ~/.pip/pip.conf
+
 exit  # for going to pi
 ```
 
-### * 设置 Pi 过来的免密
+### 1.3.5 设置 Pi 过来的免密
 
-**在Pi主机上执行！**
+**在Pi主机上使用 pi 用户执行**
 ```shell
 ssh-keygen -t rsa
 NANO_IP=nano的ip
@@ -187,7 +194,7 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub hyren@${NANO_IP}
 ssh hyren@${NANO_IP}  # for check
 ```
 
-### * 关闭图形界面(禁止启动时进入桌面)
+### 1.3.6 关闭图形界面(禁止启动时进入桌面)
 ```shell
 sudo systemctl set-default multi-user.target
 sudo reboot
@@ -215,7 +222,7 @@ lshw    # 查看硬件
 
 # 3. 安装项目
 
-1. [安装frpc ssh](03-frp)
+1. [安装frp Client端-ssh](03-frp)
 2. [安装项目运行环境](60-app-nano)
 
 # 4. 清理

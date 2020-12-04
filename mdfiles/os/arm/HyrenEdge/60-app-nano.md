@@ -23,6 +23,8 @@
 ### 2.1 安装
 
 ```shell
+su - hyren
+
 PROJECT_ROOT=/hyren/hrsapp
 mkdir -p ${PROJECT_ROOT}/bin ${PROJECT_ROOT}/dist
 cd ${PROJECT_ROOT}/dist
@@ -50,7 +52,7 @@ mkdir ${TEST_ROOT} ${TEST_ROOT}/pic
 cd ${TEST_ROOT} && ls
 
 # 从笔记本上传测试图片过来
-sftp hyren@172.168.0.163
+sftp hyren@172.168.0.nanaip
 > cd /hyren/hrsapp/test/pic
 > put *.jpg
 
@@ -59,13 +61,7 @@ cd ${PROJECT_ROOT}/dist/python/yolov4-keras
 
 HRS_RESOURCES_ROOT=${PROJECT_ROOT}/dist/python/resources python3 test.py
 # input : /hyren/hrsapp/test/pic/*.jpg
-# 把 *-result.jpg 取出来看结果
-
-# 测试结束后，清理掉测试环境！
-echo TEST_ROOT=${TEST_ROOT}  # for check TEST_ROOT
-# 为了防止吴删除，即使上句看了变量值，这里也二次确认一下再删除
-[[ $TEST_ROOT =~ /test$ ]] && rm -rf ${TEST_ROOT}
-ll ${TEST_ROOT}
+# sftp> get *-result.jpg 取出来看结果
 ```
 
 > test.py中的代码逻辑如下
@@ -103,8 +99,59 @@ yolo.close_session()
 ```
 
 ## 3. 把项目配置成开机启动
+
+### 启动服务的工具脚本
+```shell
+echo PROJECT_ROOT=${PROJECT_ROOT}  # check PROJECT_ROOT should be /hyren/hrsapp
+
+touch ${PROJECT_ROOT}/bin/zhna-ai.sh
+chmod u+x ${PROJECT_ROOT}/bin/zhna-ai.sh && ls -l ${PROJECT_ROOT}/bin
+
+vi ${PROJECT_ROOT}/bin/zhna-ai.sh
+```
+- [ zhna-ai.sh ]
+```shell
+#!/bin/bash
+
+set -e
+
+RunType="$1"
+echo RunType=$RunType
+
+BINDIR=/hyren/hrsapp/bin
+echo BINDIR=$BINDIR
+echo PATH=$PATH
+
+# [ Func 1 ] : start process
+if [ "x$RunType" == "xstart" ]; then
+    cd /hyren/hrsapp/dist/python/yolov4-keras > /dev/null
+
+    APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
+
+    echo Start At : $(date), APP_SYSTEMOUT_LOGFILE=$APP_SYSTEMOUT_LOGFILE
+    echo "" >> $APP_SYSTEMOUT_LOGFILE
+    echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
+
+    HRS_RESOURCES_ROOT=/hyren/hrsapp/dist/python/resources /hyren/python/venv/tf-1.15/bin/python3 service.py >> $APP_SYSTEMOUT_LOGFILE 2>&1
+fi
+
+# [ Func 2 ] : just show process
+if [ "x$RunType" == "xshow" ]; then
+    echo && ps -ef | grep "python3 service.py" | grep -v grep && echo
+fi
+
+# [ Func 3 ] : kill process. For 'ExecStop=' in hre-appai.service
+if [ "x$RunType" == "xstop" ]; then
+    # TODO
+    echo "Stopped"
+fi
+```
+
+### 注册成开机启动
 ```shell
 su -
+PROJECT_ROOT=/hyren/hrsapp
+
 cat > /etc/systemd/system/hre-appai.service << EOF
 [Unit]
 Description=HyrenEdgeAppAI
@@ -118,58 +165,26 @@ User=hyren
 [Install]
 WantedBy=multi-user.target
 EOF
+cat /etc/systemd/system/hre-appai.service
 
 # 启用服务
 systemctl start hre-appai
-systemctl status hre-appai  # show : RunType, date and java version
+# 启动后，用status看输出。
+# 应该把脚本中的各个echo输出出来，包括RunType=start等
+systemctl status hre-appai
+
+tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
+
 systemctl enable hre-appai
 
 # 以下为调试用命令
-systemctl daemon-reload
+# systemctl daemon-reload
+# 修改脚本后重启服务，并用status看输出，用tail看日志
 systemctl restart hre-appai
 systemctl status hre-appai
-# 这个日志文件位置，通过上条命令(status)能看到
-tail /hyren/zhna-ai-console.log
-ps -ef|grep python
 
-systemctl stop hre-appai
-systemctl disable hre-appai
-```
-
-- 启动服务的工具脚本
-```shell
-#! /bin/bash
-
-set -e
-
-RunType="$1"
-
-. /hyren/pyvenv-tf15
-
-BINDIR=$(cd $(dirname $0); pwd)
-echo RunType=$RunType
-echo PATH=$PATH
-
-# [ Func 2 ] : just show process
-if [ "x$RunType" == "xshow" ]; then
-    echo
-    ps -ef | grep "python3 service.py" | grep -v grep
-    echo
-fi
-
-# [ Func 3 ] : start process
-if [ "x$RunType" == "xstart" ]; then
-    cd /hyren/app/zhihuinongan/python/yolov4-keras > /dev/null
-
-    HRS_RESOURCES_ROOT=/hyren/app/zhihuinongan/python/resources
-    LOGFILE=${BINDIR}/zhna-ai-console.log
-
-    echo Start At : $(date), LOGFILE=$LOGFILE
-    echo "" >> $LOGFILE
-    echo "========== $(date) ==========" >> $LOGFILE
-
-    python3 service.py >> $LOGFILE 2>&1
-fi
+# systemctl stop hre-appai
+# systemctl disable hre-appai
 ```
 
 ---

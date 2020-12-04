@@ -10,7 +10,7 @@
 su - pi
 # 最好在官方源上做update和安装。换成国内源后，有可能出现安装失败的情况
 sudo apt update
-sudo apt upgrade
+sudo apt upgrade -y
 sudo apt install -y build-essential make cmake cmake-curses-gui \
          git g++ pkg-config curl libfreetype6-dev \
          libcanberra-gtk-module libcanberra-gtk3-module
@@ -28,6 +28,7 @@ sudo apt install -y libopenblas-base libopenmpi-dev cmake libopenblas-dev
 ## 2.1 安装 pip
 ```shell
 cd /data
+~/mount 1
 # 安装 pip
 # wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/setuptools-19.6.tar.gz
@@ -44,9 +45,10 @@ sudo apt install -y python3-pip
 
 pip3 -V  # show : pip 9.0.1
 # 更新到最新版，要用sudo，否则setuptools是装在当前用户下
-sudo python3 -m pip install -U pip
-sudo python3 -m pip install -U testresources 
-sudo python3 -m pip install -U setuptools==49.6.0 --use-feature=2020-resolver
+sudo python3 -m pip install -U pip==20.2.4
+sudo python3 -m pip install -U testresources
+# 更新 setuptools 。不理报错
+sudo python3 -m pip install setuptools==49.6.0 --use-feature=2020-resolver
 ```
 
 ## 2.2 安装 venv
@@ -72,13 +74,21 @@ sudo cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc
 
 # Build and install protobuf-3.8.0 libraries
 export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
+
+# 方式1：解压make好的包（/data/protobuf/src）
+cp /mnt/usb1/hre/nano/protobuf-3.8.0.make.tar.gz .
+tar xf protobuf-3.8.0.make.tar.gz
+cd protobuf-3.8.0/
+# 方式2：源码编译
 cd protobuf-3.8.0/
 ./autogen.sh
 ./configure --prefix=/usr/local
 make -j4
+
 # 检查make编译结果。这一步非常耗时(半个多小时)。最后应该是7个项目都是PASS。
 # 可不做，一般不会有问题，以后有问题了再做。
 make check
+
 sudo make install
 sudo ldconfig
 ```
@@ -92,7 +102,7 @@ sudo pip3 uninstall -y protobuf
 
 ```shell
 # Update python3 protobuf module
-sudo python3 -m pip install Cython
+sudo python3 -m pip install Cython==0.29.21
 cd /data/protobuf/src/protobuf-3.8.0/python/
 python3 setup.py build --cpp_implementation
 python3 setup.py test --cpp_implementation
@@ -120,7 +130,7 @@ protoc -I=./app --python_out=./app_out/ app/people.proto
 ```
 
 ### vi app_out/test.py
-```python
+```shell
 cat > app_out/test.py << EOF
 import people_pb2
 
