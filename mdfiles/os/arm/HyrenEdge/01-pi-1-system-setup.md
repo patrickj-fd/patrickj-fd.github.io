@@ -39,6 +39,23 @@ sudo wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant.conf  -i wlan0
 
 pi/raspberry 登陆机器
 
+### 设置键盘
+```shell
+sudo raspi-config
+```
+1. Localisation Options
+2. Change Keyboard Layout
+3. Generic 101-key PC / Or : 102-key PC (intl.)  / Or : 105-key PC (intl.)
+4. English(US)
+5. The default for the keyboard layout
+6. No compose key
+7. Finish (这时已经回到了主画面)
+
+重启生效
+```shell
+sudo reboot
+```
+
 ### 设置设备编号
 ```shell
 HRE_CODE=400
