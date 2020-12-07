@@ -109,7 +109,7 @@ sudo cp /home/pi/.bashrc /hyren
 sudo cp /home/pi/.profile /hyren
 
 # 修改环境
-vi .bashrc
+vi /hyren/.bashrc
 # 46行： 把 force_color_prompt=yes 打开
 # 60行： PS1 最后 [\w ... '] 改为：[\W\[\033[00m\]\$ '] 。即 w 改成大写，并且把 $ 挪到最后。
 # 62行： PS1 把 w 改成大写。
