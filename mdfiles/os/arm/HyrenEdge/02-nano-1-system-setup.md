@@ -160,11 +160,11 @@ sudo chmod -R g+w /hyren
 su - hyren
 
 # 修改环境参数
+vi ~/.bashrc
 # 46行：去掉 force_color_prompt 注释
 # 60行：PS1's w to W
-# 91行：alias ll='ls -lAhF'
+# 91行：alias ll='ls -lhF'
 # 删除 92 和 93 行的两个 alias la / l
-vi ~/.bashrc
 
 echo "" >> ${HOME}/.bashrc
 echo "export CUBA_HOME=/usr/local/cuda" >> ${HOME}/.bashrc

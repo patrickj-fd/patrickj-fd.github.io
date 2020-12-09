@@ -132,7 +132,7 @@ sudo vi /hyren/.bashrc
 # 46行： 把 force_color_prompt=yes 打开
 # 60行： PS1 最后 [\w ... '] 改为：[\W\[\033[00m\]\$ '] 。即 w 改成大写，并且把 $ 挪到最后。
 # 62行： PS1 把 w 改成大写。
-# 91行： alias ll = 'ls -lAhF'
+# 91行： alias ll = 'ls -lhF'
 
 sudo chown -R hyren:sudo /hyren
 sudo chmod -R g+w /hyren
@@ -195,6 +195,9 @@ sudo apt install -y htop nmap
 2. [安装项目运行环境](50-app-pi)
 
 # 4. 清理工作
+
+**分别切换到3个用户(root/pi/hyren)下，执行以下命令**
+
 ```shell
 history -c
 echo > ~/.bash_history
