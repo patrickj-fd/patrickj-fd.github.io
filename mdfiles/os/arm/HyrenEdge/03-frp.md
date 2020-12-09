@@ -168,8 +168,6 @@ su -
 ps -ef|grep HRE
 # 查看开发服务的启动日志是否有错误。应该没有任何输出
 journalctl | grep HRE
-
-exit  # Over
 ```
 
 ---
