@@ -159,14 +159,17 @@ systemctl enable HRETNC-ssh
 # 重启主机并验证
 reboot
 # 自己笔记本上验证可以ssh上去（hyren 登陆）
-ssh hyren@139.9.126.19 -oPort=40101
+ssh hyren@139.9.126.19 -oPort=上面设置的端口
+exit
 
-# 登陆到该设备上
+# 再次登陆到新安装的设备上(pi/nano)
 su -
 # 查看服务是否启动了，所属用户应该是：nobody
 ps -ef|grep HRE
 # 查看开发服务的启动日志是否有错误。应该没有任何输出
 journalctl | grep HRE
+
+exit  # Over
 ```
 
 ---
