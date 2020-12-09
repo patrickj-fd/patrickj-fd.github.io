@@ -93,6 +93,8 @@ sudo chown -R pi /opt
 
 vi .bashrc
 # 46行： 把 force_color_prompt=yes 注释掉。以便从颜色上，让 pi 用户区别于其他用户。注意：如果用vscode连接上，这个颜色依然会有。
+source .bashrc
+# 应该不再有颜色了
 ```
 ### mount U盘
 ```shell
@@ -126,7 +128,7 @@ sudo cp /home/pi/.bashrc /hyren
 sudo cp /home/pi/.profile /hyren
 
 # 修改环境
-vi /hyren/.bashrc
+sudo vi /hyren/.bashrc
 # 46行： 把 force_color_prompt=yes 打开
 # 60行： PS1 最后 [\w ... '] 改为：[\W\[\033[00m\]\$ '] 。即 w 改成大写，并且把 $ 挪到最后。
 # 62行： PS1 把 w 改成大写。
@@ -147,7 +149,7 @@ exit  # back to pi
 su -
 cp /etc/apt/sources.list /etc/apt/sources.list.bak
 cp /etc/apt/sources.list.d/raspi.list /etc/apt/sources.list.d/raspi.list.bak
-#修改成国内源
+# change to china source
 echo "deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ buster main contrib non-free rpi" > /etc/apt/sources.list
 echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ buster main contrib non-free rpi" >> /etc/apt/sources.list
 echo "deb http://mirrors.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui" > /etc/apt/sources.list.d/raspi.list
