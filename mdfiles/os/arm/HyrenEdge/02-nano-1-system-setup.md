@@ -6,6 +6,7 @@
 - 烧录后开机，按照画面步骤填写内容
   * 语言选择英语
   * 时区选择上海
+
   * Your name : pi , password : Hre2188
   * 主机名设置为：hre${HRE_CODE}-nano1
     * HRE_CODE(400, 401, ...)，是每个设备的编号，每安装一个新设备，依次增加即可
@@ -31,20 +32,21 @@ sudo echo "root:Hre1088" | sudo chpasswd
 su -
 echo "pi ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
 
+# >>>>> 解决ssh缓慢/卡顿问题
+sed -i "s/^#GSSAPIAuthentication no/GSSAPIAuthentication no/g" /etc/ssh/sshd_config
+grep "GSS" /etc/ssh/sshd_config  # check
+sed -i "s/^#UseDNS no/UseDNS no/g" /etc/ssh/sshd_config
+grep "DNS" /etc/ssh/sshd_config  # check
+
+# service sshd restart
+systemctl restart sshd
+
 # >>>>> 目录权限
 # data 放各种软件
 mkdir /data
 chown -R pi /data
 chown -R pi /opt
 ls -l /
-
-# >>>>> 解决ssh缓慢/卡顿问题
-vi /etc/ssh/sshd_config
-# 最后修改为：
-    GSSAPIAuthentication no
-    UseDNS no
-# service sshd restart
-systemctl restart sshd
 
 # >>>>> 禁用swap。为了节省SD卡，设置为全部用内存
 echo "vm.swappiness = 0" >> /etc/sysctl.conf
@@ -77,6 +79,7 @@ sudo jetson_clocks --show
 | CPU Max Freq | 1479 | 918  |
 | GPU Max Freq | 921  | 640  |
 
+**以下修改命令仅供参考，不需要执行！**
 ```shell
 # 修改方式：
 # -m 对应的是 mode ID, 比如 0 或 1。
@@ -111,7 +114,6 @@ sudo apt upgrade -y
 ### 1.3.1 mount U盘的脚本
 ```shell
 sudo mkdir /mnt/usb1 /mnt/usb2
-
 cat > ~/mount << EOF
 #! /bin/bash
 

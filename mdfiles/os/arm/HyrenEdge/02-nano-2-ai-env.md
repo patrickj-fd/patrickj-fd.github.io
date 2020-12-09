@@ -32,6 +32,7 @@ cd /data
 # 安装 pip
 # wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/setuptools-19.6.tar.gz
+# 内网机器上： scp fd@172.168.0.216:/data3/HyrenEdge/setuptools-19.6.tar.gz .
 cp /mnt/usb1/hre/setuptools-19.6.tar.gz .
 tar xf setuptools-19.6.tar.gz && cd setuptools-19.6/
 python3 setup.py build
@@ -46,7 +47,7 @@ sudo apt install -y python3-pip
 pip3 -V  # show : pip 9.0.1
 # 更新到最新版，要用sudo，否则setuptools是装在当前用户下
 sudo python3 -m pip install -U pip==20.2.4
-sudo python3 -m pip install -U testresources
+sudo python3 -m pip install -U testresources==2.0.1
 # 更新 setuptools 。不理报错
 sudo python3 -m pip install setuptools==49.6.0 --use-feature=2020-resolver
 ```
@@ -61,6 +62,9 @@ sudo apt install -y python3-venv
 ## 3.1 安装
 ```shell
 mkdir -p /data/protobuf/src && cd /data/protobuf/src
+# 内网机器上：
+# scp fd@172.168.0.216:/data3/HyrenEdge/protobuf-python-3.8.0.zip .
+# scp fd@172.168.0.216:/data3/HyrenEdge/protoc-3.8.0-linux-aarch_64.zip .
 cp /mnt/usb1/hre/protobuf-python-3.8.0.zip .
 cp /mnt/usb1/hre/protoc-3.8.0-linux-aarch_64.zip .
 unzip protobuf-python-3.8.0.zip
@@ -69,7 +73,11 @@ sudo cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc
 
 # Build and install protobuf-3.8.0 libraries
 export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
-
+# 编译安装
+# cd protobuf-3.8.0/
+# ./autogen.sh
+# ./configure --prefix=/usr/local
+# make -j4
 # 解压安装
 cp /mnt/usb1/hre/nano/protobuf-3.8.0.make.tar.gz .
 tar xf protobuf-3.8.0.make.tar.gz
@@ -151,9 +159,13 @@ sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip li
 ## 4.2 创建虚拟环境
 ### 构建环境
 ```shell
+# 内网机器上：
+# scp fd@172.168.0.216:/data3/HyrenEdge/nano-pyvenv.tar.gz /data
+cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /data
+
 su - hyren
-cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /hyren
-tar xf nano-pyvenv.tar.gz
+
+tar xf /data/nano-pyvenv.tar.gz
 mkdir python
 mv venv/ python/ && ls -l python
 ```

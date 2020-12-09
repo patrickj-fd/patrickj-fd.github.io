@@ -19,7 +19,7 @@ mkdir log
 cat > server.ini << EOF
 [common]
 bind_port = 49901
-dashboard_port = 49911
+dashboard_port = 49902
 dashboard_user = aoot
 dashboard_pwd = lhy1025
 allow_ports = 40000-49899,49910-49929,7456
@@ -122,7 +122,7 @@ tail -f /tmp/HRETNC-ssh.log
 ssh -oPort=${HRE_ORG_NO}${PortSuffix} hyren@139.9.126.19
 exit
 
-# 显示该进程，并且 kill 掉
+# 显示该进程，并且 kill 掉！！！
 ps -ef | grep "HRETNC" | grep "ssh.ini" | grep -v grep
 
 # 务必要删除掉日志文件，否则后续设置完开机启动后，会因为没有权限写这个日志文件导致启动失败！！！！
