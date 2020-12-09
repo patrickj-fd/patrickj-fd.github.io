@@ -32,7 +32,7 @@ cd ${PROJECT_ROOT}/dist
 git clone http://139.9.126.19:38111/zhihuinongan/python.git
 
 cd ${PROJECT_ROOT}/dist/python/resources/module/nongan
-# get model file from 63 root/q1w2e3 :
+# get model file from 63 root/5t6y0524A!
 sftp root@172.168.0.63
 > get /data1/project/zhihuinongan/hrsapp/dist/python/resources/module/nongan/last1.h5
 > bye
