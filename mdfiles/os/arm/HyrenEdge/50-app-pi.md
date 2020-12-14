@@ -162,7 +162,7 @@ RunType="$1"
 JAVA_HOME=/usr/java/default
 PATH=$JAVA_HOME/bin:$PATH
 
-BINDIR=$(cd $(dirname $0); pwd)
+BINDIR=${PROJECT_ROOT}/bin/
 echo RunType=$RunType
 echo PATH=$PATH
 
@@ -186,6 +186,21 @@ if [ "x$RunType" == "xstop" ]; then
     echo "Stopped"
 fi
 ```
+
+**再次重申**
+1. 这个脚本仅仅适用开机启动执行。
+2. 如果要启停服务，应该使用systemctl命令。
+3. 如果日常运行中确实需要单独启动应用，应以nohup方式启动到后台去！（见下面的命令） - 理论上，不存在需要单独启动应用的情况！
+
+```shell
+BINDIR=/hyren/hrsapp/bin
+APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-systemout.log
+nohup java -jar /hyren/hrsapp/dist/java/zhna/zhna-1.0.jar >> $APP_SYSTEMOUT_LOGFILE 2>&1 &
+
+# check log
+tail -f -n100 $APP_SYSTEMOUT_LOGFILE
+```
+
 
 ### 开机启动配置文件
 ```shell

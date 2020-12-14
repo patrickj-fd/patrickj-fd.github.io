@@ -112,7 +112,7 @@ vi ${PROJECT_ROOT}/bin/zhna-ai.sh
 ```
 
 - [ zhna-ai.sh ]
-
+**除非必要，zhna-ai.sh永远不用直接执行，应该通过systemctl进行启停**
 ```shell
 #!/bin/bash
 
@@ -150,15 +150,19 @@ if [ "x$RunType" == "xstop" ]; then
 fi
 ```
 
-**注意：**
-这个脚本仅仅适用开机启动执行。如果日常运行中停止了service.py再启动，需要以nohup方式启动到后台去！
+**再次重申**
+1. 这个脚本仅仅适用开机启动执行。
+2. 如果要启停服务，应该使用systemctl命令。
+3. 如果日常运行中确实需要单独启动应用，应以nohup方式启动到后台去！（见下面的命令） - 理论上，不存在需要单独启动应用的情况！
 
 ```shell
 BINDIR=/hyren/hrsapp/bin
 APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
 cd /hyren/hrsapp/dist/python/yolov4-keras
 nohup HRS_RESOURCES_ROOT=/hyren/hrsapp/dist/python/resources /hyren/python/venv/tf-1.15/bin/python3 service.py >> $APP_SYSTEMOUT_LOGFILE 2>&1 &
-tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
+
+# check log
+tail -f -n100 $APP_SYSTEMOUT_LOGFILE
 ```
 
 
