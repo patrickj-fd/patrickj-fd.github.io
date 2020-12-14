@@ -65,6 +65,7 @@ HRS_RESOURCES_ROOT=${PROJECT_ROOT}/dist/python/resources python3 test.py
 ```
 
 - test.py中的代码逻辑如下
+
 ```python
 import os
 import sys
