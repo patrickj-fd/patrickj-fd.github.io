@@ -176,6 +176,7 @@ systemctl start hre-appai
 # 应该把脚本中的各个echo输出出来，包括：RunType=start, BINDIR=/hyren/hrsapp/bin, PATH..., Start At....
 systemctl status hre-appai
 
+# 看看应用的启动日志。应该看到Flask服务的启动信息和应用的输出日志
 tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
 
 systemctl enable hre-appai
