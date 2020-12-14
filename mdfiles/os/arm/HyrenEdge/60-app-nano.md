@@ -150,6 +150,18 @@ if [ "x$RunType" == "xstop" ]; then
 fi
 ```
 
+**注意：**
+这个脚本仅仅适用开机启动执行。如果日常运行中停止了service.py再启动，需要以nohup方式启动到后台去！
+
+```shell
+BINDIR=/hyren/hrsapp/bin
+APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
+cd /hyren/hrsapp/dist/python/yolov4-keras
+nohup HRS_RESOURCES_ROOT=/hyren/hrsapp/dist/python/resources /hyren/python/venv/tf-1.15/bin/python3 service.py >> $APP_SYSTEMOUT_LOGFILE 2>&1 &
+tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
+```
+
+
 ### 注册成开机启动
 ```shell
 su -
