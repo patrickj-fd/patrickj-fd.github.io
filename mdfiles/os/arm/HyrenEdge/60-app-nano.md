@@ -110,7 +110,9 @@ chmod u+x ${PROJECT_ROOT}/bin/zhna-ai.sh && ls -l ${PROJECT_ROOT}/bin
 
 vi ${PROJECT_ROOT}/bin/zhna-ai.sh
 ```
+
 - [ zhna-ai.sh ]
+
 ```shell
 #!/bin/bash
 
