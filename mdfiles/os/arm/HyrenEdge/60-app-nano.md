@@ -173,7 +173,7 @@ cat /etc/systemd/system/hre-appai.service
 # 启用服务
 systemctl start hre-appai
 # 启动后，用status看输出。
-# 应该把脚本中的各个echo输出出来，包括RunType=start等
+# 应该把脚本中的各个echo输出出来，包括：RunType=start, BINDIR=/hyren/hrsapp/bin, PATH..., Start At....
 systemctl status hre-appai
 
 tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
