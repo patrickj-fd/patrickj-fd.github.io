@@ -64,7 +64,7 @@ HRS_RESOURCES_ROOT=${PROJECT_ROOT}/dist/python/resources python3 test.py
 # sftp> get *-result.jpg 取出来看结果
 ```
 
-> test.py中的代码逻辑如下
+- test.py中的代码逻辑如下
 ```python
 import os
 import sys
