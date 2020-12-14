@@ -189,6 +189,13 @@ systemctl status hre-appai
 
 # systemctl stop hre-appai
 # systemctl disable hre-appai
+
+# 重启确认是否开机启动成功
+reboot
+ps -ef|grep service.py
+
+cat /hyren/hrsapp/bin/zhna-ai-systemout.log | grep "="
+# 应该看到两行启动时间。第一行上重启前第一次启动服务时输出的，第二行就是这次开机自动启动输出的，看时间可知
 ```
 
 ---
