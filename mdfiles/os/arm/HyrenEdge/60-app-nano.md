@@ -111,7 +111,7 @@ chmod u+x ${PROJECT_ROOT}/bin/zhna-ai.sh && ls -l ${PROJECT_ROOT}/bin
 vi ${PROJECT_ROOT}/bin/zhna-ai.sh
 ```
 
-##### [ zhna-ai.sh ]
+#### [ zhna-ai.sh ]
 **除非必要，zhna-ai.sh永远不用直接执行，应该通过systemctl进行启停**
 ```shell
 #!/bin/bash
