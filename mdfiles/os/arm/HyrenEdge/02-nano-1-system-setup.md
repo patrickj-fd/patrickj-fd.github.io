@@ -198,10 +198,18 @@ exit  # for going to pi
 
 **在Pi主机上使用 pi 用户执行**
 ```shell
+# pi -> pi 的免密
+ssh-keygen -t rsa
+NANO_IP=nano的ip
+ssh-copy-id -i ~/.ssh/id_rsa.pub pi@${NANO_IP}
+ssh ${NANO_IP}  # for check
+
+# hyren -> hyren 的免密
+su - hyren
 ssh-keygen -t rsa
 NANO_IP=nano的ip
 ssh-copy-id -i ~/.ssh/id_rsa.pub hyren@${NANO_IP}
-ssh hyren@${NANO_IP}  # for check
+ssh ${NANO_IP}  # for check
 ```
 
 ### 1.3.6 关闭图形界面(禁止启动时进入桌面)
