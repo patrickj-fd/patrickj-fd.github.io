@@ -167,6 +167,12 @@ vi ~/.bashrc
 # 60行：PS1's w to W
 # 91行：alias ll='ls -lhF'
 # 删除 92 和 93 行的两个 alias la / l
+sed -i '46c force_color_prompt=yes' ~/.bashrc
+sed -i '60s%\]\\w\\\[%\]\\W\\\[%' ~/.bashrc
+sed -i '62s%:\\w\\%:\\W\\%' ~/.bashrc
+sed -i "91c alias ll='ls -lhF'" ~/.bashrc
+sed -i "92d" ~/.bashrc
+sed -i "93d" ~/.bashrc
 
 echo "" >> ${HOME}/.bashrc
 echo "export CUBA_HOME=/usr/local/cuda" >> ${HOME}/.bashrc
