@@ -180,6 +180,8 @@ echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ${HOME}/.bashrc
 echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOME}/.bashrc
 
 source .bashrc
+# 看命令行是不是只显示当前目录了， ll 命令是否可用
+
 nvcc -V  # see CUDA info
 
 # 设置 python 源
