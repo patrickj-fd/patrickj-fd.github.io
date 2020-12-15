@@ -160,7 +160,7 @@ sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip li
 ### 构建环境
 ```shell
 # 内网机器上：
-# scp fd@172.168.0.216:/data3/HyrenEdge/nano-pyvenv.tar.gz /data
+# scp fd@172.168.0.216:/data3/HyrenEdge/nano/nano-pyvenv.tar.gz /data
 cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /data
 
 su - hyren
