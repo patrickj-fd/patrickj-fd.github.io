@@ -66,7 +66,7 @@ HRE_CODE=400
 sudo hostnamectl set-hostname hre${HRE_CODE}-pi
 cp /etc/hosts ./hosts.bak # backup
 # 把里面的raspberrypi修改为：hre400-pi (127.0.1.1 开头的一行)
-sudo sed -i "s/raspberrypi/hre${HRE_CODE}-pi/g" /etc/hosts
+sudo sed -i "s/127\.0\.1\.1\t\traspberrypi/127\.0\.1\.1\t\thre${HRE_CODE}-pi/g" /etc/hosts
 cat /etc/hosts
 sudo reboot
 hostname  # show : hre400-pi
@@ -75,12 +75,15 @@ cat /etc/hosts
 ```
 
 ### 修正vi不能使用上下左右键
-```
-sudo vi /etc/vim/vimrc.tiny
+```shell
+# sudo vi /etc/vim/vimrc.tiny
+# 把compatible加上no。再增加一行："set backspace=2"
+# set nocompatible
+# set backspace=2
 
-# 把compatible加上no。再增加一行backspace
-set nocompatible
-set backspace=2
+sudo sed -i "/set compatible/c set nocompatible" /etc/vim/vimrc.tiny
+sudo sed -i "/set nocompatible/a set backspace=2" /etc/vim/vimrc.tiny
+cat /etc/vim/vimrc.tiny  # check
 ```
 ### 设置初始值
 ```shell
@@ -91,10 +94,14 @@ sudo mkdir /data
 sudo chown -R pi /data
 sudo chown -R pi /opt
 
-vi .bashrc
+# vi .bashrc
 # 46行： 把 force_color_prompt=yes 注释掉。以便从颜色上，让 pi 用户区别于其他用户。注意：如果用vscode连接上，这个颜色依然会有。
+# 91行启用 ll 命令别名
+#sed -i "/force_color_prompt=yes/c #force_color_prompt=yes" .bashrc
+sed -i '46c #force_color_prompt=yes' .bashrc
+sed -i "91c alias ll='ls -lhF'" .bashrc
 source .bashrc
-# 应该不再有颜色了
+# 应该不再有颜色了，且 ll 可用
 ```
 ### mount U盘
 ```shell
@@ -127,19 +134,22 @@ sudo echo "hyren:hre118" | sudo chpasswd
 sudo cp /home/pi/.bashrc /hyren
 sudo cp /home/pi/.profile /hyren
 
-# 修改环境
-sudo vi /hyren/.bashrc
+# 修改hyren用户环境 : /hyren/.bashrc
 # 46行： 把 force_color_prompt=yes 打开
 # 60行： PS1 最后 [\w ... '] 改为：[\W\[\033[00m\]\$ '] 。即 w 改成大写，并且把 $ 挪到最后。
 # 62行： PS1 把 w 改成大写。
-# 91行： alias ll = 'ls -lhF'
+# 91行： alias ll='ls -lhF'
+sudo sed -i '46c force_color_prompt=yes' /hyren/.bashrc
+sudo sed -i '60s%\\w \\\$\\\[\\033\[00m\\\] %\\W\\\[\\033\[00m\\\]\\\$ %' /hyren/.bashrc
+sudo sed -i '62s%:\\w\\\$ %:\\W\\\$ %' /hyren/.bashrc
+sudo sed -i "91c alias ll='ls -lhF'" /hyren/.bashrc
 
 sudo chown -R hyren:sudo /hyren
 sudo chmod -R g+w /hyren
 
 # 验证hyren用户的环境
 su - hyren
-# 登陆后，执行：ll看权限 , pwd看主目录位置
+# 登陆后，看命令行颜色是不是上面修改后的。执行：ll看权限 , pwd看主目录位置
 exit  # back to pi
 ```
 
