@@ -107,18 +107,11 @@ source .bashrc
 ```shell
 sudo mkdir /mnt/usb1 /mnt/usb2
 cat > ~/mount << EOF
-#! /bin/bash
-
-USB_NO=\$1
-if [ "x\$USB_NO" == "x" ]; then
-  echo "Missing usb number."
-  exit 1
-fi
-
-sudo mount /dev/sda\$USB_NO /mnt/usb\$USB_NO
+#!/bin/bash
+sudo mount /dev/sda1 /mnt/usb1
 echo
-echo USB : /mnt/usb\$USB_NO
-ls /mnt/usb\$USB_NO
+echo USB : /mnt/usb1
+ls /mnt/usb1
 echo
 EOF
 chmod 700 ~/mount
@@ -180,8 +173,10 @@ date  # show : CST time and equal yours time
 ### java
 ```shell
 mkdir /usr/java
-/home/pi/mount 1
-tar -xf /mnt/usb1/hre/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz -C /usr/java
+# /home/pi/mount 1
+# tar -xf /mnt/usb1/hre/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz -C /usr/java
+ssh root@172.168.0.100 "cat /data1/HyrenEdge/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz" | tar -zxf - -C /usr/java  # 5t6y0524A!
+
 ln -s /usr/java/jdk8u275-b01 /usr/java/default && ls -l /usr/java
 echo "export JAVA_HOME=/usr/java/default" >> /etc/profile
 echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile

@@ -33,8 +33,10 @@ cd /data
 # wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/setuptools-19.6.tar.gz
 # 内网机器上： scp fd@172.168.0.216:/data3/HyrenEdge/setuptools-19.6.tar.gz .
-cp /mnt/usb1/hre/setuptools-19.6.tar.gz .
-tar xf setuptools-19.6.tar.gz && cd setuptools-19.6/
+# cp /mnt/usb1/hre/setuptools-19.6.tar.gz .
+# tar xf setuptools-19.6.tar.gz && cd setuptools-19.6/
+ssh root@172.168.0.100 "cat /data1/HyrenEdge/setuptools-19.6.tar.gz" | tar -zxf -  # 5t6y0524A!
+cd setuptools-19.6/
 python3 setup.py build
 sudo python3 setup.py install
 
@@ -65,22 +67,26 @@ mkdir -p /data/protobuf/src && cd /data/protobuf/src
 # 内网机器上：
 # scp fd@172.168.0.216:/data3/HyrenEdge/protobuf-python-3.8.0.zip .
 # scp fd@172.168.0.216:/data3/HyrenEdge/protoc-3.8.0-linux-aarch_64.zip .
-cp /mnt/usb1/hre/protobuf-python-3.8.0.zip .
-cp /mnt/usb1/hre/protoc-3.8.0-linux-aarch_64.zip .
+# cp /mnt/usb1/hre/protobuf-python-3.8.0.zip .
+# cp /mnt/usb1/hre/protoc-3.8.0-linux-aarch_64.zip .
+scp root@172.168.0.100:/data1/HyrenEdge/protobuf-python-3.8.0.zip .  # 5t6y0524A!
+scp root@172.168.0.100:/data1/HyrenEdge/protoc-3.8.0-linux-aarch_64.zip .  # 5t6y0524A!
 unzip protobuf-python-3.8.0.zip
 unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0
 sudo cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc
 
 # Build and install protobuf-3.8.0 libraries
 export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
-# 编译安装
+# 方式 1 : 编译安装
 # cd protobuf-3.8.0/
 # ./autogen.sh
 # ./configure --prefix=/usr/local
 # make -j4
-# 解压安装
-cp /mnt/usb1/hre/nano/protobuf-3.8.0.make.tar.gz .
-tar xf protobuf-3.8.0.make.tar.gz
+
+# 方式 2 : 解压安装
+# cp /mnt/usb1/hre/nano/protobuf-3.8.0.make.tar.gz .
+# tar xf protobuf-3.8.0.make.tar.gz
+ssh root@172.168.0.100 "cat /data1/HyrenEdge/nano/protobuf-3.8.0.make.tar.gz" | tar -zxf -  # 5t6y0524A!
 cd protobuf-3.8.0/
 
 # 检查make编译结果。这一步非常耗时(半个多小时)。最后应该是7个项目都是PASS。
@@ -161,7 +167,8 @@ sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip li
 ```shell
 # 内网机器上：
 # scp fd@172.168.0.216:/data3/HyrenEdge/nano/nano-pyvenv.tar.gz /data
-cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /data
+# cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /data
+scp root@172.168.0.100:/data1/HyrenEdge/nano/nano-pyvenv.tar.gz .  # 5t6y0524A!
 
 su - hyren
 

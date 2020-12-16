@@ -115,18 +115,11 @@ sudo apt upgrade -y
 ```shell
 sudo mkdir /mnt/usb1 /mnt/usb2
 cat > ~/mount << EOF
-#! /bin/bash
-
-USB_NO=\$1
-if [ "x\$USB_NO" == "x" ]; then
-  echo "Missing usb number."
-  exit 1
-fi
-
-sudo mount /dev/sda\$USB_NO /mnt/usb\$USB_NO
+#!/bin/bash
+sudo mount /dev/sda1 /mnt/usb1
 echo
-echo USB : /mnt/usb\$USB_NO
-ls /mnt/usb\$USB_NO
+echo USB : /mnt/usb1
+ls /mnt/usb1
 echo
 EOF
 chmod 700 ~/mount

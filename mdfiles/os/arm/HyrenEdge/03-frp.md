@@ -44,18 +44,15 @@ su -
 # 1. 定义环境
 # Pi
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/pi/frp_0.34.3_linux_arm.tar.gz
-FRP_DIST_PATH=/mnt/usb1/hre/pi
+FRP_DIST_PATH=pi
 FRP_DIST_NAME=frp_0.34.3_linux_arm
 # Nano
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/nano/frp_0.34.3_linux_arm64.tar.gz
-FRP_DIST_PATH=/mnt/usb1/hre/nano
+FRP_DIST_PATH=nano
 FRP_DIST_NAME=frp_0.34.3_linux_arm64
 
 # 2. 安装 Frpc
-FRP_DIST_PATH=${FRP_DIST_PATH:+"${FRP_DIST_PATH}/"}
-echo FRP_DIST_PATH=$FRP_DIST_PATH  # check
-echo FRP_DIST_NAME=$FRP_DIST_NAME  # check
-tar -xf ${FRP_DIST_PATH}${FRP_DIST_NAME}.tar.gz -C /opt
+ssh root@172.168.0.100 "cat /data1/HyrenEdge/${FRP_DIST_PATH}/${FRP_DIST_NAME}.tar.gz" | tar -zxf - -C /opt  # 5t6y0524A!
 mv /opt/${FRP_DIST_NAME}/ /opt/HRETNC/
 chown -R root:root /opt/HRETNC/ && ls -l /opt/HRETNC/
 
