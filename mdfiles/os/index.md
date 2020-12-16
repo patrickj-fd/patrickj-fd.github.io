@@ -7,7 +7,10 @@
   * 该页面可根据操作系统选择source.list里面的内容
 
 - [常用命令](usage)
-- [编写shell](shell)
+
+- [shell编程]
+  * [代码里常用的命令](shell)
+  * [好的代码段](shell-goodcode)
 
 - [设置开机启动](systemd-ForAutoRunOnBoot)
 - [清理多余窗口](kill-window)
