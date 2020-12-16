@@ -3,6 +3,7 @@
 ---
 
 # 通用
+- [烧制SD卡](make-sdcard)
 - [设置python环境](python)
 
 # 树莓派
