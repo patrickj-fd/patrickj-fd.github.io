@@ -31,11 +31,8 @@ cd ${PROJECT_ROOT}/dist
 
 git clone http://139.9.126.19:38111/zhihuinongan/python.git
 
-cd ${PROJECT_ROOT}/dist/python/resources/module/nongan
-# get model file from 63 root/5t6y0524A!
-sftp root@172.168.0.63
-> get /data1/project/zhihuinongan/hrsapp/dist/python/resources/module/nongan/last1.h5
-> bye
+# get model file from 63
+scp root@172.168.0.63:/data1/project/zhihuinongan/hrsapp/dist/python/resources/module/nongan/last1.h5 ${PROJECT_ROOT}/dist/python/resources/module/nongan  # 5t6y0524A!
 
 source ~/pyvenv-tf15  # cp from : /hyren/python/venv/tf-1.15/bin/activate
 
@@ -52,16 +49,19 @@ mkdir ${TEST_ROOT} ${TEST_ROOT}/pic
 cd ${TEST_ROOT} && ls
 
 # 从笔记本上传测试图片过来
-sftp hyren@172.168.0.nanaip
-> cd /hyren/hrsapp/test/pic
-> put *.jpg
+scp root@172.168.0.100:/data1/HyrenEdge/nano/app-test-pic/pic/* ${TEST_ROOT}/pic  # 5t6y0524A!
+ls ${TEST_ROOT}/pic
 
 # 运行测试程序
 cd ${PROJECT_ROOT}/dist/python/yolov4-keras
 
+echo ${TEST_ROOT}/pic
 HRS_RESOURCES_ROOT=${PROJECT_ROOT}/dist/python/resources python3 test.py
-# input : /hyren/hrsapp/test/pic/*.jpg
-# sftp> get *-result.jpg 取出来看结果
+# 输入要进行预测的文件 : /hyren/hrsapp/test/pic/*.jpg
+# 运行结束后，把结果文件（*-result.jpg）取到本机看结果 [ scp hyren@172.168.0.163:/hyren/hrsapp/test/pic/*-result.jpg /tmp ]
+
+# 验证没问题后，退出python虚拟环境
+deactivate
 ```
 
 - test.py中的代码逻辑如下
@@ -103,6 +103,7 @@ yolo.close_session()
 
 ### 启动服务的工具脚本
 ```shell
+cd ~
 echo PROJECT_ROOT=${PROJECT_ROOT}  # check PROJECT_ROOT should be /hyren/hrsapp
 
 touch ${PROJECT_ROOT}/bin/zhna-ai.sh
@@ -193,7 +194,8 @@ systemctl start hre-appai
 # 应该把脚本中的各个echo输出出来，包括：RunType=start, BINDIR=/hyren/hrsapp/bin, PATH..., Start At....
 systemctl status hre-appai
 
-# 看看应用的启动日志。应该看到Flask服务的启动信息和应用的输出日志
+# 看看应用的启动日志。
+# 耐心等待，因为tensorflow启动很慢。最后，应该看到Flask服务的启动信息和应用的输出日志
 tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
 
 systemctl enable hre-appai
@@ -201,14 +203,15 @@ systemctl enable hre-appai
 # 以下为调试用命令
 # systemctl daemon-reload
 # 修改脚本后重启服务，并用status看输出，用tail看日志
-systemctl restart hre-appai
-systemctl status hre-appai
-
+# systemctl restart hre-appai
+# systemctl status hre-appai
 # systemctl stop hre-appai
 # systemctl disable hre-appai
 
-# 重启确认是否开机启动成功
+# 重启：为了验证是否开机启动了
 reboot
+
+# 开机后确认是否自动启动成功
 ps -ef|grep service.py
 
 cat /hyren/hrsapp/bin/zhna-ai-systemout.log | grep "="
