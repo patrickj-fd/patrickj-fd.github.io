@@ -17,11 +17,13 @@ if [[ $HRE_ORG_NO < 400 ]] || [[ $HRE_ORG_NO > 498 ]]; then
 fi
 
 # 设备名等变量
-EdgeName="$1"
-EdgeDeviceName="pi"
+EdgeName="$(hostname)"
+# 从主机名上获得设备名（最后一个'-'字符后面的是设备名）
+EdgeName=${EdgeName##*-}
 if [ "$EdgeName" == "pi" ]; then
     PortSuffix="00"
     FRP_DIST_NAME=frp_0.34.3_linux_arm
+    EdgeDeviceName="pi"
 elif [ "$EdgeName" == "nano1" ]; then
     PortSuffix="01"
     FRP_DIST_NAME=frp_0.34.3_linux_arm64
@@ -32,16 +34,26 @@ elif [ "$EdgeName" == "nano2" ]; then
     EdgeDeviceName="nano"
 else
     echo "EdgeName(=$EdgeName) is wrong"
-    echo "Usage : ./setup-hretnc.sh pi/nano1/nano2"
     exit 1
 fi
+
+# 确认
+echo
+echo -e "当前用户 ： [$USER] \t\t must be root"
+echo -e "设备编码 ： [$HRE_ORG_NO] \t\t must between 400 and 498"
+echo -e "设备名称 ： [$EdgeDeviceName] \t\t must be pi/nano"
+echo -e "设备别名 ： [$EdgeName] \t\t must be pi/nano1/nano2"
+echo
+read -p "Confirm the info [Y/N] : " inputKey
+[ "$inputKey" != "Y" ] && exit 1
 
 # 安装frp
 # 提前把frp软件包放到/tmp目录下
 if [ ! -f /tmp/${FRP_DIST_NAME}.tar.gz ]; then
-    echo "First, get package. eg : scp root@172.168.0.100:/var/www/html/yum/HyrenEdge/$EdgeDeviceName/$FRP_DIST_NAME.tar.gz /tmp"
-    exit 1
+    echo "First, get package from : 172.168.0.100:/data1/HyrenEdge/$EdgeDeviceName/$FRP_DIST_NAME.tar.gz to /tmp"
+    scp root@172.168.0.100:/data1/HyrenEdge/$EdgeDeviceName/$FRP_DIST_NAME.tar.gz /tmp
 fi
+
 tar -xf /tmp/${FRP_DIST_NAME}.tar.gz -C /opt
 mv /opt/${FRP_DIST_NAME}/ /opt/HRETNC/
 chown -R root:root /opt/HRETNC/
@@ -73,7 +85,7 @@ echo "... ... Start service for checking ... ..."
 nohup /opt/HRETNC/HRETNC -c /opt/HRETNC/ssh.ini > /tmp/HRETNC.nohup.out 2>&1 &
 sleep 1
 echo "Check starting log"
-echo "Should be end by : [hre${HRE_ORG_NO}-${EdgeName}-ssh] start proxy success"
+echo -e "Should be end by : \033[33m [hre${HRE_ORG_NO}-${EdgeName}-ssh] start proxy success \033[0m"
 echo "------ [Running Log] Start --------------------------------------"
 tail /tmp/HRETNC-ssh.log
 echo "------ [Running Log] End   --------------------------------------"
@@ -115,7 +127,7 @@ EOF
 systemctl start HRETNC-ssh
 sleep 1
 echo "Check systemctl log"
-echo "Should be seeing : Active: active (running) , Started HyrenEdgeNetSSH"
+echo -e "Should be seeing : \033[33m Active: active (running) , Started HyrenEdgeNetSSH \033[0m"
 echo "------ [systemctl Log] Start --------------------------------------"
 systemctl status HRETNC-ssh
 echo "------ [systemctl Log] End   --------------------------------------"

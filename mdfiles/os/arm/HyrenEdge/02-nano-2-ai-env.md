@@ -28,7 +28,6 @@ sudo apt install -y libopenblas-base libopenmpi-dev cmake libopenblas-dev
 ## 2.1 安装 pip
 ```shell
 cd /data
-~/mount 1
 # 安装 pip
 # wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/setuptools-19.6.tar.gz
@@ -71,6 +70,7 @@ mkdir -p /data/protobuf/src && cd /data/protobuf/src
 # cp /mnt/usb1/hre/protoc-3.8.0-linux-aarch_64.zip .
 scp root@172.168.0.100:/data1/HyrenEdge/protobuf-python-3.8.0.zip .  # 5t6y0524A!
 scp root@172.168.0.100:/data1/HyrenEdge/protoc-3.8.0-linux-aarch_64.zip .  # 5t6y0524A!
+ls  # see the two files
 unzip protobuf-python-3.8.0.zip
 unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0
 sudo cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc
@@ -82,16 +82,17 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
 # ./autogen.sh
 # ./configure --prefix=/usr/local
 # make -j4
+# 检查make编译结果。这一步非常耗时(半个多小时)。最后应该是7个项目都是PASS。
+# 可不做，一般不会有问题，以后有问题了再做。
+# make check
 
 # 方式 2 : 解压安装
 # cp /mnt/usb1/hre/nano/protobuf-3.8.0.make.tar.gz .
 # tar xf protobuf-3.8.0.make.tar.gz
-ssh root@172.168.0.100 "cat /data1/HyrenEdge/nano/protobuf-3.8.0.make.tar.gz" | tar -zxf -  # 5t6y0524A!
+scp root@172.168.0.100:/data1/HyrenEdge/nano/protobuf-3.8.0.make.tar.gz .  # 5t6y0524A!
+tar xf protobuf-3.8.0.make.tar.gz
 cd protobuf-3.8.0/
-
-# 检查make编译结果。这一步非常耗时(半个多小时)。最后应该是7个项目都是PASS。
-# 可不做，一般不会有问题，以后有问题了再做。
-# make check
+# make check  # 检查解压包里面make编译结果
 
 sudo make install
 sudo ldconfig
@@ -158,7 +159,7 @@ height: 160
 
 ## 4.1 安装依赖软件
 ```shell
-sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
+sudo apt install -y libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
 # sudo apt-get install python3-pip 官方步骤有这个
 ```
 
@@ -168,7 +169,7 @@ sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip li
 # 内网机器上：
 # scp fd@172.168.0.216:/data3/HyrenEdge/nano/nano-pyvenv.tar.gz /data
 # cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /data
-scp root@172.168.0.100:/data1/HyrenEdge/nano/nano-pyvenv.tar.gz .  # 5t6y0524A!
+scp root@172.168.0.100:/data1/HyrenEdge/nano/nano-pyvenv.tar.gz /data  # 5t6y0524A!
 
 su - hyren
 

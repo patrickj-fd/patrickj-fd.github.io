@@ -3,7 +3,7 @@
 ---
 
 # 1. 系统环境安装
-- 烧录后开机，按照画面步骤填写内容
+1. 烧录后开机，按照画面步骤填写内容
   * 语言选择英语
   * 时区选择上海
 
@@ -12,11 +12,11 @@
     * HRE_CODE(400, 401, ...)，是每个设备的编号，每安装一个新设备，依次增加即可
     * 第2个nano后缀为nano2
 
-- 首次进入系统时，显示的Clipit保存历史的提示框，选择：No
+2. 首次进入系统时，显示的Clipit保存历史的提示框，选择：No
 
-- 关闭自动更新
-
-第一次进入系统时，首先先关了它。不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
+3. 关闭自动更新
+  - 不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
+  - 打开这个画面，可能会卡顿假死，不用乱点，等一会就可以了。
 ```
 System Settings -> Software & Updates -> Updates tab :
 Automatically check for updates : change to 'Never' and then close.
@@ -46,7 +46,7 @@ systemctl restart sshd
 mkdir /data
 chown -R pi /data
 chown -R pi /opt
-ls -l /
+ls -l / | grep pi  # check
 
 # >>>>> 禁用swap。为了节省SD卡，设置为全部用内存
 echo "vm.swappiness = 0" >> /etc/sysctl.conf
@@ -155,7 +155,7 @@ sudo chmod -R g+w /hyren
 su - hyren
 
 # 修改环境参数
-vi ~/.bashrc
+# vi ~/.bashrc
 # 46行：去掉 force_color_prompt 注释
 # 60行：PS1's w to W
 # 91行：alias ll='ls -lhF'
@@ -164,15 +164,15 @@ sed -i '46c force_color_prompt=yes' ~/.bashrc
 sed -i '60s%\]\\w\\\[%\]\\W\\\[%' ~/.bashrc
 sed -i '62s%:\\w\\%:\\W\\%' ~/.bashrc
 sed -i "91c alias ll='ls -lhF'" ~/.bashrc
-sed -i "92d" ~/.bashrc
 sed -i "93d" ~/.bashrc
+sed -i "92d" ~/.bashrc
 
-echo "" >> ${HOME}/.bashrc
-echo "export CUBA_HOME=/usr/local/cuda" >> ${HOME}/.bashrc
-echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ${HOME}/.bashrc
-echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ${HOME}/.bashrc
+echo "" >> ~/.bashrc
+echo "export CUBA_HOME=/usr/local/cuda" >> ~/.bashrc
+echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ~/.bashrc
+echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\${LD_LIBRARY_PATH}" >> ~/.bashrc
 
-source .bashrc
+source ~/.bashrc
 # 看命令行是不是只显示当前目录了， ll 命令是否可用
 
 nvcc -V  # see CUDA info
