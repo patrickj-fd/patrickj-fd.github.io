@@ -40,7 +40,6 @@ tail -f log/running.log
 ```shell
 su -
 
-/home/pi/mount 1
 # 1. 定义环境
 # Pi
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/pi/frp_0.34.3_linux_arm.tar.gz
