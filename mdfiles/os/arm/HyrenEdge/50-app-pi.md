@@ -237,6 +237,9 @@ ps -ef|grep java
 # 激活开机启动
 systemctl enable hre-appmis
 
+# 重启机器，验证是否开机启动了
+reboot
+
 # 以下为调试用命令
 # systemctl daemon-reload
 # systemctl restart hre-appmis
