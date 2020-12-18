@@ -48,7 +48,7 @@ TEST_ROOT=${PROJECT_ROOT}/test
 mkdir ${TEST_ROOT} ${TEST_ROOT}/pic
 cd ${TEST_ROOT} && ls
 
-# 从笔记本上传测试图片过来
+# 获取测试用的采摘图片
 scp root@172.168.0.100:/data1/HyrenEdge/nano/app-test-pic/pic/* ${TEST_ROOT}/pic  # 5t6y0524A!
 ls ${TEST_ROOT}/pic
 
