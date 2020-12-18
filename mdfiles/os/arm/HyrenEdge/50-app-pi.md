@@ -83,7 +83,7 @@ cat > /opt/HRETNC/startApps.sh << EOF
 #!/bin/bash
 
 if [ -f /opt/HRETNC/apps.ini ]; then
-    echo HRETNC-apps Start At : $(date)
+    echo HRETNC-apps Start At : \$(date)
     /opt/HRETNC/HRETNC \$1 -c /opt/HRETNC/apps.ini
 else
     echo "HRETNC-apps failed : Missing apps.ini"
