@@ -239,7 +239,7 @@ systemctl enable hre-appmis
 
 # 以下为调试用命令
 # systemctl daemon-reload
-#systemctl restart hre-appmis
+# systemctl restart hre-appmis
 # systemctl status hre-appmis
 # systemctl stop hre-appmis
 # systemctl disable hre-appmis
