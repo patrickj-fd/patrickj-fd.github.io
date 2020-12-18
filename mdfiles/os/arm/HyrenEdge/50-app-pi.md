@@ -148,11 +148,17 @@ HRE_ORG_NO=$(hostname)
 HRE_ORG_NO=${HRE_ORG_NO:3:3}
 echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......
 
-# 3. 修改配置文件 
+# 3. 修改配置文件
+# 修改web服务端口
 sed -i "s/    port : .*/    port : ${HRE_ORG_NO}10/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
 
-vi /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
 # 修改文件中订阅地址的IP为本机IP
+LOCAL_WIFI_IP=$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}')
+echo LOCAL_WIFI_IP=$LOCAL_WIFI_IP  # check
+sed -i "s/\/\/139\.9\.126\.19:/\/\/${LOCAL_WIFI_IP}:/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
+
+# 修改文件中订阅地址的端口
+sed -i "s/${LOCAL_WIFI_IP}:49920/${LOCAL_WIFI_IP}:${HRE_ORG_NO}10/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
 
 ```
 
