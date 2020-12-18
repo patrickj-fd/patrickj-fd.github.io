@@ -4,11 +4,10 @@
 
 # 1. 系统环境安装
 1. 烧录后开机，按照画面步骤填写内容
-  * 语言选择英语
-  * 时区选择上海
-
-  * Your name : pi , password : Hre2188
-  * 主机名设置为：hre${HRE_CODE}-nano1
+  - 语言选择英语
+  - 时区选择上海
+  - Your name : pi , password : Hre2188
+  - 主机名设置为：hre${HRE_CODE}-nano1
     * HRE_CODE(400, 401, ...)，是每个设备的编号，每安装一个新设备，依次增加即可
     * 第2个nano后缀为nano2
 
@@ -17,6 +16,7 @@
 3. 关闭自动更新
   - 不关闭的话，如果它在自动更新时，碰巧自己在apt装软件，会出现锁。
   - 打开这个画面，可能会卡顿假死，不用乱点，等一会就可以了。
+
 ```
 System Settings -> Software & Updates -> Updates tab :
 Automatically check for updates : change to 'Never' and then close.
