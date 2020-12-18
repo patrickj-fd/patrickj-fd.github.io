@@ -140,11 +140,20 @@ journalctl | grep HRE
 ```shell
 su - hyren
 
-PROJECT_ROOT=/hyren/hrsapp
-mkdir -p ${PROJECT_ROOT}
-cd ${PROJECT_ROOT}
+# 1. 获取应用程序。应该在主目录解压出来 hrsapp 目录
+ssh root@172.168.0.100 "cat /data1/HyrenEdge/pi/hrsapp.tar.gz" | tar -zxf - -C /hyren  # 5t6y0524A!
 
-git clone http://139.9.126.19:38111/.....
+# 2. 得到本设备的编号（从本设备的主机名中截取）
+HRE_ORG_NO=$(hostname)
+HRE_ORG_NO=${HRE_ORG_NO:3:3}
+echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......
+
+# 3. 修改配置文件 
+sed -i "s/    port : .*/    port : ${HRE_ORG_NO}10/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
+
+vi /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
+# 修改文件中订阅地址的IP为本机IP
+
 ```
 
 ## 3. 把项目配置成开机启动
