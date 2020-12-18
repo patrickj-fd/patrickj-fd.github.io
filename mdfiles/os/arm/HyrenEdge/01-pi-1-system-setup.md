@@ -209,7 +209,7 @@ echo > ~/.bash_history
 history -r
 ```
 
-# 5. 系统设置
+# 5. 参考命令
 ## 4.1 连接wifi（命令行下）
 ```shell
 # 查看wifi列表
