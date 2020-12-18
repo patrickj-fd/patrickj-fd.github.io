@@ -228,18 +228,22 @@ EOF
 # 启用服务
 systemctl start hre-appmis
 systemctl status hre-appmis  # show : RunType, date and java version
-systemctl enable hre-appmis
 
-# 以下为调试用命令
-systemctl daemon-reload
-systemctl restart hre-appmis
-systemctl status hre-appmis
+# 查看一下应用的运行日志
 # 这个日志文件位置，通过上条命令(status)能看到
 tail /hyren/hrsapp/bin/zhna-console.log
 ps -ef|grep java
 
-systemctl stop hre-appmis
-systemctl disable hre-appmis
+# 激活开机启动
+systemctl enable hre-appmis
+
+# 以下为调试用命令
+# systemctl daemon-reload
+#systemctl restart hre-appmis
+# systemctl status hre-appmis
+# systemctl stop hre-appmis
+# systemctl disable hre-appmis
+
 ```
 
 ---
