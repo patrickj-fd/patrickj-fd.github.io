@@ -152,7 +152,8 @@ git clone http://139.9.126.19:38111/.....
 ### 应用脚本文件zhna.sh
 **除非必要，zhna.sh永远不用直接执行，应该通过systemctl进行启停**
 ```shell
-# vi ${PROJECT_ROOT}/bin/zhna.sh
+vi ${PROJECT_ROOT}/bin/zhna.sh
+# zhna.sh 内容如下
 #!/bin/bash
 
 set -e
@@ -185,6 +186,8 @@ if [ "x$RunType" == "xstop" ]; then
     # TODO
     echo "Stopped"
 fi
+
+chmod u+x ${PROJECT_ROOT}/bin/zhna.sh
 ```
 
 **再次重申：**
