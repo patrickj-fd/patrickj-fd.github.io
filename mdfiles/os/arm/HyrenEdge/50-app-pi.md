@@ -152,7 +152,7 @@ git clone http://139.9.126.19:38111/.....
 ### 应用脚本文件zhna.sh
 **除非必要，zhna.sh永远不用直接执行，应该通过systemctl进行启停**
 ```shell
-# cat > ${PROJECT_ROOT}/bin/zhna.sh << EOF
+# vi ${PROJECT_ROOT}/bin/zhna.sh
 #!/bin/bash
 
 set -e
