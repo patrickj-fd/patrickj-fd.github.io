@@ -231,7 +231,7 @@ systemctl status hre-appmis  # show : RunType, date and java version
 
 # 查看一下应用的运行日志
 # 这个日志文件位置，通过上条命令(status)能看到
-tail /hyren/hrsapp/bin/zhna-console.log
+tail /hyren/hrsapp/bin/zhna-systemout.log
 ps -ef|grep java
 
 # 激活开机启动
