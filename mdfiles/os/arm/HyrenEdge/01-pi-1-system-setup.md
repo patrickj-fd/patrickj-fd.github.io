@@ -15,6 +15,8 @@ ip=192.168.137.100 console=seria10,115200 console=tty1 ......
 
 **注意：用完后，务必要把新加进去的'ip=192.168.137.100'删除掉！否则，每次开机都会等待很久的网络（持续出现：waiting up to 100 more seconds for network）**
 
+**注意：**网线直连（包括内网网线连接）时，刚开机后要稍等一会才能连接上。
+
 ### WiFi
 在SD卡根新建文件：wpa_supplicant.conf
 ```ini
