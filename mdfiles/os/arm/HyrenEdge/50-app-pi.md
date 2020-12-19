@@ -149,16 +149,17 @@ HRE_ORG_NO=${HRE_ORG_NO:3:3}
 echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......
 
 # 3. 修改配置文件
-# 修改web服务端口
-sed -i "s/    port : .*/    port : ${HRE_ORG_NO}10/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
+# 设置web服务端口。默认的设置规则为设备3位编号+10。除非用户真实环境不允许使用这个端口
+HRE_MISWEB_PORT=${HRE_ORG_NO}10
+sed -i "s/    port : .*/    port : ${HRE_MISWEB_PORT}/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
 
-# 修改文件中订阅地址的IP为本机IP
+# 修改IP。设备进入正式环境后，得到用户网络真实IP后，还要再修改。以下命令仅仅是为了公司内部测试环境用
 LOCAL_WIFI_IP=$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}')
 echo LOCAL_WIFI_IP=$LOCAL_WIFI_IP  # check
 sed -i "s/\/\/139\.9\.126\.19:/\/\/${LOCAL_WIFI_IP}:/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
 
-# 修改文件中订阅地址的端口
-sed -i "s/${LOCAL_WIFI_IP}:49920/${LOCAL_WIFI_IP}:${HRE_ORG_NO}10/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
+# 修改Port。
+sed -i "s/:49920\//:${HRE_MISWEB_PORT}\//" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
 
 ```
 
