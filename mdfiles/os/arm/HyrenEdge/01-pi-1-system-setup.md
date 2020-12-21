@@ -211,8 +211,8 @@ echo > ~/.bash_history
 history -r
 ```
 
-# 5. 参考命令
-## 4.1 连接wifi（命令行下）
+# 5. 参考
+## 5.1 连接wifi（命令行下）
 ```shell
 # 查看wifi列表
 sudo iwlist wlan0 scan | grep SSID
@@ -226,6 +226,18 @@ sudo ifdown wlan0
 sudo ifup wlan0     # or reboot 
 # 也可以试试下面这个：
 sudo wpa_cli -i wlan0 reconfigure
+```
+
+## 5.2 连接显示器不亮
+- 换一个hdmi口试试
+- 如果能ssh上去，那么换一个hmdi后再重启下试试
+- 修改启动配置文件：config.txt
+```
+hdmi_force_hotplug=1
+config_hdmi_boost=4
+hdmi_drive=2
+hdmi_group=2
+hdmi_mode=9
 ```
 
 ---
