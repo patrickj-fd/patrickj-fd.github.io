@@ -233,8 +233,10 @@ sudo wpa_cli -i wlan0 reconfigure
 - 如果能ssh上去，那么换一个hmdi后再重启下试试
 - 修改启动配置文件：config.txt
 ```
-hdmi_force_hotplug=1
-config_hdmi_boost=4
+hdmi_force_hotplug=1  ：启用HDMI热插拔功能。
+config_hdmi_boost=4   ：启用加强HDMI信号。
+
+如果还不行，就修改下面配置项：
 hdmi_drive=2
 hdmi_group=2
 hdmi_mode=9
