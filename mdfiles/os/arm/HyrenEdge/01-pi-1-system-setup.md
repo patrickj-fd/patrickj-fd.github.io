@@ -3,21 +3,9 @@
 ---
 
 # 1. Pi
-## 1.1 配置网络
+## 1.1 初始设置
 
-### 网线直连
-打开SD卡根文件cmdline.txt，在第一行最前面添加用于网线直连的ip：
-```txt
-# console开始的是文件原始内容
-ip=192.168.137.100 console=seria10,115200 console=tty1 ......
-```
-用网线把电脑和pi直连后即可通过该ip连接pi了。
-
-**注意：用完后，务必要把新加进去的'ip=192.168.137.100'删除掉！否则，每次开机都会等待很久的网络（持续出现：waiting up to 100 more seconds for network）**
-
-**注意：**网线直连（包括内网网线连接）时，刚开机后要稍等一会才能连接上。
-
-### WiFi
+### 1.1.1 WiFi
 在SD卡根新建文件：wpa_supplicant.conf
 ```ini
 country=CN
@@ -34,10 +22,25 @@ sudo wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant.conf  -i wlan0
 ```
 通过wpa_supplicant的直接连接，如果配置文件出现问题，则会直接提示配置文件的错误详情
 
-### 开启 SSH 服务
+### 1.1.2 开启 SSH 服务
 在SD卡根新建文件：ssh。（也可以在树莓派开机后创建：sudo touch /boot/ssh）
 
-## 1.2 初始化系统环境
+### 1.1.3 网线直连
+打开SD卡根文件cmdline.txt，在第一行最前面添加用于网线直连的ip：
+```txt
+# console开始的是文件原始内容
+ip=192.168.137.100 console=seria10,115200 console=tty1 ......
+```
+用网线把电脑和pi直连后即可通过该ip连接pi了。
+
+**注意：用完后，务必要把新加进去的'ip=192.168.137.100'删除掉！否则，每次开机都会等待很久的网络（持续出现：waiting up to 100 more seconds for network）**
+
+**注意：**网线直连（包括内网网线连接）时，刚开机后要稍等一会才能连接上。
+
+### 1.1.4 HDMI连接显示器
+修改 config.txt 文件，把hdmi_force_hotplug=1的注释去掉（目的：启用HDMI热插拔功能）
+
+## 1.2 系统基础环境设置
 
 pi/raspberry 登陆机器
 
