@@ -244,7 +244,7 @@ echo > ~/.bash_history
 history -r
 ```
 
-# 5. 参考命令
+# 5. 参考
 ## 5.1 连接wifi（命令行下）
 ```shell
 # 查看wifi列表
@@ -255,7 +255,14 @@ sudo nmcli device wifi connect 'boyan-dev-5G' password 'hongzhitech'
 ifconfig
 ```
 
-## 5.2换源
+## 5.2 问题汇总
+- 刚烧好的卡，开机报错：
+```txt
+A start job is running for End-user configuration after initial OEM installation (10min 25s / no limit)
+```
+解决办法：重启
+
+## 5.3 换源
 **装完tensorflow后再考虑是否要换源。一般情况下不需要更换**
 ```shell
 # 清华源对于 nano 来说，是最好的。
