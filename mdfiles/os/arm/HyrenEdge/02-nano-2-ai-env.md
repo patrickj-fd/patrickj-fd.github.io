@@ -9,8 +9,8 @@
 ```shell
 su - pi
 # 最好在官方源上做update和安装。换成国内源后，有可能出现安装失败的情况
-sudo apt update
-sudo apt upgrade -y
+# sudo apt update
+# sudo apt upgrade -y
 sudo apt install -y build-essential make cmake cmake-curses-gui \
          git g++ pkg-config curl libfreetype6-dev \
          libcanberra-gtk-module libcanberra-gtk3-module
@@ -28,17 +28,20 @@ sudo apt install -y libopenblas-base libopenmpi-dev cmake libopenblas-dev
 ## 2.1 安装 pip
 ```shell
 cd /data
-# 安装 pip
+
+# 安装 setuptools
+# 某些情况下，直接装python3-pip会报错，需要先安装一个低版本的setuptools才能装pip
 # wget -c --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/setuptools-19.6.tar.gz
 # 内网机器上： scp fd@172.168.0.216:/data3/HyrenEdge/setuptools-19.6.tar.gz .
 # cp /mnt/usb1/hre/setuptools-19.6.tar.gz .
 # tar xf setuptools-19.6.tar.gz && cd setuptools-19.6/
-ssh root@172.168.0.100 "cat /data1/HyrenEdge/setuptools-19.6.tar.gz" | tar -zxf -  # 5t6y0524A!
-cd setuptools-19.6/
-python3 setup.py build
-sudo python3 setup.py install
+#ssh root@172.168.0.100 "cat /data1/HyrenEdge/setuptools-19.6.tar.gz" | tar -zxf -  # 5t6y0524A!
+#cd setuptools-19.6/
+#python3 setup.py build
+#sudo python3 setup.py install
 
+# 安装 pip
 sudo apt install -y python3-pip
 # 【若报错】： No module named ‘distutils.util’ ：
 # sudo apt install -y python3-distutils
