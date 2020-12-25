@@ -142,6 +142,7 @@ sudo mkdir /hyren
 sudo useradd -d /hyren -s /bin/bash hyren
 # sudo userdel -r hyren  # 包括主目录一起删除
 sudo echo "hyren:hre118" | sudo chpasswd
+sudo echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
 
 sudo cp /home/pi/.bashrc /hyren
 sudo cp /home/pi/.profile /hyren

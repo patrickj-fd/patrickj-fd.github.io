@@ -186,7 +186,12 @@ mv venv/ python/ && ls -l python
 cp /hyren/python/venv/tf-1.15/bin/activate ~/pyvenv-tf15
 ```
 
-## 4.3 [空]
+## 4.3 安装工具软件
+```shell
+# 监控系统运行情况，比如GPU使用率等
+sudo -H pip3 install jetson-stats==3.0.2
+# Usage : sudo jtop
+```
 
 ## 4.4 验证
 ```shell

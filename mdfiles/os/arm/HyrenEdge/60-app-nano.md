@@ -39,6 +39,9 @@ source ~/pyvenv-tf15  # cp from : /hyren/python/venv/tf-1.15/bin/activate
 python3 -m pip install -U git+http://139.9.126.19:38111/FdcoreHyren/feedwork-py.git
 python3 -m pip install flask==1.1.2 requests==2.25.0 pillow==8.0.1
 # python3 -m pip install matplotlib==3.3.2 h5py==2.10.0
+
+# 退出python虚拟环境
+deactivate
 ```
 
 ### 2.2 测试项目
@@ -55,13 +58,16 @@ ls ${TEST_ROOT}/pic
 # 运行测试程序
 cd ${PROJECT_ROOT}/dist/python/yolov4-keras
 
-echo ${TEST_ROOT}/pic
-HRS_RESOURCES_ROOT=${PROJECT_ROOT}/dist/python/resources python3 test.py
+# 使用 CPU 执行程序
+#source ~/pyvenv-tf15
+#HRS_RESOURCES_ROOT=${PROJECT_ROOT}/dist/python/resources python3 test.py
+
+# 使用 GPU 执行程序（不要进入py虚拟环境）
+PYTHON_CMD=/hyren/python/venv/tf-1.15/bin/python3
+sudo HRS_RESOURCES_ROOT=${PROJECT_ROOT}/dist/python/resources $PYTHON_CMD test.py
 # 输入要进行预测的文件 : /hyren/hrsapp/test/pic/*.jpg
 # 运行结束后，把结果文件（*-result.jpg）取到本机看结果 [ scp hyren@172.168.0.163:/hyren/hrsapp/test/pic/*-result.jpg /tmp ]
 
-# 验证没问题后，退出python虚拟环境
-deactivate
 ```
 
 - test.py中的代码逻辑如下
@@ -136,7 +142,7 @@ if [ "x$RunType" == "xstart" ]; then
     echo "" >> $APP_SYSTEMOUT_LOGFILE
     echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
 
-    HRS_RESOURCES_ROOT=/hyren/hrsapp/dist/python/resources /hyren/python/venv/tf-1.15/bin/python3 service.py >> $APP_SYSTEMOUT_LOGFILE 2>&1
+    sudo HRS_RESOURCES_ROOT=/hyren/hrsapp/dist/python/resources /hyren/python/venv/tf-1.15/bin/python3 service.py >> $APP_SYSTEMOUT_LOGFILE 2>&1
 fi
 
 # [ Func 2 ] : just show process
