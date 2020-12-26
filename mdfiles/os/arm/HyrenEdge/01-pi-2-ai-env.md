@@ -4,17 +4,36 @@
 
 # 删除 python2
 ```shell
-sudo apt remove --purge python
-sudo apt remove --auto-remove python2.7
-sudo apt clean
+su - pi
+
+# 查看Python的可选项
+update-alternatives --display python
+# /usr/bin/python 链接文件，两个可选项必须是一样的，这样这个链接文件才可以选择两个不同的可选项去链接
+# 把python3的优先级设置成更大的数字
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 100
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 150
+# 这时如果我们查看 /usr/bin/python 这个文件时，会发现它已经链接到了 /etc/alternatives/python
+# sudo update-alternatives --config python
+
+#sudo apt remove --purge python
+#sudo apt remove --auto-remove python2.7
+#sudo apt clean
 # 确认
-ll /usr/bin/py*
+python -V  # show : Python 3.7.3
 ```
 
 # tensorflow
 ```shell
 sudo apt install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libhdf5-dev  python3-dev gfortran libblas-dev liblapack-dev libopenblas-dev libatlas-base-dev
 
+sudo apt install -y python3-pip
+# 可以先现在 https://www.piwheels.org/simple/numpy/numpy-1.16.6-cp37-cp37m-linux_armv7l.whl
+sudo python3 -m pip install numpy==1.16.6
+sudo apt install -y python3-venv
+
+
+
+====================
 sudo apt install -y build-essential make cmake cmake-curses-gui \
          git g++ pkg-config curl libfreetype6-dev \
          libcanberra-gtk-module libcanberra-gtk3-module
