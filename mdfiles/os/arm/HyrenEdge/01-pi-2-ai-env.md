@@ -7,17 +7,18 @@
 su - pi
 
 # 查看Python的可选项
-update-alternatives --display python
+#update-alternatives --display python
 # /usr/bin/python 链接文件，两个可选项必须是一样的，这样这个链接文件才可以选择两个不同的可选项去链接
 # 把python3的优先级设置成更大的数字
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 100
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 150
+#sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 100
+#sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 150
 # 这时如果我们查看 /usr/bin/python 这个文件时，会发现它已经链接到了 /etc/alternatives/python
 # sudo update-alternatives --config python
 
-#sudo apt remove --purge python
-#sudo apt remove --auto-remove python2.7
-#sudo apt clean
+sudo apt remove --purge python
+sudo apt remove --auto-remove python2.7
+sudo apt clean
+ll /usr/bin/py*
 # 确认
 python -V  # show : Python 3.7.3
 ```
@@ -63,7 +64,7 @@ sudo apt install -y libatlas-base-dev gfortran
 sudo apt-get install -y libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5
 
 # 下载源码
-sudo mkdir -p /data/opencv/gitrepo && cd /data/opencv/gitrepo
+mkdir -p /data/opencv/gitrepo && cd /data/opencv/gitrepo
 git clone https://gitee.com/hyren/opencv.git
 git clone https://gitee.com/hyren/opencv_contrib.git
 cd opencv_contrib
@@ -77,6 +78,11 @@ sudo echo "199.232.96.133 raw.githubusercontent.com" >> /etc/hosts
 
 # 创建一个临时构建目录
 mkdir build && cd build
+CMAKEFILES_ROOT=/mnt/usb1/hre/pi
+mkdir -p /data/opencv/gitrepo/opencv/build/downloads/xfeatures2d/
+cp ${CMAKEFILES_ROOT}/raw.githubusercontent.com/xfeatures2d/* /data/opencv/gitrepo/opencv/build/downloads/xfeatures2d/
+mkdir -p /data/opencv/gitrepo/opencv/build/share/OpenCV/testdata/cv/face/
+cp ${CMAKEFILES_ROOT}/raw.githubusercontent.com/face_landmark_model.dat /data/opencv/gitrepo/opencv/build/share/OpenCV/testdata/cv/face/
 
 # == 配置 ==
 # ENABLE_NEON ENABLE_VFPV3 针对ARM架构CPU的。 cat /proc/cpuinfo 能看到支持什么
@@ -102,28 +108,64 @@ nohup cmake -D CMAKE_BUILD_TYPE=RELEASE \
     -D BUILD_EXAMPLES=OFF \
     .. > cmake.log 2>&1 &
 ## 最后的 .. 表示上级目录
+tail -f cmake.log
+
+# ---------------------------------------------------------------------
+# cmake成功，最后显示三行：
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /data/opencv/gitrepo/opencv/build
+# ---------------------------------------------------------------------
+
 # 在当前目录下生成很多配置、编译相关的文件，其中 CMakeCache.txt文件可以自己修改，关闭不要的功能模块。
 # 比如： WITH_1394:BOOL=OFF。make时出错的模块可以不编译可以通过CMakeCache.txt文件配置关掉
 vi CMakeCache.txt # WITH_1394:BOOL=OFF
 
-# 对下载失败的文件，在CMakeDownloadLog.txt里面找到下载地址，手动下载
-vi CMakeDownloadLog.txt
-# 把下载的文件，放到： opencv_contrib/modules/xfeatures2d/src/ 即可开始后面的make了
-# 或者也许，提前放到opencv/.cache/xfeatures2d/下的boostdesc和vgg目录下
-
+# CMakeDownloadLog.txt
+# 因为上面已经把要下载的文件拷贝过来了，所以这个文件里面都是do_copy
+# 如果从零开始下载，很可能会下载失败，这时就需要在这个文件里面找到下载地址，手动下载
+# 把下载的文件，放到： opencv_contrib/modules/xfeatures2d/src/ 即可开始后面的make了。这个路径有问题
 # face_landmark_model.dat 下载失败，手动下载
-vi modules/face/CMakeLists.txt
+#vi modules/face/CMakeLists.txt
 # 把："https://raw.githubusercontent.com/opencv/opencv_3rdparty/${__commit_hash}/"
 # 改："file:///这个文件的全路径"（不带文件名）
 
 # == 编译 ==
-make -j4
+nohup make -j4 > make.log 2>&1 &
+tail -f make.log
+# make 过程中，可能会失败，一般报错为：
+# make: *** [Makefile:163: all] Error 2
+# 这时，要往上看很多行的日志输出，直到找到有更明确的 Error 信息
+# 成功显示：[100%] Built target opencv_python3
 
 # == 安装 == 安装到前面指定的目录（CMAKE_INSTALL_PREFIX）
-make install
+nohup make install > makeinstall.log 2>&1 &
+tail -f makeinstall.log
 # 验证
 /opt/opencv3.4.10/bin/opencv_version
 
+# 安装给 python
+cp -r /opt/opencv3.4.10/lib/python3.7/dist-packages/cv2 /usr/local/lib/python3.7/dist-packages/
+# cp -r /opt/opencv3.4.10/lib/python3.7/dist-packages/cv2 虚拟环境/lib/python3.7/site-packages
+
+python3 -c "import cv2; print(cv2.__version__)"
+
+# 或者，把so加入到系统中（没验证）
+echo "/opt/opencv3.4.10/lib" > /etc/ld.so.conf.d/opencv.conf
+# 或许要加上下面这句。？表示一个空格，可能原因是有的语言要求最后有一个空格才可以编译通过。
+echo "?" >> /etc/ld.so.conf.d/opencv.conf
+ldconfig
+```
+
+## 验证
+```python
+# cat > /tmp/opencvtest.py << EOF
+import cv2
+import numpy as np
+
+img = np.zeros((512, 512), np.uint8)         # 生成一张空的灰度图像
+cv2.line(img, (0, 0), (511, 511), 255, 5)    # 绘制一条白色直线
+cv2.imwrite('messigray.png', img)
 ```
 
 ---
