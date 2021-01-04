@@ -47,9 +47,33 @@ YOLOv4实用训练实践
 
 ## 1.2 标注和训练
 ### 1.2.1 使用labelImg标注
+- [Download from github](https://github.com/tzutalin/labelImg) and  unzip
+- In ``data/predefined_classes.txt`` define the list of classes that will be used for training.
+- launch labelImg
 - 选YOLO的存储格式
 - 选择被标注图片所在目录
 - 选择标注结果的存储目标（Ctrl+R）
+- 开始干活
+  * w: 在图片上画框
+  * d: 下一张图片（a: 上一张图片）
+  * Ctrl+S 保存（没处理一张存一次）
+
+Ctrl+S保存标注结果后，会生成一个和文件同名的txt文件，里面是标注框的坐标（YOLO格式）。
+
+使用过程中注意看启动软件的cmd窗口，有的图片会报ZeroDivisionError: float division by zero 错误，这时，标注结果的txt文件没有任何内容。  
+解决办法：  
+> https://github.com/tzutalin/labelImg/issues/386
+> https://github.com/tzutalin/labelImg/issues/309
+
+```python
+import os
+import cv2
+
+filename = ""
+img_file = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+fixed_filename = f"{os.path.splitext(os.path.basename(filename))[0]}.jpg"
+cv2.imwrite(fixed_filename, img_file)
+```
 
 ### 1.2.2 训练-使用官方darnet训练
 
