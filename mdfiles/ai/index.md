@@ -10,8 +10,8 @@
 - [待看的文章](tosee)
 
 - Yolo
-  * [概述](summary)
-  * [cfg配置文件详解](cfg-detail)
+  * [概述](yolo/summary)
+  * [cfg配置文件详解](yolo/cfg-detail)
 
 ---
 
