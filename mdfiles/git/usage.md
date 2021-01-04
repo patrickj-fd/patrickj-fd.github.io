@@ -74,7 +74,7 @@ git pull
 
 
 ## 2.3 仅拉取最新提交的版本
-当项目过大时，git clone会很慢，解决方法很简单，在git clone时加上--depth=1即可解决。
+当项目过大时，git clone会很慢，解决方法很简单，在git clone时加上'--depth=1'即可解决。
 > depth用于指定克隆深度，为1即表示只克隆最近一次commit.
 
 这种方法克隆的项目只包含最近的一次commit的一个分支，体积很小。  
