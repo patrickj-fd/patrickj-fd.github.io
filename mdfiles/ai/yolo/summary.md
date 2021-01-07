@@ -81,24 +81,113 @@ The ld linker tool doesn't use this variable. If you want to use a library locat
 
 ## 1.4 标注和训练
 ### 1.4.1 使用labelImg标注
-- [Download from github](https://github.com/tzutalin/labelImg) and  unzip
-- In ``data/predefined_classes.txt`` define the list of classes that will be used for training.
-- launch labelImg
+#### 1.4.1.1 安装和启动
+[Download from github](https://github.com/tzutalin/labelImg)
+
+支持Win/Linux/macOS平台，按照github上的说明即可安装。对于Win平台，直接下载release里面的zip文件，解压到任意目录即可使用。
+
+- Windows上，启动前修改 ``data/predefined_classes.txt`` 文件
+
+- Linux上可以使用下面的启动脚本(该脚本可放到$HOME/bin下面方便启动)
+
+第一个参数：工程目录。包含了标注图片等数据。后续，训练用的cfg/data/names等文件、生成训练权重文件，都放到这里  
+第二个参数：图片目录。建议使用train和valid，分别存放训练集和评估集  
+默认，标注好的txt文件也会存到第二个参数指定的目录中。  
+
+```shell
+#!/bin/bash
+set -e
+. /usr/local/bin/fd_utils.sh
+
+#BINDIR="$(cd "$(dirname "$0")" && pwd)"
+# 工程根目录默认使用启动脚本位置的路径
+PRJ_ROOT="${1:?"Usage: $(basename $0) . train [SAVED_PATH]"}"
+[ "$PRJ_ROOT" == "." ] && PRJ_ROOT="$(pwd)"
+echo "$PRJ_ROOT" | grep " " >/dev/null 2>&1 && die "Can not used dir<$PRJ_ROOT> because of space!"
+
+# 训练使用的图片目录
+# 建议在工程目录下创建两个目录：train和valid，分别对应data文件中的train和valid
+IMAGE_PATH=${2:?"Missing image folder name!"}
+[[ "$IMAGE_PATH" =~ ^/ ]] || IMAGE_PATH=$PRJ_ROOT/$IMAGE_PATH
+[ -d "$IMAGE_PATH" ] || die "IMAGE_PATH<$IMAGE_PATH> is not regular dir!"
+
+# 标注结果txt文件默认放到图片目录下，方便后面训练
+SAVED_PATH=${3:-"${IMAGE_PATH}"}
+[ -d "$SAVED_PATH" ] || die "SAVED_PATH<$SAVED_PATH> is not regular dir!"
+
+PRE_DEFINED_CLASS_FILE="${PRJ_ROOT}/pre_defined_class_file.txt"
+[ -f "$PRE_DEFINED_CLASS_FILE" ] || die "PRE_DEFINED_CLASS_FILE is not regular file"
+
+# 使用脚本所在目录的名字作为工程名
+PRJNAME="$(basename "$PRJ_ROOT")"
+LOGFILE=/tmp/labelImg-$PRJNAME.log
+
+echo 
+echo IMAGE_PATH ........... : $IMAGE_PATH
+echo SAVED_PATH ........... : $SAVED_PATH
+echo PRE_DEFINED_CLASS_FILE : $PRE_DEFINED_CLASS_FILE
+echo PRJNAME .............. : $PRJNAME
+echo LOGFILE .............. : $LOGFILE
+echo
+
+echo "" >> $LOGFILE
+echo "===== Start time : $(date) =====" >> $LOGFILE
+python3 /opt/labelImg/gitrepo/labelImg.py $IMAGE_PATH $PRE_DEFINED_CLASS_FILE $SAVED_PATH >> $LOGFILE 2>&1 &
+
+sleep 1
+tail -f $LOGFILE
+```
+
+#### 1.4.1.2 使用
+每个标注项目，建立如下目录结构：
+```txt
+[Root Dir]                         # 项目根目录
+|--train/                          # 存放标注的语料图片（包括标注结果txt文件） - 训练集
+|--valid/                          # 存放标注的语料图片（包括标注结果txt文件） - 验证集（训练时的标签文件）
+|--pre_defined_class_file.txt      # YOLO使用的标注分类名
+```
+
+启动软件后做以下设置：  
 - 选YOLO的存储格式
-- 选择被标注图片所在目录
-- 选择标注结果的存储目标（Ctrl+R）
+- 选择被标注图片所在目录。即：上面的train或valid目录
+- 选择标注结果的存储目标。使用图片所在目录，方便后续做训练。
+- 设置成自动保存：View菜单下选中自动保存
 - 开始干活
   * w: 在图片上画框
   * d: 下一张图片（a: 上一张图片）
-  * Ctrl+S 保存（没处理一张存一次）
+  * Ctrl+S 保存（如果没有设置成自动保存，那么，没处理一张要存一次）
 
-Ctrl+S保存标注结果后，会生成一个和文件同名的txt文件，里面是标注框的坐标（YOLO格式）。
+标注结束后，使用下面脚本给没有目标的图片生成空的标注文件（txt文件）
+```shell
+#!/bin/bash
+set -e
+. /usr/local/bin/fd_utils.sh
+
+IMG_DIR=${1:?"Missing img dir!"}
+[ ! -d "$IMG_DIR" ] && die "<$IMG_DIR> is not regular dir!"
+# 所有jpg, jpeg, png结尾的文件
+empty_txtfile_nums=0
+img_file_arr=($(ls ${IMG_DIR}/*.j* ${IMG_DIR}/*.p* 2>/dev/null || echo))
+for img_file in "${img_file_arr[@]}"; do
+    [ ! -f "$img_file" ] && continue
+    file_sname=${img_file%.*}
+    if [ ! -f "${file_sname}.txt" ]; then
+        touch "${file_sname}.txt" && empty_txtfile_nums=`expr $empty_txtfile_nums + 1` || echo "touch ${file_sname}.txt failed!"
+    fi
+done
+echo "Create empty txt file num : $empty_txtfile_nums"
+```
+
+#### 1.4.1.3 碰到的错误
+
+- 碰到的错误："ZeroDivisionError: float division by zero"
 
 使用过程中注意看启动软件的cmd窗口，有的图片会报ZeroDivisionError: float division by zero 错误，这时，标注结果的txt文件没有任何内容。  
 解决办法：  
-> https://github.com/tzutalin/labelImg/issues/386
-> https://github.com/tzutalin/labelImg/issues/309
+> https://github.com/tzutalin/labelImg/issues/386  
+> https://github.com/tzutalin/labelImg/issues/309  
 
+参考上面帖子，可使用下面代码对图片保存一次来解决问题：
 ```python
 import os
 import cv2
@@ -108,22 +197,30 @@ img_file = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
 fixed_filename = f"{os.path.splitext(os.path.basename(filename))[0]}.jpg"
 cv2.imwrite(fixed_filename, img_file)
 ```
+
+同样的图片，在Ubuntu上不会出现上述问题。
+
+#### 1.4.1 - 找到两个目录下的同名文件
+因为在标注的时候，可能不同的人一起工作，大家找到的语料图片的名字可能一样，造成合并时的问题。
+- [python代码](find_eqfilename_2dir)
+
 ### 1.4.2 训练-使用官方darnet训练
 
 #### (1) 配置训练环境
 - 官网下载 yolov4.conv.137 文件
-- 以 cfg/yolov4-custom.cfg 为模板修改成自己的配置文件。修改的参数参加官网
-- 把标注的文件存到任意位置（成对的jpg和txt）
-- 定义 names 文件（eg. yijia.names）
-- 定义 data 文件（eg. yijia.data）
+- 以 cfg/yolov4-custom.cfg 为模板修改成自己的配置文件（建议prj.cfg）。修改的参数参见官网。
+- 定义 names 文件(建议prj.names)。每行是一个被检测目标的名字，也即：与标注时使用的pre_defined_class_file.txt文件内容一样
+- 定义 data 文件(建议prj.data)
+例如：
 ```
-classes= 2                 分类数
-train  = 全路径/train.txt
-valid  = 全路径/test.txt
-names = 全路径/yijia.names
-backup = backup/           生成模型weights文件的目录，必须是这个名字
+classes= 2
+train = 工程全路径/train.txt              # 训练集。内容是每行一个jpg文件的全路径名
+valid = 工程全路径/valid.txt              # 标签集。内容是每行一个jpg文件的全路径名
+names = 工程全路径/prj.names
+backup = 工程全路径/weights               # 生成模型weights文件的目录，必须是绝对路径
 ```
-- 定义训练集和测试集（即data文件里面定义的两个文件：train和test）。内容是每行一个jpg文件的全路径名
+train.txt和valid.txt使用[仓库](https://gitee.com/hyren/hrdarknet)中 ``hr_train_tools.py`` 自动生成。
+
 
 #### (2) 训练
 ```shell
@@ -136,11 +233,21 @@ PRO_ROOT=/home/fd/ln-yolo/yolov4/projects-ABdarknet/yijia
 nohup ./darknet detector train $PRO_ROOT/yijia.data $PRO_ROOT/yijia.cfg /home/fd/ln-yolo/yolov4/yolov4.conv.137 -dont_show > /tmp/darknet-train.log 2>&1 &
 ```
 
+**训练心得**
+
+- 当训练过程中被中断，可以将最后一次的模型作为预训练模型继续训练。如果一次训练时间太长，可以用中间自动保存的模型继续训练，中间自动保存模型，默认文件夹不改变的情况下在backup里面，训练命令：
+./darknet detector train cfg/voc.data cfg/yolo-voc.cfg yolo-voc_final.weights  
+
+直接基于final继续训练可能不行：cfg配置文件中max_batchs设置的为45000，中断之后将中断的模型作为预训练模型的前提迭代次数没有达到45000，如果之前已经训练完成了45000次，再次训练会直接输出final模型呢。如果想当完全训练完成后，会生成yolo-voc_final.weights模型，如果在现有的final模型之上继续训练，可以修改cfg配置文件。
+
 #### （3） 验证自己的训练出来的模型
 在训练的过程中，backup目录下生成weights文件，可以拿来验证效果
 ```shell
 ./darknet detector test <data文件> <自己定义的custom.cfg文件> backup/xxx_last.weights jpg文件
 ```
+
+### 1.4.3 预测
+
 
 ## 1.3 程序解读
 - [Darknet源码读不懂](https://www.jianshu.com/p/dfcde9ce7927)
