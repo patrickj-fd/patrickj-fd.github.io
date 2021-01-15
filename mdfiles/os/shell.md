@@ -4,6 +4,12 @@
 
 [Bash 脚本教程](https://wangdoc.com/bash/intro.html)
 
+# 脚本常用
+```shell
+# 脚本所在目录
+BINDIR="$(cd "$(dirname "$0")" && pwd)"
+```
+
 # 1. 变量
 ## 1.1 数值计算
 ```shell
