@@ -256,6 +256,27 @@ nohup ./darknet detector train $PRO_ROOT/yijia.data $PRO_ROOT/yijia.cfg /home/fd
 该目录下有上百个小png文件，打开可知，是26个英文字母不同大小的图片，用于在预测结果上显示分类名字，所以也就意味着不支持中文。
 
 
+## 1.9 编码调试
+
+如果程序出现“段错误   核心已转储”，可以用 gdb 定位代码错误
+```txt
+1. 编译程序时加上 '-g' 参数（加到Makefile里面最开始的COMMON里面即可）
+COMMON= -g -Iinclude/ -I3rdparty/stb/include
+
+2. 用gdb启动程序
+gdb ./hrdarknet.bin
+
+直接运行就来看看到底发生了什么：
+(gdb) run
+
+这时，gdb会提示出来发生了什么错误。
+```
+
+[参考](https://blog.csdn.net/wlgy123/article/details/51150213)
+
+对于darknet的训练程序，如果.data文件里面的指定的train文件里面的训练图片不存在，就会发生段错误！！！
+
+
 # 2 YoloV4 Pytorch 版
 WongKinYiu的两个实现版本（基于 ultralytics/yolov3和yolov5）
 > https://github.com/WongKinYiu/PyTorch_YOLOv4
