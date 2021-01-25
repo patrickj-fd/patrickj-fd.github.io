@@ -38,6 +38,13 @@ find . -mmin  +3 -type f -print # 最近3分钟内被修改过的文件
 find ./ -mtime +3 -type f -name "mkimg*" -exec mv {} bak \;
 ```
 
+- 查找指定大文件
+```shell
+find ./ -type f -size +200M
+# 去掉查找结果中诸如无权限访问的提示，并且同时显示文件大小，并且按照大小排序
+find ./ -type f -size +200M 2>/dev/null|xargs du -shm|sort -nr
+```
+
 ### xargs 的用法
 ```shell
 find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
@@ -47,16 +54,21 @@ find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
 
 ### vi 的用法
 - 多行按列编辑
-  1. 光标定位到要操作首行或尾行。
-  2. CTRL+v 进入“可视 块”模式，上下键选取多行。
-  3. SHIFT+i(I) 输入要插入的内容。
-  4. ESC 按两次
+  * 光标定位到要操作首行或尾行。
+  * CTRL+v 进入visual block模式，上下键选取多行
+  * SHIFT+i(I) 输入要插入的内容。
+  * ESC 按两次
+
+- 删除多列
+  * CTRL+v 进入visual block模式，上下键选取多行多列
+  * 按 x 即可删除这些选中的列
 
 - 删除多行
   * :1,10d  --  1到10行
   * :.,$d  --  从当前行到文件末尾全删除。gg到文件头执行则删除了整个文件内容
   * ndd  --  光标所在行以下的n行
   * d$ -- 删除以当前字符开始的一行字符
+
 
 ## 查看系统信息
 ### 目录占用

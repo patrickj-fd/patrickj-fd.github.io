@@ -6,7 +6,9 @@
   > https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
   * 该页面可根据操作系统选择source.list里面的内容
 
-- [常用命令](usage)
+- [ubuntu安装及初始设置](ubuntu-init)
+
+- [linux常用命令](usage)
 
 - [shell编程]
   * [代码里常用的命令](shell)
