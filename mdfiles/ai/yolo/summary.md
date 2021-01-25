@@ -256,7 +256,7 @@ nohup ./darknet detector train $PRO_ROOT/yijia.data $PRO_ROOT/yijia.cfg /home/fd
 该目录下有上百个小png文件，打开可知，是26个英文字母不同大小的图片，用于在预测结果上显示分类名字，所以也就意味着不支持中文。
 
 
-## 1.9 编码调试
+## 1.9 使用 gdb 调试代码
 
 如果程序出现“段错误   核心已转储”，可以用 gdb 定位代码错误
 ```txt
@@ -269,7 +269,9 @@ gdb ./hrdarknet.bin
 直接运行就来看看到底发生了什么：
 (gdb) run
 
-这时，gdb会提示出来发生了什么错误。
+如果需要传递命令行参数，那么在run后面添加即可：
+(gdb) run -datafile prj.data -cfgfile prj.cfg -weightsfile yolov4.conv.137 -dont_show
+
 ```
 
 [参考](https://blog.csdn.net/wlgy123/article/details/51150213)
