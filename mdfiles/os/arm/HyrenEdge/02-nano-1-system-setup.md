@@ -236,7 +236,7 @@ lshw    # 查看硬件
 # 3. 安装项目
 
 1. [安装frp Client端-ssh](03-frp)
-2. [安装项目运行环境](60-app-nano)
+2. [安装项目运行环境](60-app-nano-c)
 
 # 4. 清理
 ```shell

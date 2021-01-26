@@ -272,6 +272,34 @@ gdb ./hrdarknet.bin
 如果需要传递命令行参数，那么在run后面添加即可：
 (gdb) run -datafile prj.data -cfgfile prj.cfg -weightsfile yolov4.conv.137 -dont_show
 
+run后，会显示错误信息，例如：
+Program received signal SIGSEGV, Segmentation fault.
+
+(gdb) backtrace
+#0  0x4007fc13 in _IO_getline_info () from /lib/libc.so.6
+#1  0x4007fb6c in _IO_getline () from /lib/libc.so.6
+#2  0x4007ef51 in fgets () from /lib/libc.so.6
+#3  0x80484b2 in main (argc=1, argv=0xbffffaf4) at segfault.c:10
+#4  0x40037f5c in __libc_start_main () from /lib/libc.so.6
+
+这里我们只关心我们自己的代码，因此我们就切换到3号堆栈帧（stack frame3）来看看程序在哪里崩溃的：
+(gdb) frame 3
+#3  0x80484b2 in main (argc=1, argv=0xbffffaf4) at segfault.c:10
+10        fgets(buf, 1024, stdin)
+
+这句代码里，估计就是 buf 出了问题，打印看看他：
+(gdb) print buf
+$1 = 0x0
+
+buf的值是0x0，也就是NULL指针。
+
+(gdb) kill
+杀掉上面的运行进程，设置断点单步跟踪看看
+
+(gdb) break segfault.c:8
+
+再次运行：
+(gdb) run
 ```
 
 [参考](https://blog.csdn.net/wlgy123/article/details/51150213)

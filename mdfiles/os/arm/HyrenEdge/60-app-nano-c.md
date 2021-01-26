@@ -28,6 +28,7 @@ su - hyren
 # 项目根目录
 PROJECT_ROOT=/hyren/hrsapp
 mkdir -p ${PROJECT_ROOT}/bin
+mkdir -p ${PROJECT_ROOT}/dist
 # 临时目录，可定期清理
 TEMP_DIR=/hyren/temp
 mkdir -p ${TEMP_DIR}/nongan
@@ -38,18 +39,25 @@ git clone http://139.9.126.19:38111/FdcoreHyren/feedwork-shell.git
 sudo ln -s feedwork-shell/fd_utils.sh /usr/local/bin/fd_utils.sh
 
 # 建立本项目的目录结构
-mkdir -p ${PROJECT_ROOT}/dist/c
-mkdir -p ${PROJECT_ROOT}/dist/c/nongan/weights
+mkdir ${PROJECT_ROOT}/dist/c
+mkdir ${PROJECT_ROOT}/dist/c/nongan
+mkdir ${PROJECT_ROOT}/dist/c/nongan/weights
 # 创建存储预测结果图片的目录
-mkdir -p ${TEMP_DIR}/nongan/pred-result-images
+mkdir ${TEMP_DIR}/nongan/pred-result-images
 
-# 获得项目文件：hrdarknet.bin hr-predict.sh prj.names prj.cfg weights
-ProjectRes=fd@172.168.0.216:/data1/project-repos/nongan
-scp ${ProjectRes}/prj.* ${ProjectRes}/hr* ${PROJECT_ROOT}/dist/c/nongan
-scp ${ProjectRes}/weights/prj_final.weights ${PROJECT_ROOT}/dist/c/nongan/weights/
+# 从nano开发机上获得项目文件：hrdarknet.bin hr-predict.sh prj.names prj.cfg weights
+# TODO 改成文件从gogs上取，权重和执行程序从开发机上取
+ProjectRes=hyren@172.168.0.172:/hyren/project/nongan
+scp ${ProjectRes}/prj.* ${ProjectRes}/hr*.bin ${ProjectRes}/hr*.sh ${PROJECT_ROOT}/dist/c/nongan
+scp ${ProjectRes}/weights/prj_final.* ${PROJECT_ROOT}/dist/c/nongan/weights/
+
+cd ${PROJECT_ROOT}/dist/c/nongan/weights
+sha256sum -c <(grep prj_final.weights prj_final.weights.sha256)
+cd ..
 # 清理掉不需要的文件
-[ -n "${PROJECT_ROOT}" ] && rm -f ${PROJECT_ROOT}/dist/c/nongan/prj.data || echo "Missing PROJECT_ROOT"
-ls
+[ -n "${PROJECT_ROOT}" ] && rm -f prj.data || echo "Missing PROJECT_ROOT"
+chmod u+x *.sh && ls -l
+mv hrdarknet-gdb.bin .hrdarknet-gdb.bin && ls -l
 ```
 
 - 安装 python 环境
@@ -73,10 +81,12 @@ deactivate
 mkdir -p ${TEST_ROOT}/pic && ls ${TEST_ROOT}
 
 # 获取测试用的采摘图片
-scp root@172.168.0.100:/data1/HyrenEdge/nano/app-test-pic/pic/* ${TEST_ROOT}/pic  # 5t6y0524A!
+#scp root@172.168.0.100:/data1/HyrenEdge/nano/app-test-pic/pic/* ${TEST_ROOT}/pic  # 5t6y0524A!
+scp ${ProjectRes}/test/pic/* ${TEST_ROOT}/pic
 ls ${TEST_ROOT}/pic
 
 # 启动
+cd ${PROJECT_ROOT}/dist/c/nongan && ls
 sudo ./hr-predict.sh -s -p ${TEST_ROOT}/pic
 
 # 开始测试
@@ -90,21 +100,10 @@ curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-6.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-1.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-2.jpg
 
-# 停止
-sudo ./hr-predict.sh -Q
+# 测试通过后，Ctrl+C 退出即可。
 ```
 
-### 2.3 正式启动
-```shell
-cd ${PROJECT_ROOT}/dist/c/nongan
-sudo ./hr-predict.sh
-
-# 针对网络图片，如果要存储每张图片的预测结果图：
-mkdir ${TEMP_DIR}/nongan/predict_result_images
-sudo ./hr-predict.sh -s -p ${TEMP_DIR}/nongan/predict_result_images
-```
-
-启动脚本 hr-predict.sh 内容如下：
+- 启动脚本 hr-predict.sh 内容如下
 ```shell
 #!/bin/bash
 # 启动 : 
@@ -223,7 +222,7 @@ echo
 ### 启动服务的工具脚本
 ```shell
 cd ~
-echo PROJECT_ROOT=${PROJECT_ROOT}  # check PROJECT_ROOT should be /hyren/hrsapp
+echo PROJECT_ROOT=${PROJECT_ROOT}  # should be /hyren/hrsapp
 
 touch ${PROJECT_ROOT}/bin/zhna-ai.sh
 chmod u+x ${PROJECT_ROOT}/bin/zhna-ai.sh && ls -l ${PROJECT_ROOT}/bin
@@ -274,16 +273,23 @@ WantedBy=multi-user.target
 EOF
 cat /etc/systemd/system/hre-appai.service
 
+# 返回 hyren用户
+exit
+
 # 启用服务
-systemctl start hre-appai
+sudo systemctl start hre-appai
 # 启动后，用status看输出。
 # 应该把脚本中的各个echo输出出来，包括：RunType=start, BINDIR=/hyren/hrsapp/bin, PATH..., Start At....
-systemctl status hre-appai
+sudo systemctl status hre-appai
 
 # 看看应用的启动日志。
 # 耐心等待，因为启动很慢。
 tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
+# 验证
+cd ${TEST_ROOT}/pic
+curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-1.jpg
 
+# 设置为开机启动
 systemctl enable hre-appai
 
 # 以下为调试用命令
