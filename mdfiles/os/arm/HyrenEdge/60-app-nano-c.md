@@ -104,6 +104,7 @@ curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-2.jpg
 ```
 
 - 启动脚本 hr-predict.sh 内容如下
+
 ```shell
 #!/bin/bash
 # 启动 : 
