@@ -12,8 +12,10 @@ su - pi
 # sudo apt update
 # sudo apt upgrade -y
 sudo apt install -y build-essential make cmake cmake-curses-gui \
-         git g++ pkg-config curl libfreetype6-dev \
+         git g++ pkg-config libfreetype6-dev \
          libcanberra-gtk-module libcanberra-gtk3-module
+sudo apt install -y curl  libcurl4-openssl-dev
+
 sudo apt install -y libpython3.6-dev
 sudo apt install -y python3-dev python3-testresources
 sudo apt install -y autoconf libtool

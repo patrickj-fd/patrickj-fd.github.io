@@ -25,15 +25,37 @@
 ```shell
 su - hyren
 
+# 项目根目录
 PROJECT_ROOT=/hyren/hrsapp
-mkdir -p ${PROJECT_ROOT}/bin ${PROJECT_ROOT}/dist
+mkdir -p ${PROJECT_ROOT}/bin
+# 临时目录，可定期清理
+TEMP_DIR=/hyren/temp
+mkdir -p ${TEMP_DIR}/nongan
+
+# 取基础 shell 库 feedwork-shell
 cd ${PROJECT_ROOT}/dist
+git clone http://139.9.126.19:38111/FdcoreHyren/feedwork-shell.git
+sudo ln -s feedwork-shell/fd_utils.sh /usr/local/bin/fd_utils.sh
 
-git clone http://139.9.126.19:38111/zhihuinongan/python.git
+# 建立本项目的目录结构
+mkdir -p ${PROJECT_ROOT}/dist/c
+mkdir -p ${PROJECT_ROOT}/dist/c/nongan/weights
+# 创建存储预测结果图片的目录
+mkdir -p ${TEMP_DIR}/nongan/pred-result-images
 
-# get model file from 63
-scp root@172.168.0.63:/data1/project/zhihuinongan/hrsapp/dist/python/resources/module/nongan/last1.h5 ${PROJECT_ROOT}/dist/python/resources/module/nongan  # 5t6y0524A!
+# 获得项目文件：hrdarknet.bin hr-predict.sh prj.names prj.cfg weights
+ProjectRes=fd@172.168.0.216:/data1/project-repos/nongan
+scp ${ProjectRes}/prj.* ${ProjectRes}/hr* ${PROJECT_ROOT}/dist/c/nongan
+scp ${ProjectRes}/weights/prj_final.weights ${PROJECT_ROOT}/dist/c/nongan/weights/
+# 清理掉不需要的文件
+[ -n "${PROJECT_ROOT}" ] && rm -f ${PROJECT_ROOT}/dist/c/nongan/prj.data || echo "Missing PROJECT_ROOT"
+ls
+```
 
+- 安装 python 环境
+
+目前不需要python，安装备用
+```shell
 source ~/pyvenv-tf15  # cp from : /hyren/python/venv/tf-1.15/bin/activate
 
 python3 -m pip install -U git+http://139.9.126.19:38111/FdcoreHyren/feedwork-py.git
@@ -47,62 +69,153 @@ deactivate
 ### 2.2 测试项目
 ```shell
 # 建立测试环境
-TEST_ROOT=${PROJECT_ROOT}/test
-mkdir ${TEST_ROOT} ${TEST_ROOT}/pic
-cd ${TEST_ROOT} && ls
+[ -n "${PROJECT_ROOT}" ] && TEST_ROOT=${PROJECT_ROOT}/dist/c/nongan/test || echo "Missing PROJECT_ROOT"
+mkdir -p ${TEST_ROOT}/pic && ls ${TEST_ROOT}
 
 # 获取测试用的采摘图片
 scp root@172.168.0.100:/data1/HyrenEdge/nano/app-test-pic/pic/* ${TEST_ROOT}/pic  # 5t6y0524A!
 ls ${TEST_ROOT}/pic
 
-# 运行测试程序
-cd ${PROJECT_ROOT}/dist/python/yolov4-keras
+# 启动
+sudo ./hr-predict.sh -s -p ${TEST_ROOT}/pic
 
-# 使用 CPU 执行程序
-#source ~/pyvenv-tf15
-#HRS_RESOURCES_ROOT=${PROJECT_ROOT}/dist/python/resources python3 test.py
+# 开始测试
+cd ${TEST_ROOT}/pic
+curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-1.jpg
+curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-2.jpg
+curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-3.jpg
+curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-4.jpg
+curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-5.jpg
+curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-6.jpg
+curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-1.jpg
+curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-2.jpg
 
-# 使用 GPU 执行程序（不要进入py虚拟环境）
-PYTHON_CMD=/hyren/python/venv/tf-1.15/bin/python3
-sudo HRS_RESOURCES_ROOT=${PROJECT_ROOT}/dist/python/resources $PYTHON_CMD test.py
-# 输入要进行预测的文件 : /hyren/hrsapp/test/pic/*.jpg
-# 运行结束后，把结果文件（*-result.jpg）取到本机看结果 [ scp hyren@172.168.0.163:/hyren/hrsapp/test/pic/*-result.jpg /tmp ]
-
+# 停止
+sudo ./hr-predict.sh -Q
 ```
 
-- test.py中的代码逻辑如下
+### 2.3 正式启动
+```shell
+cd ${PROJECT_ROOT}/dist/c/nongan
+sudo ./hr-predict.sh
 
-```python
-import os
-import sys
-import glob
-from yolo import YOLO
-from PIL import Image
+# 针对网络图片，如果要存储每张图片的预测结果图：
+mkdir ${TEMP_DIR}/nongan/predict_result_images
+sudo ./hr-predict.sh -s -p ${TEMP_DIR}/nongan/predict_result_images
+```
 
-import feedwork.utils.FileHelper as fileu
+启动脚本 hr-predict.sh 内容如下：
+```shell
+#!/bin/bash
+# 启动 : 
+# 保存预测结果图片：    sudo ./hr-predict.sh -s -p /hyren/hrsapp/dist/c/nongan/test/pic
+# 不保存预测结果图片：  sudo ./hr-predict.sh
+# 如果是预测本机上的图片，必须指定图片所在根目录来启动： sudo ./hr-predict.sh -p /hyren/hrsapp/dist/c/nongan/test/pic
+
+set -e
+. /usr/local/bin/fd_utils.sh
+BINDIR="$(cd "$(dirname "$0")" && pwd)"
+BIN_NAME="$(basename "$0")"
+
+# ========== cmd args ========== Start
+# -s            : 开关变量。是否保存画框的预测结果图片
+# -p PATH       : 指定图片根目录。
+#                 1. 如果是预测本机上的图片，该目录为这些图片所在的根目录。同时也作为预测结果图片的保存目录
+#                 2. 如果是预测网络上的图片，该目录用于存储预测结果图片。需要 '-s' 参数
+# -D log level  : 0-trace , 1-debug , 2-info
+# -A            : 其他各种要传递的参数
+# -Q            : 停止正在运行的进程
+# -S            : 显示进程信息，即 ps -ef
+declare -A ArgDict
+while getopts "SQsp:D:A:" arg_opt; do
+    # echo "current arg : $arg_opt=$OPTARG"
+    [ "$arg_opt" == "?" ] && usage
+    if [ "Nll$OPTARG" == "Nll" ]; then
+        ArgDict["$arg_opt"]="TRUE"
+    else
+        ArgDict["$arg_opt"]="$OPTARG"
+    fi
+done
+# echo "all cmd opts : ${!ArgDict[*]}"; exit 1
+# 如果输入参数以'-'开头，那么必须用双引号包裹作为 -A 的值来输入！
+# 例如：-A "-json_port 39011 -mjpeg_port 39012"
+OtherArgs="${ArgDict["A"]}"
+# 剩余的所有参数（不能'-'开头！）
+#shift $(($OPTIND - 1))
+#OtherArgs="${OtherArgs} $@"
+# ========== cmd args ========== End
+
+EXEC=hrdarknet.bin
+PID=$(ps -ef|grep -v "$BIN_NAME"|grep -w "$EXEC"|grep -v grep|awk '{print $2}')
 
 
-yolo = YOLO()
+# ========== 终止进程 ==========
+if [ "${ArgDict["Q"]}" == "TRUE" ]; then
+    if [ -n "$PID" ]; then
+        kill "$PID"
+        echo "stop successful"
+    else
+        echo "$EXEC is not exist, pid=$PID"
+    fi
+    exit 0
+fi
 
-while True:
-    img_pattern = input("Input image files pattern [ /path/*.jpg ] OR [ quit ] : ")
-    if img_pattern == "quit":
-        break
-    for img_name in glob.iglob(img_dir):
-        img_sname = fileu.file_shortname(img_name)
-        if img_sname.endswith("-result"):
-            continue
-        img_path = fileu.file_abspath(img_name)
-        img_extname = fileu.file_extname(img_name)
-        print(f"\ndeal : {img_path} - {img_sname}{img_extname}")
-        # 开始处理
-        image = Image.open(img_name)
-        img_result = yolo.detect_image(image)
-        img_result_fname = f"{img_path}/{img_sname}-result{img_extname}"
-        print(f"done : {img_result_fname}")
-        img_result.save(img_result_fname)
+# ========== 显示进程 ==========
+if [ "${ArgDict["S"]}" == "TRUE" ]; then
+    ps -ef|grep -v "$BIN_NAME"|grep "$EXEC"|grep -v grep
+    exit 0
+fi
 
-yolo.close_session()
+# ========== 启动进程 ==========
+[ -n "$PID" ] && die "$EXEC (pid=$PID) exist!"
+
+if [ "${ArgDict["s"]}" == "TRUE" ]; then
+    # 如果要保存预测结果图片，那么必须指定存储图片的根目录
+    Save_respic="-save_respic"  # is save predict image
+    [ -z "${ArgDict["p"]}" ] && die "Missing image dir by arg '-p'"
+fi
+Imgfile_root="${ArgDict["p"]}"
+if [ -n "$Imgfile_root" ]; then
+    [ ! -d "$Imgfile_root" ] && die "Imgfile_root=$Imgfile_root is not regular dir"
+fi
+
+Log_level="${ArgDict["D"]}"
+# 没给日志级别，默认使用 info
+[ -z "${Log_level}" ] && Log_level=2
+
+PRJ_ROOT="/hyren/hrsapp/dist/c/nongan"
+[ ! -d "$PRJ_ROOT" ] && die "<$PRJ_ROOT> is not regular path!"
+
+# http port
+ARGSTR_PORT="-port 38010"
+
+echo
+
+# HR_LOGLEVEL       : 0-trace , 1-debug , 2-info .....
+# HR_LOGOUT_TYPE    : 1-有颜色代码； 2-无颜色代码
+
+LOGFILE=/hyren/temp/nongan/running.log
+[ -f "$LOGFILE" ] && mv $LOGFILE $LOGFILE.$(date "+%H%M%S")  # backup last logfile
+
+HR_LOGLEVEL=$Log_level HR_LOGOUT_TYPE=2 "$BINDIR/$EXEC" -t pred $ARGSTR_PORT \
+    -namesfile ${PRJ_ROOT}/prj.names \
+    -cfgfile ${PRJ_ROOT}/prj.cfg \
+    -weightsfile ${PRJ_ROOT}/weights/prj_final.weights \
+    -imgfile_root ${Imgfile_root} $Save_respic
+
+echo "Process info :"
+ps -ef | grep "$EXEC" | grep -v grep
+echo
+echo "See log :"
+echo "tail -f $LOGFILE"
+echo
+
+# 本机调试时启动：
+# HR_LOGLEVEL=$Log_level  "$BINDIR/$EXEC" -t pred $ARGSTR_PORT \
+#     -namesfile ${PRJ_ROOT}/prj.names \
+#     -cfgfile ${PRJ_ROOT}/prj.cfg \
+#     -weightsfile ${PRJ_ROOT}/weights/prj_final.weights \
+#     -imgfile_root ${Imgfile_root} $Save_respic
 ```
 
 ## 3. 把项目配置成开机启动
@@ -122,39 +235,17 @@ vi ${PROJECT_ROOT}/bin/zhna-ai.sh
 **除非必要，zhna-ai.sh永远不用直接执行，应该通过systemctl进行启停**
 ```shell
 #!/bin/bash
-
 set -e
-
-RunType="$1"
-echo RunType=$RunType
 
 BINDIR=/hyren/hrsapp/bin
 echo BINDIR=$BINDIR
-echo PATH=$PATH
 
-# [ Func 1 ] : start process
-if [ "x$RunType" == "xstart" ]; then
-    cd /hyren/hrsapp/dist/python/yolov4-keras > /dev/null
+APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
 
-    APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
-
-    echo Start At : $(date), APP_SYSTEMOUT_LOGFILE=$APP_SYSTEMOUT_LOGFILE
-    echo "" >> $APP_SYSTEMOUT_LOGFILE
-    echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
-
-    sudo HRS_RESOURCES_ROOT=/hyren/hrsapp/dist/python/resources /hyren/python/venv/tf-1.15/bin/python3 service.py >> $APP_SYSTEMOUT_LOGFILE 2>&1
-fi
-
-# [ Func 2 ] : just show process
-if [ "x$RunType" == "xshow" ]; then
-    echo && ps -ef | grep "python3 service.py" | grep -v grep && echo
-fi
-
-# [ Func 3 ] : kill process. For 'ExecStop=' in hre-appai.service
-if [ "x$RunType" == "xstop" ]; then
-    # TODO
-    echo "Stopped"
-fi
+echo Start At : $(date), APP_SYSTEMOUT_LOGFILE=$APP_SYSTEMOUT_LOGFILE
+echo "" >> $APP_SYSTEMOUT_LOGFILE
+echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
+sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh >> $APP_SYSTEMOUT_LOGFILE 2>&1
 ```
 
 **再次重申：**
@@ -162,17 +253,6 @@ fi
 2. 如果要启停服务，应该使用systemctl命令。
 3. 如果日常运行中需要单独启动应用，应以nohup方式启动到后台去！（见下面的命令）
   - 理论上，不存在需要单独启动应用的情况！
-
-```shell
-BINDIR=/hyren/hrsapp/bin
-APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
-cd /hyren/hrsapp/dist/python/yolov4-keras
-nohup HRS_RESOURCES_ROOT=/hyren/hrsapp/dist/python/resources /hyren/python/venv/tf-1.15/bin/python3 service.py >> $APP_SYSTEMOUT_LOGFILE 2>&1 &
-
-# check log
-tail -f -n100 $APP_SYSTEMOUT_LOGFILE
-```
-
 
 ### 注册成开机启动
 ```shell
@@ -186,7 +266,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=${PROJECT_ROOT}/bin/zhna-ai.sh start
+ExecStart=${PROJECT_ROOT}/bin/zhna-ai.sh
 User=hyren
 
 [Install]
@@ -201,7 +281,7 @@ systemctl start hre-appai
 systemctl status hre-appai
 
 # 看看应用的启动日志。
-# 耐心等待，因为tensorflow启动很慢。最后，应该看到Flask服务的启动信息和应用的输出日志
+# 耐心等待，因为启动很慢。
 tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
 
 systemctl enable hre-appai
@@ -218,7 +298,7 @@ systemctl enable hre-appai
 reboot
 
 # 开机后确认是否自动启动成功
-ps -ef|grep service.py
+ps -ef|grep hrdarknet.bin
 
 cat /hyren/hrsapp/bin/zhna-ai-systemout.log | grep "="
 # 应该看到两行启动时间。第一行是重启前第一次启动服务时输出的，第二行就是这次开机自动启动输出的，看时间可知
