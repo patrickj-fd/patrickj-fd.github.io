@@ -99,7 +99,9 @@ curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-5.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-6.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-1.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-2.jpg
-
+# 使用网络图片做预测（这种方式不需要-s -p参数，可以无参启动： sudo ./hr-predict.sh）
+curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg'
+curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/6654baf19df9498d985c274f63ba7efe.jpg'
 # 测试通过后，Ctrl+C 退出即可。
 ```
 
@@ -169,14 +171,17 @@ fi
 # ========== 启动进程 ==========
 [ -n "$PID" ] && die "$EXEC (pid=$PID) exist!"
 
+# 是否需要保存预测结果图片
 if [ "${ArgDict["s"]}" == "TRUE" ]; then
     # 如果要保存预测结果图片，那么必须指定存储图片的根目录
     Save_respic="-save_respic"  # is save predict image
     [ -z "${ArgDict["p"]}" ] && die "Missing image dir by arg '-p'"
 fi
+# 图片根目录
 Imgfile_root="${ArgDict["p"]}"
 if [ -n "$Imgfile_root" ]; then
     [ ! -d "$Imgfile_root" ] && die "Imgfile_root=$Imgfile_root is not regular dir"
+    Imgfile_root="-imgfile_root $Imgfile_root"
 fi
 
 Log_level="${ArgDict["D"]}"
@@ -189,33 +194,32 @@ PRJ_ROOT="/hyren/hrsapp/dist/c/nongan"
 # http port
 ARGSTR_PORT="-port 38010"
 
-echo
+# =========== 在本机上nohup方式直接启动程序 ============= Start.
+# 本脚本应该注册到服务中开机启动，所以，下面这种启动方式仅保留备用
+# echo
+# LOGFILE=/hyren/temp/nongan/running.log
+# [ -f "$LOGFILE" ] && mv $LOGFILE $LOGFILE.$(date "+%H%M%S")  # backup last logfile
 
-# HR_LOGLEVEL       : 0-trace , 1-debug , 2-info .....
-# HR_LOGOUT_TYPE    : 1-有颜色代码； 2-无颜色代码
+# HR_LOGLEVEL=$Log_level HR_LOGOUT_TYPE=2 nohup "$BINDIR/$EXEC" -t pred $ARGSTR_PORT \
+#     -namesfile ${PRJ_ROOT}/prj.names \
+#     -cfgfile ${PRJ_ROOT}/prj.cfg \
+#     -weightsfile ${PRJ_ROOT}/weights/prj_final.weights \
+#     -imgfile_root ${Imgfile_root} $Save_respic > $LOGFILE 2>&1 &
 
-LOGFILE=/hyren/temp/nongan/running.log
-[ -f "$LOGFILE" ] && mv $LOGFILE $LOGFILE.$(date "+%H%M%S")  # backup last logfile
+# echo "Process info :"
+# ps -ef | grep "$EXEC" | grep -v grep
+# echo
+# echo "See log :"
+# echo "tail -f $LOGFILE"
+# echo
+# =========== 在本机上nohup方式直接启动程序 ============= Start.
 
 HR_LOGLEVEL=$Log_level HR_LOGOUT_TYPE=2 "$BINDIR/$EXEC" -t pred $ARGSTR_PORT \
     -namesfile ${PRJ_ROOT}/prj.names \
     -cfgfile ${PRJ_ROOT}/prj.cfg \
     -weightsfile ${PRJ_ROOT}/weights/prj_final.weights \
-    -imgfile_root ${Imgfile_root} $Save_respic
+    ${Imgfile_root} $Save_respic
 
-echo "Process info :"
-ps -ef | grep "$EXEC" | grep -v grep
-echo
-echo "See log :"
-echo "tail -f $LOGFILE"
-echo
-
-# 本机调试时启动：
-# HR_LOGLEVEL=$Log_level  "$BINDIR/$EXEC" -t pred $ARGSTR_PORT \
-#     -namesfile ${PRJ_ROOT}/prj.names \
-#     -cfgfile ${PRJ_ROOT}/prj.cfg \
-#     -weightsfile ${PRJ_ROOT}/weights/prj_final.weights \
-#     -imgfile_root ${Imgfile_root} $Save_respic
 ```
 
 ## 3. 把项目配置成开机启动
@@ -245,8 +249,10 @@ APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
 echo Start At : $(date), APP_SYSTEMOUT_LOGFILE=$APP_SYSTEMOUT_LOGFILE
 echo "" >> $APP_SYSTEMOUT_LOGFILE
 echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
-sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh >> $APP_SYSTEMOUT_LOGFILE 2>&1
+sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh -p /hyren/temp/nongan/pred-result-images >> $APP_SYSTEMOUT_LOGFILE 2>&1
 ```
+
+**如果希望保存预测结果的画框图片，需要加上参数 '-s'，并重启服务**
 
 **再次重申：**
 1. 这个脚本仅仅适用开机启动执行。
@@ -291,15 +297,15 @@ cd ${TEST_ROOT}/pic
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-1.jpg
 
 # 设置为开机启动
-systemctl enable hre-appai
+sudo systemctl enable hre-appai
 
 # 以下为调试用命令
-# systemctl daemon-reload
+# sudo systemctl daemon-reload
 # 修改脚本后重启服务，并用status看输出，用tail看日志
-# systemctl restart hre-appai
-# systemctl status hre-appai
-# systemctl stop hre-appai
-# systemctl disable hre-appai
+# sudo systemctl restart hre-appai
+# sudo systemctl status hre-appai
+# sudo systemctl stop hre-appai
+# sudo systemctl disable hre-appai
 
 # 重启：为了验证是否开机启动了
 reboot
