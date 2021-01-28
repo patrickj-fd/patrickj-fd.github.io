@@ -21,7 +21,7 @@ sudo apt install -y python3-dev python3-testresources
 sudo apt install -y autoconf libtool
 
 sudo apt install -y libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg-dev liblapack-dev libblas-dev gfortran
-sudo apt install -y libopenblas-base libopenmpi-dev cmake libopenblas-dev
+sudo apt install -y libopenblas-base libopenmpi-dev libopenblas-dev
 
 ```
 
@@ -56,6 +56,10 @@ sudo python3 -m pip install -U pip==20.2.4
 sudo python3 -m pip install -U testresources==2.0.1
 # 更新 setuptools 。不理报错
 sudo python3 -m pip install setuptools==49.6.0 --use-feature=2020-resolver
+
+# 监控系统运行情况，比如GPU使用率等
+sudo -H pip3 install jetson-stats==3.0.2
+# Usage : sudo jtop
 ```
 
 ## 2.2 安装 venv
@@ -191,7 +195,7 @@ cp /hyren/python/venv/tf-1.15/bin/activate ~/pyvenv-tf15
 ## 4.3 安装工具软件
 ```shell
 # 监控系统运行情况，比如GPU使用率等
-sudo -H pip3 install jetson-stats==3.0.2
+#sudo -H pip3 install jetson-stats==3.0.2
 # Usage : sudo jtop
 ```
 

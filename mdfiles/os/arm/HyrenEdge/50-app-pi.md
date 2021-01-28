@@ -144,9 +144,7 @@ su - hyren
 ssh root@172.168.0.100 "cat /data1/HyrenEdge/pi/hrsapp.tar.gz" | tar -zxf - -C /hyren  # 5t6y0524A!
 
 # 2. 得到本设备的编号（从本设备的主机名中截取）
-HRE_ORG_NO=$(hostname)
-HRE_ORG_NO=${HRE_ORG_NO:3:3}
-echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......
+HRE_ORG_NO=$(hostname) && HRE_ORG_NO=${HRE_ORG_NO:3:3} && echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......
 
 # 3. 修改配置文件
 # 设置web服务端口。默认的设置规则为设备3位编号+10。除非用户真实环境不允许使用这个端口

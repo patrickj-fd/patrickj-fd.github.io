@@ -23,6 +23,7 @@
 ### 2.1 安装
 
 ```shell
+whoami  # is hyren
 su - hyren
 
 # 项目根目录
@@ -36,7 +37,7 @@ mkdir -p ${TEMP_DIR}/nongan
 # 取基础 shell 库 feedwork-shell
 cd ${PROJECT_ROOT}/dist
 git clone http://139.9.126.19:38111/FdcoreHyren/feedwork-shell.git
-sudo ln -s feedwork-shell/fd_utils.sh /usr/local/bin/fd_utils.sh
+sudo ln -s ${PROJECT_ROOT}/dist/feedwork-shell/fd_utils.sh /usr/local/bin/fd_utils.sh
 
 # 建立本项目的目录结构
 mkdir ${PROJECT_ROOT}/dist/c
@@ -91,18 +92,23 @@ sudo ./hr-predict.sh -s -p ${TEST_ROOT}/pic
 
 # 开始测试
 cd ${TEST_ROOT}/pic
-curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-1.jpg
+curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=no-1.jpg&upid=100&force_save_result=1'
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-2.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-3.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-4.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-5.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-6.jpg
-curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-1.jpg
+curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=you-1.jpg&upid=100&force_save_result=1'
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-2.jpg
 # 使用网络图片做预测（这种方式不需要-s -p参数，可以无参启动： sudo ./hr-predict.sh）
 curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg'
 curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/6654baf19df9498d985c274f63ba7efe.jpg'
-# 测试通过后，Ctrl+C 退出即可。
+
+# 通过浏览器看到预测结果图片：
+cd ${TEST_ROOT}/pic
+python3 -m http.server 49926 &
+# 之后即可访问：
+http://172.168.0.xxx:49926
 ```
 
 - 启动脚本 hr-predict.sh 内容如下
@@ -250,6 +256,9 @@ echo Start At : $(date), APP_SYSTEMOUT_LOGFILE=$APP_SYSTEMOUT_LOGFILE
 echo "" >> $APP_SYSTEMOUT_LOGFILE
 echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
 sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh -p /hyren/temp/nongan/pred-result-images >> $APP_SYSTEMOUT_LOGFILE 2>&1
+# Or setting log level :
+# sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh -D 0 -p /hyren/temp/nongan/pred-result-images >> $APP_SYSTEMOUT_LOGFILE 2>&1
+# sudo systemctl restart hre-appai && sudo systemctl status hre-appai
 ```
 
 **如果希望保存预测结果的画框图片，需要加上参数 '-s'，并重启服务**
@@ -279,6 +288,7 @@ User=hyren
 WantedBy=multi-user.target
 EOF
 cat /etc/systemd/system/hre-appai.service
+grep "${PROJECT_ROOT}" /etc/systemd/system/hre-appai.service  # see : ExecStart=/hyren/hrsapp/bin/zhna-ai.sh
 
 # 返回 hyren用户
 exit
@@ -286,15 +296,29 @@ exit
 # 启用服务
 sudo systemctl start hre-appai
 # 启动后，用status看输出。
-# 应该把脚本中的各个echo输出出来，包括：RunType=start, BINDIR=/hyren/hrsapp/bin, PATH..., Start At....
+# 应该把脚本中的各个echo输出出来，包括：BINDIR=/hyren/hrsapp/bin, Start At '当前时间'
 sudo systemctl status hre-appai
 
 # 看看应用的启动日志。
 # 耐心等待，因为启动很慢。
-tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
+sudo systemctl restart hre-appai && sudo systemctl status hre-appai  # if need do this!
+tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log  # see : http service listen port 38010 and started at : 'current date time'
+
 # 验证
-cd ${TEST_ROOT}/pic
-curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-1.jpg
+curl http://localhost:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
+ls /hyren/temp/nongan/pred-result-images  # nothing in the folder
+
+curl http://localhost:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100&force_save_result=1'
+curl http://localhost:38010/behavior_detect -X POST \
+    -d 'imgfile=http://61.155.158.222:6120/pic?8dd988877-9dob01l*21e842--45ef4ee7c35adi7b2*=8d0i3s1*=idp4*=pd*m4i1t=1e1965576i0s=*0az48a1d4pi-7do=443=4i630&upid=100&force_save_result=1'
+ls /hyren/temp/nongan/pred-result-images  # two '.rst.jpg' files in the folder
+# 看结果图片
+cd /hyren/temp/nongan/pred-result-images
+python3 -m http.server 49926
+# 之后即可访问：
+http://172.168.0.xxx:49926
 
 # 设置为开机启动
 sudo systemctl enable hre-appai
@@ -308,13 +332,20 @@ sudo systemctl enable hre-appai
 # sudo systemctl disable hre-appai
 
 # 重启：为了验证是否开机启动了
-reboot
+sudo reboot
 
 # 开机后确认是否自动启动成功
-ps -ef|grep hrdarknet.bin
-
-cat /hyren/hrsapp/bin/zhna-ai-systemout.log | grep "="
+ps -ef|grep hrdarknet.bin | grep -v grep
+cat /hyren/hrsapp/bin/zhna-ai-systemout.log | grep "======"
 # 应该看到两行启动时间。第一行是重启前第一次启动服务时输出的，第二行就是这次开机自动启动输出的，看时间可知
+
+# 确认服务是否可用
+curl http://localhost:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
+# login pi
+nano1ip=
+curl http://${nano1ip}:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
 ```
 
 ---

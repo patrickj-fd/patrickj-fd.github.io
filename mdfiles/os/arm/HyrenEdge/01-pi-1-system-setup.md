@@ -108,19 +108,6 @@ sed -i "91c alias ll='ls -lhF'" .bashrc
 source .bashrc
 # 应该不再有颜色了，且 ll 可用
 ```
-### mount U盘
-```shell
-sudo mkdir /mnt/usb1 /mnt/usb2
-cat > ~/mount << EOF
-#!/bin/bash
-sudo mount /dev/sda1 /mnt/usb1
-echo
-echo USB : /mnt/usb1
-ls /mnt/usb1
-echo
-EOF
-chmod 700 ~/mount
-```
 
 ### 建立工作用户
 ```shell
@@ -212,6 +199,12 @@ sudo apt install -y htop nmap
 history -c
 echo > ~/.bash_history
 history -r
+
+su - hyren
+echo "$(date '+%Y-%m-%d %H:%M:%S')" > .done && cat .done
+history -c
+echo > ~/.bash_history
+history -r
 ```
 
 # 5. 参考
@@ -227,7 +220,7 @@ sudo vi /etc/wpa_supplicant/wpa_supplicant.conf
 # 该文件保存后，一般等待几秒就可以连上网络了，如果不行试试：
 sudo ifdown wlan0
 sudo ifup wlan0     # or reboot 
-# 也可以试试下面这个：
+# 如果执行ifdown/ifup出错，执行下面命令即可
 sudo wpa_cli -i wlan0 reconfigure
 ```
 

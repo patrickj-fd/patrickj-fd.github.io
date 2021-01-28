@@ -111,20 +111,7 @@ sudo apt upgrade -y
 
 ## 1.3 初始化工作环境
 
-### 1.3.1 mount U盘的脚本
-```shell
-sudo mkdir /mnt/usb1 /mnt/usb2
-cat > ~/mount << EOF
-#!/bin/bash
-sudo mount /dev/sda1 /mnt/usb1
-echo
-echo USB : /mnt/usb1
-ls /mnt/usb1
-echo
-EOF
-chmod 700 ~/mount
-```
-
+### 1.3.1 无
 
 ### 1.3.2 安装常用软件
 ```shell
@@ -142,7 +129,11 @@ sudo mkdir /hyren
 sudo useradd -d /hyren -s /bin/bash hyren
 # sudo userdel -r hyren  # 包括主目录一起删除
 sudo echo "hyren:hre118" | sudo chpasswd
-sudo echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
+
+# 给 hyren 用户赋予免密sudo的权限
+su -
+echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
+exit
 
 sudo cp /home/pi/.bashrc /hyren
 sudo cp /home/pi/.profile /hyren
@@ -171,8 +162,7 @@ sed -i "92d" ~/.bashrc
 echo "" >> ~/.bashrc
 echo "export CUBA_HOME=/usr/local/cuda" >> ~/.bashrc
 echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ~/.bashrc
-echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}
-" >> ~/.bashrc
+echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}" >> ~/.bashrc
 
 source ~/.bashrc
 # 看命令行是不是只显示当前目录了， ll 命令是否可用
@@ -186,7 +176,7 @@ echo "trusted-host = pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
 echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple/" >> ~/.pip/pip.conf
 echo "timeout = 150" >> ~/.pip/pip.conf
 
-exit  # for going to pi
+exit  # back to pi
 ```
 
 ### 1.3.5 设置 Pi 过来的免密
@@ -241,6 +231,12 @@ lshw    # 查看硬件
 # 4. 清理
 ```shell
 # su 成 root/pi/hyren 分别执行下面的清理工作
+history -c
+echo > ~/.bash_history
+history -r
+
+su - hyren
+echo "$(date '+%Y-%m-%d %H:%M:%S')" > .done && cat .done
 history -c
 echo > ~/.bash_history
 history -r

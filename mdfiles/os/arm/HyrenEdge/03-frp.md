@@ -65,9 +65,7 @@ Server_Port=49901
 
 # 4. 设置3位设备编号。和主机名的编号相同。该设备使用的端口会后缀两位数字，即每个设备可以有99个端口。
 # [ 内部测试的机器设置为：499 ]
-HRE_ORG_NO=$(hostname)
-HRE_ORG_NO=${HRE_ORG_NO:3:3}
-echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......
+HRE_ORG_NO=$(hostname) && HRE_ORG_NO=${HRE_ORG_NO:3:3} && echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......
 
 # 5. 设置设备名。可用名字为：pi , nano1 , nano2。
 EdgeName=
@@ -112,7 +110,7 @@ nohup /opt/HRETNC/HRETNC -c /opt/HRETNC/ssh.ini &
 
 # 查看启动日志。最后一行应该类似 :
 # ...... [hre400-pi/nano-ssh] start proxy success
-tail -f /tmp/HRETNC-ssh.log
+tail /tmp/HRETNC-ssh.log
 
 # 验证
 ssh -oPort=${HRE_ORG_NO}${PortSuffix} hyren@139.9.126.19
@@ -155,7 +153,7 @@ systemctl enable HRETNC-ssh
 # 重启主机并验证
 reboot
 # 自己笔记本上验证可以ssh上去（hyren 登陆）
-ssh hyren@139.9.126.19 -oPort=上面设置的端口
+ssh hyren@139.9.126.19 -oPort=上面设置的端口（例如：40100）
 exit
 
 # 再次登陆到新安装的设备上(pi/nano)
@@ -164,6 +162,13 @@ su -
 ps -ef|grep HRE
 # 查看开发服务的启动日志是否有错误。应该没有任何输出
 journalctl | grep HRE
+
+# 查看启动日志。最后一行应该类似 :
+# ...... [hre400-pi/nano-ssh] start proxy success
+tail /tmp/HRETNC-ssh.log
+
+# 退出
+exit
 ```
 
 ---
