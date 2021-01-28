@@ -146,8 +146,7 @@ User=nobody
 WantedBy=multi-user.target
 EOF
 
-systemctl start HRETNC-ssh
-systemctl status HRETNC-ssh  # check : Active: active (running)
+systemctl start HRETNC-ssh && systemctl status HRETNC-ssh  # check : Active: active (running)
 systemctl enable HRETNC-ssh
 
 # 重启主机并验证

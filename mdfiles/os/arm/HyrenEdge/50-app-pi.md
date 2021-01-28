@@ -150,14 +150,13 @@ HRE_ORG_NO=$(hostname) && HRE_ORG_NO=${HRE_ORG_NO:3:3} && echo $HRE_ORG_NO  # sh
 # 设置web服务端口。默认的设置规则为设备3位编号+10。除非用户真实环境不允许使用这个端口
 HRE_MISWEB_PORT=${HRE_ORG_NO}10
 sed -i "s/    port : .*/    port : ${HRE_MISWEB_PORT}/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
+grep -C 1 "${HRE_MISWEB_PORT}" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf  # check
 
 # 修改IP。设备进入正式环境后，得到用户网络真实IP后，还要再修改。以下命令仅仅是为了公司内部测试环境用
-LOCAL_WIFI_IP=$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}')
-echo LOCAL_WIFI_IP=$LOCAL_WIFI_IP  # check
-sed -i "s/\/\/139\.9\.126\.19:/\/\/${LOCAL_WIFI_IP}:/" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
-
-# 修改Port。
-sed -i "s/:49920\//:${HRE_MISWEB_PORT}\//" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/httpserver.conf
+# LOCAL_WIFI_IP=$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}')
+NANO_IP=
+sed -i "s%algo_url=.*%algo_url=http://${NANO_IP}:38010/%" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/comm.conf
+grep -C 1 "${NANO_IP}" /hyren/hrsapp/dist/java/zhna/resources/fdconfig/comm.conf  # check
 
 ```
 
@@ -167,39 +166,32 @@ sed -i "s/:49920\//:${HRE_MISWEB_PORT}\//" /hyren/hrsapp/dist/java/zhna/resource
 **除非必要，zhna.sh永远不用直接执行，应该通过systemctl进行启停**
 ```shell
 vi /hyren/hrsapp/bin/zhna.sh
-# zhna.sh 内容如下
+# 清空文件内容：
+# gg     到第1行
+# dG     先按d，再按 Shift+G
+# zhna.sh ========= Start
+
 #!/bin/bash
 
 set -e
 
-RunType="$1"
-
 JAVA_HOME=/usr/java/default
 PATH=$JAVA_HOME/bin:$PATH
 
-BINDIR=/hyren/hrsapp/bin/
-echo RunType=$RunType
+BINDIR=/hyren/hrsapp/bin
+echo BINDIR=$BINDIR
 echo PATH=$PATH
 
-# [ Func 1 ] : start process
-if [ "x$RunType" == "xstart" ]; then
-    APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-systemout.log
-    echo Start At : $(date), APP_SYSTEMOUT_LOGFILE=$APP_SYSTEMOUT_LOGFILE
-    java -version
-    echo "" >> $APP_SYSTEMOUT_LOGFILE
-    java -jar /hyren/hrsapp/dist/java/zhna/zhna-1.0.jar >> $APP_SYSTEMOUT_LOGFILE 2>&1
-fi
+APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-systemout.log
+echo Start At : $(date)
+echo LogFile=$APP_SYSTEMOUT_LOGFILE
+java -version
+echo "" >> $APP_SYSTEMOUT_LOGFILE
+echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
+java -jar /hyren/hrsapp/dist/java/zhna/zhna-1.0.jar >> $APP_SYSTEMOUT_LOGFILE 2>&1
 
-# [ Func 2 ] : just show process
-if [ "x$RunType" == "xshow" ]; then
-    echo && ps -ef | grep "java" | grep "zhna-1.0.jar" | grep -v grep && echo
-fi
+# zhna.sh ========= End
 
-# [ Func 3 ] : kill process. For 'ExecStop=' in hre-appmis.service
-if [ "x$RunType" == "xstop" ]; then
-    # TODO
-    echo "Stopped"
-fi
 
 chmod u+x /hyren/hrsapp/bin/zhna.sh
 ```
@@ -225,6 +217,7 @@ tail -f -n100 $APP_SYSTEMOUT_LOGFILE
 su -
 # 要和上面设置保持一致！！！
 PROJECT_ROOT=/hyren/hrsapp
+
 cat > /etc/systemd/system/hre-appmis.service << EOF
 [Unit]
 Description=HyrenEdgeAppMis
@@ -232,27 +225,35 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=${PROJECT_ROOT}/bin/zhna.sh start
+ExecStart=${PROJECT_ROOT}/bin/zhna.sh
 User=hyren
 
 [Install]
 WantedBy=multi-user.target
 EOF
+# check
+cat /etc/systemd/system/hre-appmis.service
+grep "${PROJECT_ROOT}" /etc/systemd/system/hre-appmis.service  # see : ExecStart=/hyren/hrsapp/bin/zhna.sh
+
+# 返回 pi用户
+su - pi
 
 # 启用服务
-systemctl start hre-appmis
-systemctl status hre-appmis  # show : RunType, date and java version
+sudo systemctl start hre-appmis && sudo systemctl status hre-appmis  # show : BINDIR, PATH, Start At, LogFile, Openjdk version ......
 
 # 查看一下应用的运行日志
 # 这个日志文件位置，通过上条命令(status)能看到
-tail /hyren/hrsapp/bin/zhna-systemout.log
-ps -ef|grep java
+sudo systemctl restart hre-appmis && sudo systemctl status hre-appmis  # if need do this!
+tail /hyren/hrsapp/bin/zhna-systemout.log  # see : Web Server started successfully at 'current date time'
+ps -ef | grep java | grep zhna | grep -v grep
 
 # 激活开机启动
-systemctl enable hre-appmis
+sudo systemctl enable hre-appmis
 
 # 重启机器，验证是否开机启动了
 reboot
+# check log
+tail /hyren/hrsapp/bin/zhna-systemout.log  # see : Web Server started successfully at 'current date time'
 
 # 以下为调试用命令
 # systemctl daemon-reload
@@ -260,7 +261,6 @@ reboot
 # systemctl status hre-appmis
 # systemctl stop hre-appmis
 # systemctl disable hre-appmis
-
 ```
 
 ---

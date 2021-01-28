@@ -98,6 +98,7 @@ sudo echo "pi:Hre2188" | sudo chpasswd
 sudo mkdir /data
 sudo chown -R pi /data
 sudo chown -R pi /opt
+ls -l / | grep pi  # check
 
 # vi .bashrc
 # 46行： 把 force_color_prompt=yes 注释掉。以便从颜色上，让 pi 用户区别于其他用户。注意：如果用vscode连接上，这个颜色依然会有。

@@ -249,10 +249,12 @@ set -e
 
 BINDIR=/hyren/hrsapp/bin
 echo BINDIR=$BINDIR
+echo PATH=$PATH
 
 APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
 
-echo Start At : $(date), APP_SYSTEMOUT_LOGFILE=$APP_SYSTEMOUT_LOGFILE
+echo Start At : $(date)
+echo LogFile=$APP_SYSTEMOUT_LOGFILE
 echo "" >> $APP_SYSTEMOUT_LOGFILE
 echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
 sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh -p /hyren/temp/nongan/pred-result-images >> $APP_SYSTEMOUT_LOGFILE 2>&1
@@ -297,7 +299,7 @@ exit
 sudo systemctl start hre-appai
 # 启动后，用status看输出。
 # 应该把脚本中的各个echo输出出来，包括：BINDIR=/hyren/hrsapp/bin, Start At '当前时间'
-sudo systemctl status hre-appai
+sudo systemctl status hre-appai  # show : BINDIR, PATH, Start At, LogFile, Openjdk version ......
 
 # 看看应用的启动日志。
 # 耐心等待，因为启动很慢。
@@ -314,6 +316,12 @@ curl http://localhost:38010/behavior_detect -X POST \
 curl http://localhost:38010/behavior_detect -X POST \
     -d 'imgfile=http://61.155.158.222:6120/pic?8dd988877-9dob01l*21e842--45ef4ee7c35adi7b2*=8d0i3s1*=idp4*=pd*m4i1t=1e1965576i0s=*0az48a1d4pi-7do=443=4i630&upid=100&force_save_result=1'
 ls /hyren/temp/nongan/pred-result-images  # two '.rst.jpg' files in the folder
+
+# 在 pi 上验证
+nano1ip=
+curl http://${nano1ip}:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
+
 # 看结果图片
 cd /hyren/temp/nongan/pred-result-images
 python3 -m http.server 49926
