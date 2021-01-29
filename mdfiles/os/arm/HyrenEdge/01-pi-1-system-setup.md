@@ -118,7 +118,7 @@ sudo useradd -d /hyren -s /bin/bash hyren
 sudo echo "hyren:hre118" | sudo chpasswd
 
 sudo cp /home/pi/.bashrc /hyren
-sudo cp /home/pi/.profile /hyren
+sudo cp /home/pi/.profile /hyren && ls -la /hyren
 
 # 修改hyren用户环境 : /hyren/.bashrc
 # 46行： 把 force_color_prompt=yes 打开

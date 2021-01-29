@@ -136,7 +136,7 @@ echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
 exit
 
 sudo cp /home/pi/.bashrc /hyren
-sudo cp /home/pi/.profile /hyren
+sudo cp /home/pi/.profile /hyren && ls -la /hyren
 
 sudo chown -R hyren:sudo /hyren
 sudo chmod -R g+w /hyren
@@ -165,6 +165,7 @@ echo "export PATH=/usr/local/cuda/bin:\${PATH}" >> ~/.bashrc
 echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}" >> ~/.bashrc
 
 source ~/.bashrc
+echo $LD_LIBRARY_PATH  # show : /usr/local/cuda/lib64
 # 看命令行是不是只显示当前目录了， ll 命令是否可用
 
 nvcc -V  # see CUDA info

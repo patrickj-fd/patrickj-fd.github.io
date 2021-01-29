@@ -48,7 +48,7 @@ mkdir ${TEMP_DIR}/nongan/pred-result-images
 
 # 从nano开发机上获得项目文件：hrdarknet.bin hr-predict.sh prj.names prj.cfg weights
 # TODO 改成文件从gogs上取，权重和执行程序从开发机上取
-ProjectRes=hyren@172.168.0.172:/hyren/project/nongan
+ProjectRes=hyren@172.168.0.172:/hyren/project/nongan  # PROJECT_ROOT=/hyren/hrsapp
 scp ${ProjectRes}/prj.* ${ProjectRes}/hr*.bin ${ProjectRes}/hr*.sh ${PROJECT_ROOT}/dist/c/nongan
 scp ${ProjectRes}/weights/prj_final.* ${PROJECT_ROOT}/dist/c/nongan/weights/
 
@@ -206,7 +206,7 @@ ls /hyren/temp/nongan/pred-result-images  # two '.rst.jpg' files in the folder
 # 在 pi 上验证
 nano1ip=
 curl http://${nano1ip}:38010/behavior_detect -X POST \
-    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=pi-100'
 
 # 看结果图片
 cd /hyren/temp/nongan/pred-result-images
