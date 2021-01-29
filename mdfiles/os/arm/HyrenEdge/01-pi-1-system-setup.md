@@ -218,7 +218,10 @@ sudo iwlist wlan0 scan | grep SSID
 # 如果网络没有密码，则添加一行：key_mgmt=NONE
 # 如果网络是隐藏的，则添加一行：scan_ssid=1
 sudo vi /etc/wpa_supplicant/wpa_supplicant.conf
-# 该文件保存后，一般等待几秒就可以连上网络了，如果不行试试：
+# 该文件保存后，一般等待几秒就可以连上网络了
+ifconfig
+
+# 如果不行试试：
 sudo ifdown wlan0
 sudo ifup wlan0     # or reboot 
 # 如果执行ifdown/ifup出错，执行下面命令即可

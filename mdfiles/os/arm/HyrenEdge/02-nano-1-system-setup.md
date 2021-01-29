@@ -205,6 +205,8 @@ sudo reboot
 # 恢复(启动时进入桌面)
 # sudo systemctl set-default graphical.target
 # sudo reboot
+
+sudo systemctl get-default  # show : multi-user.target
 ```
 
 ## 1.4 查看系统情况

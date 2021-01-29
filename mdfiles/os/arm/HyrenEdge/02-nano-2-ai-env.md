@@ -135,16 +135,12 @@ message people
     int32 height = 2;
 }
 EOF
-```
 
-### 编译
-```shell
+# compile
 mkdir app_out
 protoc -I=./app --python_out=./app_out/ app/people.proto
-```
 
-### vi app_out/test.py
-```shell
+# test codefile
 cat > app_out/test.py << EOF
 import people_pb2
 
@@ -155,9 +151,10 @@ print(pbFirstPeople)
 EOF
 ```
 
-### 查看结果
+# 查看结果
 ```shell
 python3 app_out/test.py
+
 
 # 结果显示：
 name: "joey"

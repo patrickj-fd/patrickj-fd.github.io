@@ -156,18 +156,15 @@ ssh hyren@139.9.126.19 -oPort=上面设置的端口（例如：40100）
 exit
 
 # 再次登陆到新安装的设备上(pi/nano)
-su -
 # 查看服务是否启动了，所属用户应该是：nobody
-ps -ef|grep HRE
+sudo ps -ef|grep HRE
 # 查看开发服务的启动日志是否有错误。应该没有任何输出
-journalctl | grep HRE
+sudo journalctl | grep HRE
 
 # 查看启动日志。最后一行应该类似 :
 # ...... [hre400-pi/nano-ssh] start proxy success
-tail /tmp/HRETNC-ssh.log
+sudo tail /tmp/HRETNC-ssh.log
 
-# 退出
-exit
 ```
 
 ---

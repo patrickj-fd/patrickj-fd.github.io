@@ -37,7 +37,7 @@ mkdir -p ${TEMP_DIR}/nongan
 # 取基础 shell 库 feedwork-shell
 cd ${PROJECT_ROOT}/dist
 git clone http://139.9.126.19:38111/FdcoreHyren/feedwork-shell.git
-sudo ln -s ${PROJECT_ROOT}/dist/feedwork-shell/fd_utils.sh /usr/local/bin/fd_utils.sh
+sudo ln -s ${PROJECT_ROOT}/dist/feedwork-shell/fd_utils.sh /usr/local/bin/fd_utils.sh && ls -l /usr/local/bin/fd*
 
 # 建立本项目的目录结构
 mkdir ${PROJECT_ROOT}/dist/c
@@ -87,11 +87,12 @@ scp ${ProjectRes}/test/pic/* ${TEST_ROOT}/pic
 ls ${TEST_ROOT}/pic
 
 # 启动
-cd ${PROJECT_ROOT}/dist/c/nongan && ls
+cd ${PROJECT_ROOT}/dist/c/nongan && ls -l
+./hrdarknet.bin -version
 sudo ./hr-predict.sh -s -p ${TEST_ROOT}/pic
 
 # 开始测试
-cd ${TEST_ROOT}/pic
+cd ${TEST_ROOT}/pic  # cd /hyren/hrsapp/dist/c/nongan/test/pic
 curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=no-1.jpg&upid=100&force_save_result=1'
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-2.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-3.jpg
@@ -111,8 +112,140 @@ python3 -m http.server 49926 &
 http://172.168.0.xxx:49926
 ```
 
-- 启动脚本 hr-predict.sh 内容如下
+## 3. 把项目配置成开机启动
 
+### 启动服务的工具脚本
+```shell
+cd ~
+echo PROJECT_ROOT=${PROJECT_ROOT}  # should be /hyren/hrsapp
+
+touch ${PROJECT_ROOT}/bin/zhna-ai.sh
+chmod u+x ${PROJECT_ROOT}/bin/zhna-ai.sh && ls -l ${PROJECT_ROOT}/bin
+
+vi ${PROJECT_ROOT}/bin/zhna-ai.sh
+```
+
+#### [ zhna-ai.sh ]
+**除非必要，zhna-ai.sh永远不用直接执行，应该通过systemctl进行启停**
+```shell
+#!/bin/bash
+set -e
+
+BINDIR=/hyren/hrsapp/bin
+echo BINDIR=$BINDIR
+echo PATH=$PATH
+
+APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
+
+echo Start At : $(date)
+echo LogFile=$APP_SYSTEMOUT_LOGFILE
+echo "" >> $APP_SYSTEMOUT_LOGFILE
+echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
+sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh -p /hyren/temp/nongan/pred-result-images >> $APP_SYSTEMOUT_LOGFILE 2>&1
+# Or setting log level :
+# sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh -D 0 -p /hyren/temp/nongan/pred-result-images >> $APP_SYSTEMOUT_LOGFILE 2>&1
+# sudo systemctl restart hre-appai && sudo systemctl status hre-appai
+```
+
+**如果希望保存预测结果的画框图片，需要加上参数 '-s'，并重启服务**
+
+**再次重申：**
+1. 这个脚本仅仅适用开机启动执行。
+2. 如果要启停服务，应该使用systemctl命令。
+3. 如果日常运行中需要单独启动应用，应以nohup方式启动到后台去！（见下面的命令）
+  - 理论上，不存在需要单独启动应用的情况！
+
+### 注册成开机启动
+```shell
+su -
+PROJECT_ROOT=/hyren/hrsapp
+
+cat > /etc/systemd/system/hre-appai.service << EOF
+[Unit]
+Description=HyrenEdgeAppAI
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=${PROJECT_ROOT}/bin/zhna-ai.sh
+User=hyren
+
+[Install]
+WantedBy=multi-user.target
+EOF
+cat /etc/systemd/system/hre-appai.service
+grep "${PROJECT_ROOT}" /etc/systemd/system/hre-appai.service  # see : ExecStart=/hyren/hrsapp/bin/zhna-ai.sh
+
+# 返回 hyren用户
+exit
+
+# 启用服务
+sudo systemctl start hre-appai
+# 启动后，用status看输出。
+# 应该把脚本中的各个echo输出出来，包括：BINDIR=/hyren/hrsapp/bin, Start At '当前时间'
+sudo systemctl status hre-appai  # show : BINDIR, PATH, Start At, LogFile, Openjdk version ......
+
+# 以上启动成功后，看日志是否正确监听端口了。耐心等待，因为启动很慢
+tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log  # see : http service listen port 38010 and started at : 'current date time'
+
+# 再重启服务一次，看看是否可以正常重启。
+sudo systemctl restart hre-appai && sudo systemctl status hre-appai  # if need do this!
+tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log  # see : http service listen port 38010 and started at : 'current date time'
+
+# 验证
+curl http://localhost:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
+ls /hyren/temp/nongan/pred-result-images  # nothing in the folder
+
+curl http://localhost:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100&force_save_result=1'
+curl http://localhost:38010/behavior_detect -X POST \
+    -d 'imgfile=http://61.155.158.222:6120/pic?8dd988877-9dob01l*21e842--45ef4ee7c35adi7b2*=8d0i3s1*=idp4*=pd*m4i1t=1e1965576i0s=*0az48a1d4pi-7do=443=4i630&upid=100&force_save_result=1'
+ls /hyren/temp/nongan/pred-result-images  # two '.rst.jpg' files in the folder
+
+# 在 pi 上验证
+nano1ip=
+curl http://${nano1ip}:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
+
+# 看结果图片
+cd /hyren/temp/nongan/pred-result-images
+python3 -m http.server 49926
+# 之后即可访问：
+http://172.168.0.xxx:49926
+
+# 设置为开机启动
+sudo systemctl enable hre-appai
+
+# 以下为调试用命令
+# sudo systemctl daemon-reload
+# 修改脚本后重启服务，并用status看输出，用tail看日志
+# sudo systemctl restart hre-appai
+# sudo systemctl status hre-appai
+# sudo systemctl stop hre-appai
+# sudo systemctl disable hre-appai
+
+# 重启：为了验证是否开机启动了
+sudo reboot
+
+# 开机后确认是否自动启动成功
+ps -ef|grep hrdarknet.bin | grep -v grep
+cat /hyren/hrsapp/bin/zhna-ai-systemout.log | grep "======"
+# 应该看到两行启动时间。第一行是重启前第一次启动服务时输出的，第二行就是这次开机自动启动输出的，看时间可知
+
+# 确认服务是否可用
+curl http://localhost:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
+# login pi
+nano1ip=
+curl http://${nano1ip}:38010/behavior_detect -X POST \
+    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
+```
+
+
+# 参考内容
+
+## 启动脚本 hr-predict.sh 
 ```shell
 #!/bin/bash
 # 启动 : 
@@ -226,134 +359,6 @@ HR_LOGLEVEL=$Log_level HR_LOGOUT_TYPE=2 "$BINDIR/$EXEC" -t pred $ARGSTR_PORT \
     -weightsfile ${PRJ_ROOT}/weights/prj_final.weights \
     ${Imgfile_root} $Save_respic
 
-```
-
-## 3. 把项目配置成开机启动
-
-### 启动服务的工具脚本
-```shell
-cd ~
-echo PROJECT_ROOT=${PROJECT_ROOT}  # should be /hyren/hrsapp
-
-touch ${PROJECT_ROOT}/bin/zhna-ai.sh
-chmod u+x ${PROJECT_ROOT}/bin/zhna-ai.sh && ls -l ${PROJECT_ROOT}/bin
-
-vi ${PROJECT_ROOT}/bin/zhna-ai.sh
-```
-
-#### [ zhna-ai.sh ]
-**除非必要，zhna-ai.sh永远不用直接执行，应该通过systemctl进行启停**
-```shell
-#!/bin/bash
-set -e
-
-BINDIR=/hyren/hrsapp/bin
-echo BINDIR=$BINDIR
-echo PATH=$PATH
-
-APP_SYSTEMOUT_LOGFILE=${BINDIR}/zhna-ai-systemout.log
-
-echo Start At : $(date)
-echo LogFile=$APP_SYSTEMOUT_LOGFILE
-echo "" >> $APP_SYSTEMOUT_LOGFILE
-echo "========== $(date) ==========" >> $APP_SYSTEMOUT_LOGFILE
-sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh -p /hyren/temp/nongan/pred-result-images >> $APP_SYSTEMOUT_LOGFILE 2>&1
-# Or setting log level :
-# sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh -D 0 -p /hyren/temp/nongan/pred-result-images >> $APP_SYSTEMOUT_LOGFILE 2>&1
-# sudo systemctl restart hre-appai && sudo systemctl status hre-appai
-```
-
-**如果希望保存预测结果的画框图片，需要加上参数 '-s'，并重启服务**
-
-**再次重申：**
-1. 这个脚本仅仅适用开机启动执行。
-2. 如果要启停服务，应该使用systemctl命令。
-3. 如果日常运行中需要单独启动应用，应以nohup方式启动到后台去！（见下面的命令）
-  - 理论上，不存在需要单独启动应用的情况！
-
-### 注册成开机启动
-```shell
-su -
-PROJECT_ROOT=/hyren/hrsapp
-
-cat > /etc/systemd/system/hre-appai.service << EOF
-[Unit]
-Description=HyrenEdgeAppAI
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=${PROJECT_ROOT}/bin/zhna-ai.sh
-User=hyren
-
-[Install]
-WantedBy=multi-user.target
-EOF
-cat /etc/systemd/system/hre-appai.service
-grep "${PROJECT_ROOT}" /etc/systemd/system/hre-appai.service  # see : ExecStart=/hyren/hrsapp/bin/zhna-ai.sh
-
-# 返回 hyren用户
-exit
-
-# 启用服务
-sudo systemctl start hre-appai
-# 启动后，用status看输出。
-# 应该把脚本中的各个echo输出出来，包括：BINDIR=/hyren/hrsapp/bin, Start At '当前时间'
-sudo systemctl status hre-appai  # show : BINDIR, PATH, Start At, LogFile, Openjdk version ......
-
-# 看看应用的启动日志。
-# 耐心等待，因为启动很慢。
-sudo systemctl restart hre-appai && sudo systemctl status hre-appai  # if need do this!
-tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log  # see : http service listen port 38010 and started at : 'current date time'
-
-# 验证
-curl http://localhost:38010/behavior_detect -X POST \
-    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
-ls /hyren/temp/nongan/pred-result-images  # nothing in the folder
-
-curl http://localhost:38010/behavior_detect -X POST \
-    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100&force_save_result=1'
-curl http://localhost:38010/behavior_detect -X POST \
-    -d 'imgfile=http://61.155.158.222:6120/pic?8dd988877-9dob01l*21e842--45ef4ee7c35adi7b2*=8d0i3s1*=idp4*=pd*m4i1t=1e1965576i0s=*0az48a1d4pi-7do=443=4i630&upid=100&force_save_result=1'
-ls /hyren/temp/nongan/pred-result-images  # two '.rst.jpg' files in the folder
-
-# 在 pi 上验证
-nano1ip=
-curl http://${nano1ip}:38010/behavior_detect -X POST \
-    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
-
-# 看结果图片
-cd /hyren/temp/nongan/pred-result-images
-python3 -m http.server 49926
-# 之后即可访问：
-http://172.168.0.xxx:49926
-
-# 设置为开机启动
-sudo systemctl enable hre-appai
-
-# 以下为调试用命令
-# sudo systemctl daemon-reload
-# 修改脚本后重启服务，并用status看输出，用tail看日志
-# sudo systemctl restart hre-appai
-# sudo systemctl status hre-appai
-# sudo systemctl stop hre-appai
-# sudo systemctl disable hre-appai
-
-# 重启：为了验证是否开机启动了
-sudo reboot
-
-# 开机后确认是否自动启动成功
-ps -ef|grep hrdarknet.bin | grep -v grep
-cat /hyren/hrsapp/bin/zhna-ai-systemout.log | grep "======"
-# 应该看到两行启动时间。第一行是重启前第一次启动服务时输出的，第二行就是这次开机自动启动输出的，看时间可知
-
-# 确认服务是否可用
-curl http://localhost:38010/behavior_detect -X POST \
-    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
-# login pi
-nano1ip=
-curl http://${nano1ip}:38010/behavior_detect -X POST \
-    -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
 ```
 
 ---
