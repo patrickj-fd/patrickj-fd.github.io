@@ -68,6 +68,7 @@ sudo swapon --show
 ### * 检查功率模式
 ```shell
 sudo /usr/sbin/nvpmodel -q  # show : MAXN
+
 # 查看处理器状态，各个值应该符合下面表格中 10W 这一列的数值
 sudo jetson_clocks --show
 ```
@@ -80,14 +81,15 @@ sudo jetson_clocks --show
 | CPU Max Freq | 1479 | 918  |
 | GPU Max Freq | 921  | 640  |
 
+
 **以下修改命令仅供参考，不需要执行！**
 ```shell
 # 修改方式：
 # -m 对应的是 mode ID, 比如 0 或 1。
 # 10w模式：
-sudo /usr/sbin/nvpmodel -m 0
+# sudo /usr/sbin/nvpmodel -m 0
 # 5w模式：
-sudo /usr/sbin/nvpmodel -m 1
+# sudo /usr/sbin/nvpmodel -m 1
 ```
 
 ### * 清理不用的软件
