@@ -181,25 +181,42 @@ doc/**/*.txt
 ```
 
 # 9. 其他
-## 查看仓库状态
+## 9.1 查看仓库状态
 查看有哪些文件被修改、添加、删除了，是否在暂存区，等等信息。
 ```shell
 git status     # 显示详细的信息
 git status -s  # 显示简短信息
 ```
-显示简短信息，可以直观了解变动的文件，并且配合git add来提交指定文件。例如：只提交部分文件的处理方式：
+
+## 9.2 提交指定文件
 ```shell
 git status -s        # 1. 查看仓库状态
 git add <filepath>   # 2. 添加需要提交的文件名（用上面显示出来文件全路径）
 git stash -u -k      # 3. 忽略其他文件，把现修改的隐藏起来，这样提交的时候就不会提交未被add的文件
                      #    -k 保持文件的完整。-u 包括无路径的文件(那些新的和未添加到git的)。
 git commit -m "xxx"  # 4.
-git pull             # 5. 拉取合并
+git pull             # 5. 拉取合并。如果远程没有过变化，跳过本步骤
 git push             # 6. 推送到远程
 git stash pop        # 7. 恢复之前忽略的文件（非常重要的一步）
 ```
 
-## 删除提交记录
+## 9.3 比较本地和远程的区别
+区别有两种：  
+1. 远程有比本地更加新的变化。比如别人提交了文件
+
+```shell
+git fetch orgin      # 把远程的变化情况更新到本地
+git diff master origin/master
+```
+
+2. 本地有比远程更加新的变化。比如自己修改了本地文件还没有推送给远程
+
+```shell
+git status           # 看本地仓库的状态即可知道本地有变化的文件，然后逐个文件用diff比较即可
+git diff a.txt a.txt # 第1个a.txt指本地的文件名，第2个a.txt即远程仓库上的文件名
+```
+
+## 9.4 删除提交记录
 将最近两次提交的记录合并为一次完美记录为例：
 ```
 git rebase -i HEAD~4
@@ -216,7 +233,12 @@ git rebase --continue    # 如果想放弃这次处理，执行以下命令： g
 git push -f    # 提交到远程仓库
 ```
 
-## 账户密码
+## 9.5 优美简洁的显示log
+```
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+```
+
+# 10. 账户密码
 解决 git push 时需要输入用户名密码的问题  
 - 方式一
 ```
@@ -228,10 +250,6 @@ helper = store --file .git-credentials
 - 方式二
 **推荐** ： 把本地主机的公钥添加到github上，并且，使用SSH方式访问（不要用https方式）
 
-## 优美简洁的显示log
-```
-git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-```
 
 ---
 
