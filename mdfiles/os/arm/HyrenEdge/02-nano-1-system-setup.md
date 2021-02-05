@@ -73,6 +73,7 @@ sudo jetson_clocks --show
 ```
 
 10W/5W，两种模式的主要区别：
+
 | Info class   | 10W  | 5W   |
 | :-----       | :--: | :--: |
 | Online CPU   | 4    | 2    |
