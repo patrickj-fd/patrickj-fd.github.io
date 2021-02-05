@@ -2,6 +2,16 @@
 
 ---
 
+官网
+> https://www.raspberrypi.org
+
+镜像下载地址（包括64位）
+> https://downloads.raspberrypi.org/
+
+参考文章：
+- [Install 64 bit OS on Raspberry Pi 4 + USB boot](https://qengineering.eu/install-raspberry-64-os.html)
+
+
 # 1. 烧镜像
 ## 1.1 网线直连
 打开SD卡根文件cmdline.txt，在第一行最前面添加用于网线直连的ip：
