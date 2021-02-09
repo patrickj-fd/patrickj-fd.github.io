@@ -190,9 +190,14 @@ exit  # back to pi
 ```shell
 su -
 cp /etc/ssh/sshd_config ~/sshd_config.bak
+
 # StrictModes no
 sed -i "s/#StrictModes yes/StrictModes no/" /etc/ssh/sshd_config
 grep -C 2 StrictModes /etc/ssh/sshd_config
+
+# AuthorizedKeysFile      .ssh/authorized_keys .ssh/authorized_keys2
+#sed -i "s/#AuthorizedKeysFile /AuthorizedKeysFile /" /etc/ssh/sshd_config
+#grep -C 2 AuthorizedKeysFile /etc/ssh/sshd_config
 
 systemctl restart ssh
 
