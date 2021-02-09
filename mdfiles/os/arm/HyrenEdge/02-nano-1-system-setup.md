@@ -185,18 +185,33 @@ exit  # back to pi
 
 ### 1.3.5 设置 Pi 过来的免密
 
-**在Pi主机上使用 pi 用户执行**
+1. 设置 Nano ssh 能够被免密登录
+
 ```shell
+su -
+cp /etc/ssh/sshd_config ~/sshd_config.bak
+# StrictModes no
+sed -i "s/#StrictModes yes/StrictModes no/" /etc/ssh/sshd_config
+grep -C 2 StrictModes /etc/ssh/sshd_config
+
+systemctl restart ssh
+
+```
+
+2. 设置 pi 免密登录 Nano（**在Pi主机上使用 pi 用户执行**）
+
+```shell
+ssh pi@PiIP
+
+NANO_IP=nano的ip
 # pi -> pi 的免密
 ssh-keygen -t rsa
-NANO_IP=nano的ip
 ssh-copy-id -i ~/.ssh/id_rsa.pub pi@${NANO_IP}
 ssh ${NANO_IP}  # for check
 
 # hyren -> hyren 的免密
 su - hyren
 ssh-keygen -t rsa
-NANO_IP=nano的ip
 ssh-copy-id -i ~/.ssh/id_rsa.pub hyren@${NANO_IP}
 ssh ${NANO_IP}  # for check
 ```
