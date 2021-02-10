@@ -10,7 +10,7 @@
 
 参考文章：
 - [Install 64 bit OS on Raspberry Pi 4 + USB boot](https://qengineering.eu/install-raspberry-64-os.html)
-
+- [开发相关的系列文章](https://www.pyimagesearch.com/category/raspberry-pi/)
 
 # 1. 烧镜像
 ## 1.1 网线直连
