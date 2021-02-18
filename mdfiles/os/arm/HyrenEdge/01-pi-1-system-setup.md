@@ -155,6 +155,21 @@ apt update
 apt upgrade -y
 ```
 
+### 设置免密
+```shell
+cp /etc/ssh/sshd_config ~/sshd_config.bak
+
+# StrictModes no
+sed -i "s/#StrictModes yes/StrictModes no/" /etc/ssh/sshd_config
+grep -C 2 StrictModes /etc/ssh/sshd_config
+
+# AuthorizedKeysFile      .ssh/authorized_keys .ssh/authorized_keys2
+#sed -i "s/#AuthorizedKeysFile /AuthorizedKeysFile /" /etc/ssh/sshd_config
+#grep -C 2 AuthorizedKeysFile /etc/ssh/sshd_config
+
+systemctl restart ssh
+```
+
 ### 修改系统时间
 ```shell
 dpkg-reconfigure tzdata
@@ -177,7 +192,12 @@ echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile
 # 验证java
 su - hyren
 java -version
+
+# 配置开发机的免密登录
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIJUTIXbAiyaFdD3KsBPVsjKeHI2ZwqzcqbJZK+/KJ66eeaEmtGhLUREhGJHmbv2bZ+zAFMeJCu09uKQiNJogEoKTF3Am9Z2+Y99tV/YWbfVb6bbfpnPHVbEYoneG9ZKOknHfCo8u/7D5gXTfW9fy/fGeRygUV+T+31QN8fMidBbs4tzBQFSv2Yog0NPn3RXqET9BO4yoSYUEt0X9c8kUQZuzDnMOZLPm8fl7tHXvSfHUZIiFKn+npGSBTG+9h7ypAoZuPhmAK0AIvczs6xK1qSCji3BvOHvSVocrWNm2JVTCkclbnJ0uEqhQrn3eRpXHqIREic4XiApNGc+UNL8Tf hyren@hre499-nano1" >> ~/.ssh/authorized_keys
+
 ```
+
 ### 工具软件
 ```shell
 su - pi
