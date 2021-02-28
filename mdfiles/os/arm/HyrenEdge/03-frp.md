@@ -51,7 +51,10 @@ FRP_DIST_PATH=nano
 FRP_DIST_NAME=frp_0.34.3_linux_arm64
 
 # 2. 安装 Frpc
-ssh root@172.168.0.100 "cat /data1/HyrenEdge/${FRP_DIST_PATH}/${FRP_DIST_NAME}.tar.gz" | tar -zxf - -C /opt  # 5t6y0524A!
+#ssh root@172.168.0.100 "cat /data1/HyrenEdge/${FRP_DIST_PATH}/${FRP_DIST_NAME}.tar.gz" | tar -zxf - -C /opt  # 5t6y0524A!
+curl -s ftp://ftp:@172.168.0.100/${FRP_DIST_PATH}/${FRP_DIST_NAME}.tar.gz | tar -zxf - -C /opt
+#tar -zxf ${FRP_DIST_NAME}.tar.gz  -C /opt && rm -f ${FRP_DIST_NAME}.tar.gz
+
 mv /opt/${FRP_DIST_NAME}/ /opt/HRETNC/
 chown -R root:root /opt/HRETNC/ && ls -l /opt/HRETNC/
 
@@ -74,7 +77,7 @@ EdgeName=
 # pi设置为00；两个nano分别设置为：01/02。
 # [ 内部测试的机器设置为：pi/10, nano1/11, nano2/12 ...... 并且，不要执行下面的if语句 ]
 if [ "$EdgeName" == "pi" ]; then PortSuffix="00"; elif [ "$EdgeName" == "nano1" ]; then PortSuffix="01"; elif [ "$EdgeName" == "nano2" ]; then PortSuffix="02"; else echo "========== ERROR EdgeName=$EdgeName =========="; fi
-echo PortSuffix=$PortSuffix  # should be [ pi : 00 , nano : 01 , 02 ]
+echo; echo PortSuffix=$PortSuffix; echo;  # should be [ pi : 00 , nano : 01 , 02 ]
 ```
 
 ### 2.1 配置 ssh
@@ -168,7 +171,7 @@ sudo journalctl | grep HRE
 
 # 查看启动日志。最后一行应该类似 :
 # ...... [hre400-pi/nano-ssh] start proxy success
-sudo tail /tmp/HRETNC-ssh.log
+sudo tail /tmp/HRETNC-ssh.log | grep "start proxy success"
 
 ```
 

@@ -207,9 +207,9 @@ systemctl restart ssh
 2. 设置开发部署机(499)过来的免密
 
 ```shell
-su - hyren
-mkdir ~/.ssh
-echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIJUTIXbAiyaFdD3KsBPVsjKeHI2ZwqzcqbJZK+/KJ66eeaEmtGhLUREhGJHmbv2bZ+zAFMeJCu09uKQiNJogEoKTF3Am9Z2+Y99tV/YWbfVb6bbfpnPHVbEYoneG9ZKOknHfCo8u/7D5gXTfW9fy/fGeRygUV+T+31QN8fMidBbs4tzBQFSv2Yog0NPn3RXqET9BO4yoSYUEt0X9c8kUQZuzDnMOZLPm8fl7tHXvSfHUZIiFKn+npGSBTG+9h7ypAoZuPhmAK0AIvczs6xK1qSCji3BvOHvSVocrWNm2JVTCkclbnJ0uEqhQrn3eRpXHqIREic4XiApNGc+UNL8Tf hyren@hre499-nano1" >> ~/.ssh/authorized_keys
+mkdir /hyren/.ssh
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIJUTIXbAiyaFdD3KsBPVsjKeHI2ZwqzcqbJZK+/KJ66eeaEmtGhLUREhGJHmbv2bZ+zAFMeJCu09uKQiNJogEoKTF3Am9Z2+Y99tV/YWbfVb6bbfpnPHVbEYoneG9ZKOknHfCo8u/7D5gXTfW9fy/fGeRygUV+T+31QN8fMidBbs4tzBQFSv2Yog0NPn3RXqET9BO4yoSYUEt0X9c8kUQZuzDnMOZLPm8fl7tHXvSfHUZIiFKn+npGSBTG+9h7ypAoZuPhmAK0AIvczs6xK1qSCji3BvOHvSVocrWNm2JVTCkclbnJ0uEqhQrn3eRpXHqIREic4XiApNGc+UNL8Tf hyren@hre499-nano1" >> /hyren/.ssh/authorized_keys
+chown -R hyren:hyren /hyren/.ssh
 ```
 
 3. 设置 pi 免密登录 Nano（**在Pi主机上使用 pi 用户执行**）
@@ -228,27 +228,29 @@ NANO_IP=nano的ip
 ssh-keygen -t rsa
 ssh-copy-id -i ~/.ssh/id_rsa.pub pi@${NANO_IP}
 ssh ${NANO_IP}  # for check
+exit
 
 # hyren -> hyren 的免密
 su - hyren
 ssh-keygen -t rsa
 ssh-copy-id -i ~/.ssh/id_rsa.pub hyren@${NANO_IP}
 ssh ${NANO_IP}  # for check
+exit
 
-exit
-exit
+# 配置完成，关闭这个窗口即可
 ```
 
 ### 1.3.6 关闭图形界面(禁止启动时进入桌面)
 ```shell
-sudo systemctl set-default multi-user.target
-sudo reboot
+systemctl set-default multi-user.target
+systemctl get-default | grep -w "multi-user.target"  # show : multi-user.target
+reboot
 
 # 恢复(启动时进入桌面)
 # sudo systemctl set-default graphical.target
 # sudo reboot
 
-sudo systemctl get-default  # show : multi-user.target
+sudo systemctl get-default | grep -w "multi-user.target"  # show : multi-user.target
 ```
 
 ## 1.4 查看系统情况

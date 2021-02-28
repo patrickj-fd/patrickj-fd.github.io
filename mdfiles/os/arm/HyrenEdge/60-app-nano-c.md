@@ -43,7 +43,9 @@ sudo ln -s ${PROJECT_ROOT}/dist/feedwork-shell/fd_utils.sh /usr/local/bin/fd_uti
 
 # =====》【安装应用】- 方式1:解压安装
 cd ~
-scp fd@172.168.0.216:/data1/project-repos/nongan/ProductHostBackup/dist-c.* .
+#scp fd@172.168.0.216:/data1/project-repos/nongan/ProductHostBackup/dist-c.* .
+curl -s -O ftp://ftp:@172.168.0.100/nano/dist-c.tar.gz
+curl -s -O ftp://ftp:@172.168.0.100/nano/dist-c.tar.gz.sha256
 sha256sum -c dist-c.tar.gz.sha256  # show : dist-c.tar.gz: OK
 tar xf dist-c.tar.gz -C hrsapp/dist/
 
@@ -85,17 +87,20 @@ deactivate
 ### 2.2 测试项目
 ```shell
 # 建立测试环境
-# TEST_ROOT=/hyren/hrsapp/dist/c/nongan/test && ls ${TEST_ROOT}/pic
+# =====》 使用方式1安装的：
+TEST_ROOT=/hyren/hrsapp/dist/c/nongan/test && ls ${TEST_ROOT}/pic
+
+# =====》 使用方式2安装的，做以下操作
 [ -n "${PROJECT_ROOT}" ] && TEST_ROOT=${PROJECT_ROOT}/dist/c/nongan/test || echo "Missing PROJECT_ROOT"
 mkdir -p ${TEST_ROOT}/pic && ls ${TEST_ROOT}
-
 # 获取测试用的采摘图片
 #scp root@172.168.0.100:/data1/HyrenEdge/nano/app-test-pic/pic/* ${TEST_ROOT}/pic  # 5t6y0524A!
 scp ${ProjectRes}/test/pic/* ${TEST_ROOT}/pic
 ls ${TEST_ROOT}/pic
+# =====》 使用方式2安装 - 结束
 
 # 启动
-cd ${PROJECT_ROOT}/dist/c/nongan && ls -l
+cd /hyren/hrsapp/dist/c/nongan && ls -l
 ./hrdarknet.bin -version  # show : v21.029.101724
 sudo ./hr-predict.sh -s -p ${TEST_ROOT}/pic
 

@@ -141,7 +141,8 @@ journalctl | grep HRE
 su - hyren
 
 # 1. 获取应用程序。应该在主目录解压出来 hrsapp 目录
-ssh root@172.168.0.100 "cat /data1/HyrenEdge/pi/hrsapp.tar.gz" | tar -zxf - -C /hyren  # 5t6y0524A!
+#ssh root@172.168.0.100 "cat /data1/HyrenEdge/pi/hrsapp.tar.gz" | tar -zxf - -C /hyren  # 5t6y0524A!
+curl -s ftp://ftp:@172.168.0.100/pi/hrsapp.tar.gz | tar -zxf - -C /hyren
 
 # 2. 得到本设备的编号（从本设备的主机名中截取）
 HRE_ORG_NO=$(hostname) && HRE_ORG_NO=${HRE_ORG_NO:3:3} && echo $HRE_ORG_NO  # show : 400 or 401 or 402 ......

@@ -183,7 +183,10 @@ date  # show : CST time and equal yours time
 mkdir /usr/java
 # /home/pi/mount 1
 # tar -xf /mnt/usb1/hre/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz -C /usr/java
-ssh root@172.168.0.100 "cat /data1/HyrenEdge/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz" | tar -zxf - -C /usr/java  # 5t6y0524A!
+#ssh root@172.168.0.100 "cat /data1/HyrenEdge/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz" | tar -zxf - -C /usr/java  # 5t6y0524A!
+curl -s ftp://ftp:@172.168.0.100/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz | tar -zxf - -C /usr/java
+# curl -O ftp://ftp:@172.168.0.100/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz
+# tar -zxf OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz  -C /usr/java
 
 ln -s /usr/java/jdk8u275-b01 /usr/java/default && ls -l /usr/java
 echo "export JAVA_HOME=/usr/java/default" >> /etc/profile
@@ -196,13 +199,12 @@ java -version
 # 配置开发机的免密登录
 mkdir ~/.ssh
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIJUTIXbAiyaFdD3KsBPVsjKeHI2ZwqzcqbJZK+/KJ66eeaEmtGhLUREhGJHmbv2bZ+zAFMeJCu09uKQiNJogEoKTF3Am9Z2+Y99tV/YWbfVb6bbfpnPHVbEYoneG9ZKOknHfCo8u/7D5gXTfW9fy/fGeRygUV+T+31QN8fMidBbs4tzBQFSv2Yog0NPn3RXqET9BO4yoSYUEt0X9c8kUQZuzDnMOZLPm8fl7tHXvSfHUZIiFKn+npGSBTG+9h7ypAoZuPhmAK0AIvczs6xK1qSCji3BvOHvSVocrWNm2JVTCkclbnJ0uEqhQrn3eRpXHqIREic4XiApNGc+UNL8Tf hyren@hre499-nano1" >> ~/.ssh/authorized_keys
-
+exit
 ```
 
 ### 工具软件
 ```shell
-su - pi
-sudo apt install -y htop nmap
+apt install -y htop nmap
 ```
 
 # 2. 安装AI环境
