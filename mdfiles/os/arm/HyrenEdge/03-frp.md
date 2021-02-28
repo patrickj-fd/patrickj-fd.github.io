@@ -147,17 +147,17 @@ WantedBy=multi-user.target
 EOF
 
 systemctl start HRETNC-ssh && systemctl status HRETNC-ssh  # check : Active: active (running)
-tail /tmp/HRETNC-ssh.log
+tail /tmp/HRETNC-ssh.log | grep "start proxy success"
 
 systemctl enable HRETNC-ssh
 
 # 重启主机并验证
 # LOCAL_WIFI_IP=$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}')
-echo "$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}') $(date +'%Y-%m-%d %H:%M:%S')" > /tmp/.hretnc.done && cat /tmp/.hretnc.done
+echo "$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}') $(date +'%Y-%m-%d %H:%M:%S')" > ~/.hretnc.done && cat ~/.hretnc.done
 reboot
 # 自己笔记本上验证可以ssh上去（hyren 登陆）
 ssh hyren@139.9.126.19 -oPort=上面设置的端口（例如：40100）
-cat /tmp/.hretnc.done
+cat /root/.hretnc.done
 exit
 
 # 再次登陆到新安装的设备上(pi/nano)

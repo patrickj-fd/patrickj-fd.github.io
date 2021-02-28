@@ -33,18 +33,25 @@ mkdir -p ${PROJECT_ROOT}/dist
 # 临时目录，可定期清理
 TEMP_DIR=/hyren/temp
 mkdir -p ${TEMP_DIR}/nongan
+# 创建存储预测结果图片的目录
+mkdir ${TEMP_DIR}/nongan/pred-result-images
 
 # 取基础 shell 库 feedwork-shell
 cd ${PROJECT_ROOT}/dist
 git clone http://139.9.126.19:38111/FdcoreHyren/feedwork-shell.git
 sudo ln -s ${PROJECT_ROOT}/dist/feedwork-shell/fd_utils.sh /usr/local/bin/fd_utils.sh && ls -l /usr/local/bin/fd*
 
+# =====》【安装应用】- 方式1:解压安装
+cd ~
+scp fd@172.168.0.216:/data1/project-repos/nongan/ProductHostBackup/dist-c.* .
+sha256sum -c dist-c.tar.gz.sha256  # show : dist-c.tar.gz: OK
+tar xf dist-c.tar.gz -C hrsapp/dist/
+
+# =====》【安装应用】- 方式2
 # 建立本项目的目录结构
 mkdir ${PROJECT_ROOT}/dist/c
 mkdir ${PROJECT_ROOT}/dist/c/nongan
 mkdir ${PROJECT_ROOT}/dist/c/nongan/weights
-# 创建存储预测结果图片的目录
-mkdir ${TEMP_DIR}/nongan/pred-result-images
 
 # 从nano开发机上获得项目文件：hrdarknet.bin hr-predict.sh prj.names prj.cfg weights
 # TODO 改成文件从gogs上取，权重和执行程序从开发机上取
@@ -63,7 +70,7 @@ mv hrdarknet-gdb.bin .hrdarknet-gdb.bin && ls -l
 
 - 安装 python 环境
 
-目前不需要python，安装备用
+目前不需要python，安装备用  
 ```shell
 source ~/pyvenv-tf15  # cp from : /hyren/python/venv/tf-1.15/bin/activate
 
@@ -78,6 +85,7 @@ deactivate
 ### 2.2 测试项目
 ```shell
 # 建立测试环境
+# TEST_ROOT=/hyren/hrsapp/dist/c/nongan/test && ls ${TEST_ROOT}/pic
 [ -n "${PROJECT_ROOT}" ] && TEST_ROOT=${PROJECT_ROOT}/dist/c/nongan/test || echo "Missing PROJECT_ROOT"
 mkdir -p ${TEST_ROOT}/pic && ls ${TEST_ROOT}
 
@@ -88,11 +96,10 @@ ls ${TEST_ROOT}/pic
 
 # 启动
 cd ${PROJECT_ROOT}/dist/c/nongan && ls -l
-./hrdarknet.bin -version
+./hrdarknet.bin -version  # show : v21.029.101724
 sudo ./hr-predict.sh -s -p ${TEST_ROOT}/pic
 
 # 开始测试
-cd ${TEST_ROOT}/pic  # cd /hyren/hrsapp/dist/c/nongan/test/pic
 curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=no-1.jpg&upid=100&force_save_result=1'
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-2.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-3.jpg
@@ -180,10 +187,9 @@ grep "${PROJECT_ROOT}" /etc/systemd/system/hre-appai.service  # see : ExecStart=
 exit
 
 # 启用服务
-sudo systemctl start hre-appai
+sudo systemctl start hre-appai && sudo systemctl status hre-appai  # show : BINDIR, PATH, Start At, LogFile, Openjdk version ......
 # 启动后，用status看输出。
 # 应该把脚本中的各个echo输出出来，包括：BINDIR=/hyren/hrsapp/bin, Start At '当前时间'
-sudo systemctl status hre-appai  # show : BINDIR, PATH, Start At, LogFile, Openjdk version ......
 
 # 以上启动成功后，看日志是否正确监听端口了。耐心等待，因为启动很慢
 tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log  # see : http service listen port 38010 and started at : 'current date time'

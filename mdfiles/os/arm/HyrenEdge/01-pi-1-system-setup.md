@@ -71,7 +71,7 @@ HRE_CODE=400
 sudo hostnamectl set-hostname hre${HRE_CODE}-pi
 cp /etc/hosts ./hosts.bak # backup
 # 把里面的raspberrypi修改为：hre400-pi (127.0.1.1 开头的一行)
-sudo sed -i "s/127\.0\.1\.1\t\traspberrypi/127\.0\.1\.1\t\thre${HRE_CODE}-pi/g" /etc/hosts
+[ -n "$HRE_CODE" ] && sudo sed -i "s/127\.0\.1\.1\t\traspberrypi/127\.0\.1\.1\t\thre${HRE_CODE}-pi/g" /etc/hosts
 cat /etc/hosts
 sudo reboot
 hostname  # show : hre400-pi
@@ -131,7 +131,7 @@ sudo sed -i '62s%:\\w\\\$ %:\\W\\\$ %' /hyren/.bashrc
 sudo sed -i "91c alias ll='ls -lhF'" /hyren/.bashrc
 
 sudo chown -R hyren:sudo /hyren
-sudo chmod -R g+w /hyren
+sudo chmod -R g+w /hyren && ls -la /hyren
 
 # 验证hyren用户的环境
 su - hyren
@@ -194,6 +194,7 @@ su - hyren
 java -version
 
 # 配置开发机的免密登录
+mkdir ~/.ssh
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIJUTIXbAiyaFdD3KsBPVsjKeHI2ZwqzcqbJZK+/KJ66eeaEmtGhLUREhGJHmbv2bZ+zAFMeJCu09uKQiNJogEoKTF3Am9Z2+Y99tV/YWbfVb6bbfpnPHVbEYoneG9ZKOknHfCo8u/7D5gXTfW9fy/fGeRygUV+T+31QN8fMidBbs4tzBQFSv2Yog0NPn3RXqET9BO4yoSYUEt0X9c8kUQZuzDnMOZLPm8fl7tHXvSfHUZIiFKn+npGSBTG+9h7ypAoZuPhmAK0AIvczs6xK1qSCji3BvOHvSVocrWNm2JVTCkclbnJ0uEqhQrn3eRpXHqIREic4XiApNGc+UNL8Tf hyren@hre499-nano1" >> ~/.ssh/authorized_keys
 
 ```
@@ -205,7 +206,7 @@ sudo apt install -y htop nmap
 ```
 
 # 2. 安装AI环境
-- [参考](../pi/ai-mkenv)
+- [参考](../pi/ai-mkenv) - 不做！
 
 # 3. 安装项目
 

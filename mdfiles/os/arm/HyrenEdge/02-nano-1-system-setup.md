@@ -71,6 +71,8 @@ sudo /usr/sbin/nvpmodel -q  # show : MAXN
 
 # 查看处理器状态，各个值应该符合下面表格中 10W 这一列的数值
 sudo jetson_clocks --show
+sudo jetson_clocks --show|grep 1479
+sudo jetson_clocks --show|grep 921
 ```
 
 10W/5W，两种模式的主要区别：
@@ -136,13 +138,13 @@ sudo echo "hyren:hre118" | sudo chpasswd
 # 给 hyren 用户赋予免密sudo的权限
 su -
 echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
-exit
 
-sudo cp /home/pi/.bashrc /hyren
-sudo cp /home/pi/.profile /hyren && ls -la /hyren
+cp /home/pi/.bashrc /hyren
+cp /home/pi/.profile /hyren && ls -la /hyren
 
-sudo chown -R hyren:sudo /hyren
-sudo chmod -R g+w /hyren
+chown -R hyren:sudo /hyren
+chmod -R g+w /hyren && ls -la /hyren
+
 ```
 
 #### 设置工作用户 hyren 的环境
@@ -180,7 +182,7 @@ echo "trusted-host = pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf
 echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple/" >> ~/.pip/pip.conf
 echo "timeout = 150" >> ~/.pip/pip.conf
 
-exit  # back to pi
+exit  # back to root
 ```
 
 ### 1.3.5 设置免密
@@ -200,17 +202,19 @@ grep -C 2 StrictModes /etc/ssh/sshd_config
 #grep -C 2 AuthorizedKeysFile /etc/ssh/sshd_config
 
 systemctl restart ssh
-exit
 ```
 
 2. 设置开发部署机(499)过来的免密
 
 ```shell
 su - hyren
+mkdir ~/.ssh
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIJUTIXbAiyaFdD3KsBPVsjKeHI2ZwqzcqbJZK+/KJ66eeaEmtGhLUREhGJHmbv2bZ+zAFMeJCu09uKQiNJogEoKTF3Am9Z2+Y99tV/YWbfVb6bbfpnPHVbEYoneG9ZKOknHfCo8u/7D5gXTfW9fy/fGeRygUV+T+31QN8fMidBbs4tzBQFSv2Yog0NPn3RXqET9BO4yoSYUEt0X9c8kUQZuzDnMOZLPm8fl7tHXvSfHUZIiFKn+npGSBTG+9h7ypAoZuPhmAK0AIvczs6xK1qSCji3BvOHvSVocrWNm2JVTCkclbnJ0uEqhQrn3eRpXHqIREic4XiApNGc+UNL8Tf hyren@hre499-nano1" >> ~/.ssh/authorized_keys
 ```
 
 3. 设置 pi 免密登录 Nano（**在Pi主机上使用 pi 用户执行**）
+
+新开窗口登录 Pi
 
 ```shell
 ssh pi@PiIP
@@ -230,6 +234,9 @@ su - hyren
 ssh-keygen -t rsa
 ssh-copy-id -i ~/.ssh/id_rsa.pub hyren@${NANO_IP}
 ssh ${NANO_IP}  # for check
+
+exit
+exit
 ```
 
 ### 1.3.6 关闭图形界面(禁止启动时进入桌面)

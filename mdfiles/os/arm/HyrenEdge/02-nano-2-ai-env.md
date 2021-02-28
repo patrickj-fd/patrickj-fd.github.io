@@ -53,6 +53,7 @@ sudo apt install -y python3-pip
 pip3 -V  # show : pip 9.0.1
 # 更新到最新版，要用sudo，否则setuptools是装在当前用户下
 sudo python3 -m pip install -U pip==20.2.4
+# wget https://files.pythonhosted.org/packages/cb/28/91f26bd088ce8e22169032100d4260614fc3da435025ff389ef1d396a433/pip-20.2.4-py2.py3-none-any.whl
 sudo python3 -m pip install -U testresources==2.0.1
 # 更新 setuptools 。不理报错
 sudo python3 -m pip install setuptools==49.6.0 --use-feature=2020-resolver
@@ -103,7 +104,7 @@ tar xf protobuf-3.8.0.make.tar.gz
 cd protobuf-3.8.0/
 # make check  # 检查解压包里面make编译结果
 
-sudo make install
+nohup sudo make install &
 sudo ldconfig
 ```
 
@@ -149,14 +150,13 @@ pbFirstPeople.name = "joey"
 pbFirstPeople.height = 160
 print(pbFirstPeople)
 EOF
-```
 
 # 查看结果
-```shell
 python3 app_out/test.py
+```
 
-
-# 结果显示：
+**结果应显示如下：**  
+```txt
 name: "joey"
 height: 160
 ```
