@@ -181,11 +181,34 @@ doc/**/*.txt
 ```
 
 # 9. 其他
-## 9.1 查看仓库状态
-查看有哪些文件被修改、添加、删除了，是否在暂存区，等等信息。
+## 9.1 查看各种信息
+### 9.1.1 查看库状态
+查看有哪些文件被修改、添加、删除了，是否在暂存区，等等信息。  
 ```shell
 git status     # 显示详细的信息
 git status -s  # 显示简短信息
+```
+
+### 9.1.2 查看日志获得信息（如：commitid）
+```shell
+# 只看上2次提交的信息，也同时看到版本号，以便决定是否使用新的版本号。
+git log -2 --pretty=oneline
+
+# 查看每一次提交的文件名
+git log --name-status
+```
+
+### 9.1.3 查看某次提交的信息
+```shell
+# 查看指定 commit id 提交的全部信息
+git show <commitId>
+
+# 只看状态信息
+git show <commitId> --stat
+# 看受影响的文件及状态
+git show <commitId> --name-status
+# 只看本次提交受影响的文件
+git show <commitId> --name-only
 ```
 
 ## 9.2 提交指定文件
