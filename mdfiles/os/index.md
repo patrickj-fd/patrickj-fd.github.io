@@ -1,4 +1,4 @@
-[首 页](https://patrickj-fd.github.io/index)
+[首 页](https://patrickj-fd.github.io/index) | [ai](https://patrickj-fd.github.io/mdfiles/ai/index) | [docker](https://patrickj-fd.github.io/mdfiles/docker/index) | [git](https://patrickj-fd.github.io/mdfiles/git/index) | [net](https://patrickj-fd.github.io/mdfiles/net/index) | [os](https://patrickj-fd.github.io/mdfiles/os/index) | [python](https://patrickj-fd.github.io/mdfiles/python/index)
 
 ---
 
@@ -19,8 +19,8 @@
 - [安装字体](fonts)
 
 - [常用软件](soft)
+- [安装FTP及下载](ftp)
 - [WPS安装](wps)
-
 - [VS Code](vscode)
 
 - [arm](arm/index)
