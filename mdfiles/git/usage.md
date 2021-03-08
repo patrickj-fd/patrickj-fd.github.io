@@ -101,6 +101,18 @@ git commit
 git push -u origin master
 ```
 
+## 2.5 提交指定文件
+```shell
+git status -s        # 1. 查看仓库状态
+git add <filepath>   # 2. 添加需要提交的文件名（用上面显示出来文件全路径）
+git stash -u -k      # 3. 忽略其他文件，把现修改的隐藏起来，这样提交的时候就不会提交未被add的文件
+                     #    -k 保持文件的完整。-u 包括无路径的文件(那些新的和未添加到git的)。
+git commit -m "xxx"  # 4.
+git pull             # 5. 拉取合并。如果远程没有过变化，跳过本步骤
+git push             # 6. 推送到远程
+git stash pop        # 7. 恢复之前忽略的文件（非常重要的一步）
+```
+
 # 3. 分支
 
 **应该在分支上工作！**  
@@ -211,16 +223,10 @@ git show <commitId> --name-status
 git show <commitId> --name-only
 ```
 
-## 9.2 提交指定文件
+## 9.2 中文文件乱码
+git 默认中文文件名是 \xxx\xxx 等八进制形式，是因为 对0x80以上的字符进行quote。  
 ```shell
-git status -s        # 1. 查看仓库状态
-git add <filepath>   # 2. 添加需要提交的文件名（用上面显示出来文件全路径）
-git stash -u -k      # 3. 忽略其他文件，把现修改的隐藏起来，这样提交的时候就不会提交未被add的文件
-                     #    -k 保持文件的完整。-u 包括无路径的文件(那些新的和未添加到git的)。
-git commit -m "xxx"  # 4.
-git pull             # 5. 拉取合并。如果远程没有过变化，跳过本步骤
-git push             # 6. 推送到远程
-git stash pop        # 7. 恢复之前忽略的文件（非常重要的一步）
+git config --global core.quotepath false
 ```
 
 ## 9.3 比较本地和远程的区别
