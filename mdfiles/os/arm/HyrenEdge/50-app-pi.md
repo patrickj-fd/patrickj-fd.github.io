@@ -254,9 +254,13 @@ sudo systemctl enable hre-appmis
 # 重启机器，验证是否开机启动了
 echo "$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}') $(date +'%Y-%m-%d %H:%M:%S')" > ~/.done && cat ~/.done
 sudo reboot
+
+# login pi
 cat .done
 # check log
 tail /hyren/hrsapp/bin/zhna-systemout.log  # see : Web Server started successfully at 'current date time'
+# check process
+ps -ef | grep java | grep zhna | grep -v grep
 
 # 以下为调试用命令
 # systemctl daemon-reload

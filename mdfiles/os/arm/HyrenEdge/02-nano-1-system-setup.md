@@ -224,6 +224,8 @@ ssh pi@PiIP
 
 ```shell
 NANO_IP=nano的ip
+ping $NANO_IP
+
 # pi -> pi 的免密
 ssh-keygen -t rsa
 ssh-copy-id -i ~/.ssh/id_rsa.pub pi@${NANO_IP}
@@ -241,6 +243,8 @@ exit
 ```
 
 ### 1.3.6 关闭图形界面(禁止启动时进入桌面)
+
+**回到 Nano 的终端窗口操作！**  
 ```shell
 systemctl set-default multi-user.target
 systemctl get-default | grep -w "multi-user.target"  # show : multi-user.target
