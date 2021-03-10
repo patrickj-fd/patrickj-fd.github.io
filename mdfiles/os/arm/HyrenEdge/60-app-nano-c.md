@@ -240,11 +240,12 @@ sudo systemctl enable hre-appai
 sudo reboot
 
 # 开机后确认是否自动启动成功
-ps -ef|grep hrdarknet.bin | grep -v grep
+ps -ef | grep -v grep | grep hrdarknet.bin
+# 查看启动日志，应该看到三行启动时间。第三行就是这次开机自动启动输出的，看时间可知
 cat /hyren/hrsapp/bin/zhna-ai-systemout.log | grep "======"
-# 应该看到两行启动时间。第一行是重启前第一次启动服务时输出的，第二行就是这次开机自动启动输出的，看时间可知
-
-# 确认服务是否可用
+# 监控日志再次验证
+tail -f -n100 /hyren/hrsapp/bin/zhna-ai-systemout.log
+# 验证服务是否可用
 curl http://localhost:38010/behavior_detect -X POST \
     -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg&upid=100'
 # login pi

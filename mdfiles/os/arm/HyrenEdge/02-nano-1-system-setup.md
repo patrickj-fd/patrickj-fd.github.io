@@ -276,7 +276,24 @@ lshw    # 查看硬件
 # 3. 安装项目
 
 1. [安装frp Client端-ssh](03-frp)
+
 2. [安装项目运行环境](60-app-nano-c)
+
+3. 压力测试
+```shell
+nanoip_tail=
+ping 172.168.0.${nanoip_tail}
+nohup /data1/project-repos/nongan/hrdarknet/hr-test-unit.sh 172.168.0.${nanoip_tail} 38010 -1 >/data1/project-repos/nongan/test-${nanoip_tail}.log 2>&1 &
+tail -f /data1/project-repos/nongan/test-${nanoip_tail}.log
+
+# 查看压测了多少批次
+cat /data1/project-repos/nongan/test-${nanoip_tail}.log | grep batch
+# 查看有没有出错
+cat /data1/project-repos/nongan/test-${nanoip_tail}.log | grep ERROR
+
+# 登录该nano，看看日志
+tail -f /hyren/hrsapp/bin/zhna-ai-systemout.log
+```
 
 # 4. 清理
 ```shell
