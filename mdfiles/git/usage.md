@@ -191,6 +191,22 @@ git checkout -b <branchName> <tagName>
 
 **注意：** 如果修改 tag 检出代码分支，那么虽然分支中的代码改变了，但是 tag 标记的 commit 还是同一个，标记的代码是不会变的
 
+### 3.2.4 删除tag
+```shell
+git tag -d <tagName>        # 删除本地
+git push origin :<tagName>  # 删除远程
+```
+
+说明：删除远程，实际上就是推送空的源标签refs。  
+```txt
+git push origin 标签名
+等同于：
+git push origin refs/tags/源标签名:refs/tags/目的标签名
+
+所以，推送空的源标签的命令是：
+git push origin :refs/tags/标签名
+```
+
 
 # 4. Pull Request操作
 1. fork : 把源仓库 fork 到自己在github上的工作空间中
