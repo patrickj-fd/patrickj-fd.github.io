@@ -115,31 +115,33 @@ git stash pop        # 7. 恢复之前忽略的文件（非常重要的一步）
 
 # 3. 分支
 
+## 3.1 branch
+
 **应该在分支上工作！**  
 从第一次向远程仓库push后，每次修改都应该先创建一个分支，在分支上工作：
 - 发现做错了，就直接干掉分支重来
 - 都做好了，合并到master，push master到远程，并且干掉分支
 
-## 查看分支
+### 3.1.1 查看分支
 ```
 git branch       # 查看分支
 git branch -v    # 查看各个分支最后一个提交对象的信息
 git branch --no-merged   # 查看所有包含未合并工作的分支
 git branch --no-merged master  # 查看未合并到 master 分支的有哪些
 ```
-## 创建分支
+### 3.1.2 创建分支
 ```
 git branch testing
 ```
 注意：git branch 命令仅仅创建一个新分支，并不会自动切换到新分支中去。
 也就是说，HEAD 这个特殊指针，仍然指向在 master 分支上
-## 切换分支
+### 3.1.3 切换分支
 ```
 git checkout testing    # 这样 HEAD 就指向 testing 分支了。
 # 同样道理，切换回 master 分支的方式：
 git checkout master
 ```
-## 提交新分支
+### 3.1.4 提交新分支
 ```
 git push origin 本地分支名:远程分支名
 
@@ -150,10 +152,45 @@ git checkout v0.0.5                     # 切换到该分支
 git push origin v0.0.5:v0.0.5           # 把这个新建的分支提交到远程仓库
 git checkout master
 ```
-## 删除分支
+### 3.1.5 删除分支
 ```
 git branch -d testing
 ```
+
+## 3.1 tag
+
+- tag就像是一个里程碑一个标志一个点，branch是一个新的征程一条线
+- tag是静态的，branch要向前走
+- 稳定版本备份用tag，新功能多人开发用branch（开发完成后merge到master）
+
+创建 tag 是基于本地分支的 commit，而且与分支的推送是两回事，就是说分支已经推送到远程了，但是 tag 并没有，如果把 tag 推送到远程分支上，需要另外执行 tag 的推送命令。
+
+### 3.2.1 创建tag
+```shell
+# 基于本地当前分支的最后的一个 commit 创建的 tag
+git tag <tagName>           # 创建本地tag
+git push origin <tagName>   # 推送到远程仓库
+
+# 如果不想以最后一个，只想以某一个特定的提交为 tag
+git log --pretty=oneline    # 查看当前分支的提交历史，里面包含 commit id
+git tag -a <tagName> <commitId>
+```
+
+### 3.2.2 查看tag
+```shell
+git tag                 # 列出所有本地tag
+git show <tagName>      # 查看本地某个 tag 的详细信息
+git ls-remote --tags origin  # 列出所有远程tag
+```
+
+### 3.2.3 检出tag
+因为 tag 本身指向的就是一个 commit，所以和根据 commit id 检出分支是一个道理。
+```shell
+git checkout -b <branchName> <tagName>
+```
+
+**注意：** 如果修改 tag 检出代码分支，那么虽然分支中的代码改变了，但是 tag 标记的 commit 还是同一个，标记的代码是不会变的
+
 
 # 4. Pull Request操作
 1. fork : 把源仓库 fork 到自己在github上的工作空间中
