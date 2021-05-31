@@ -287,7 +287,7 @@ git config --global core.quotepath false
 1. 远程有比本地更加新的变化。比如别人提交了文件
 
 ```shell
-git fetch orgin      # 把远程的变化情况更新到本地
+git fetch origin      # 把远程的变化情况更新到本地
 git diff master origin/master
 ```
 
