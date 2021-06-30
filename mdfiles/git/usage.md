@@ -113,6 +113,44 @@ git push             # 6. 推送到远程
 git stash pop        # 7. 恢复之前忽略的文件（非常重要的一步）
 ```
 
+## 2.6 拉取冲突解决
+- 执行`git pull`时出现以下错误
+```txt
+error: Your local changes to the following files would be overwritten by merge:
+.......
+Please commit your changes or stash them before you merge.
+```
+意思是说更新下来的内容和本地修改的内容有冲突，先提交你的改变或者先将本地修改暂时存储起来。处理的方式非常简单，主要是使用git stash命令进行处理
+
+1. 先将本地修改存储起来： `git stash`
+
+查看保存的信息： `git stash list` 。可以看到类似如下内容：
+```shell
+stash@{0}: WIP on master: 569373b update
+stash@{1}: WIP on master: 8f6e855 v1.0.8 Desktop 第一次发布
+```
+其中stash@{0}就是刚才保存的标记。
+
+2. 重新拉取： `git pull`
+3. 还原暂存的内容： `git stash pop stash@{0}`
+
+系统提示如下类似的信息：
+```txt
+Auto-merging DeskTop/src/META-INF/MANIFEST.MF
+CONFLICT (content): Merge conflict in DeskTop/src/META-INF/MANIFEST.MF
+Auto-merging Android/app/build.gradle
+CONFLICT (content): Merge conflict in Android/app/build.gradle
+The stash entry is kept in case you need it again.
+```
+意思是说，系统自动合并修改的内容，但是其中有冲突，需要解决其中的冲突。碰到这种情况，git也不知道哪行内容是需要的，所以要自行确定需要的内容。
+
+查看以上两个文件的内容，会看到冲突的位置：
+- 【Updated upstream 和 =====】 之间的内容就是pull下来的内容
+- 【===== 和 stashed changes】  之间的内容就是本地修改的内容
+
+解决完成之后，就可以正常的提交了。
+
+
 # 3. 分支
 
 ## 3.1 branch
