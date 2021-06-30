@@ -114,15 +114,15 @@ git stash pop        # 7. 恢复之前忽略的文件（非常重要的一步）
 ```
 
 ## 2.6 拉取冲突解决
-- 执行`git pull`时出现以下错误
+执行`git pull`时出现以下错误：
 ```txt
 error: Your local changes to the following files would be overwritten by merge:
 .......
 Please commit your changes or stash them before you merge.
 ```
-意思是说更新下来的内容和本地修改的内容有冲突，先提交你的改变或者先将本地修改暂时存储起来。处理的方式非常简单，主要是使用git stash命令进行处理
+意思是说更新下来的内容和本地修改的内容有冲突，先提交你的改变或者先将本地修改暂时存储起来。处理的方式非常简单，主要是使用git stash命令进行处理：
 
-1. 先将本地修改存储起来： `git stash`
+- 1) 先将本地修改存储起来： `git stash`
 
 查看保存的信息： `git stash list` 。可以看到类似如下内容：
 ```shell
@@ -131,8 +131,8 @@ stash@{1}: WIP on master: 8f6e855 v1.0.8 Desktop 第一次发布
 ```
 其中stash@{0}就是刚才保存的标记。
 
-2. 重新拉取： `git pull`
-3. 还原暂存的内容： `git stash pop stash@{0}`
+- 2) 重新拉取： `git pull`
+- 3) 还原暂存的内容： `git stash pop stash@{0}`
 
 系统提示如下类似的信息：
 ```txt
