@@ -280,6 +280,7 @@ lshw    # 查看硬件
 2. [安装项目运行环境](60-app-nano-c)
 
 3. 压力测试
+
 ```shell
 nanoip_tail=
 ping 172.168.0.${nanoip_tail}
