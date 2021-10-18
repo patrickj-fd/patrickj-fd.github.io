@@ -23,4 +23,5 @@ https://www.jianshu.com/p/e1f79d942ec9
 对于Win环境，如果输出窗口乱码，修改.vscode/task.json文件的"command"中的路径分隔符为win平台的两个正斜线。
 
 之后，每次修改js文件后的编译方式为：Cmd/Ctrl + P，输入"task compile"，点"compile"即完成编译。
-也可以增加编译快捷键：Code -> 首选项 -> 键盘快捷方式，添加自己的快捷键
+也可以增加编译快捷键：Code -> 首选项 -> 键盘快捷方式，添加自己的快捷键: 输入runTask找到对应的行，添加快捷键即可。
+
