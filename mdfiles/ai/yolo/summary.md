@@ -204,25 +204,35 @@ cv2.imwrite(fixed_filename, img_file)
 因为在标注的时候，可能不同的人一起工作，大家找到的语料图片的名字可能一样，造成合并时的问题。
 - [python代码](find_eqfilename_2dir)
 
+
 ### 1.4.2 训练-使用官方darnet训练
 
 #### (1) 配置训练环境
 - 官网下载 yolov4.conv.137 文件
 - 以 cfg/yolov4-custom.cfg 为模板修改成自己的配置文件（建议prj.cfg）。修改的参数参见官网。
-- 定义 names 文件(建议prj.names)。每行是一个被检测目标的名字，也即：与标注时使用的pre_defined_class_file.txt文件内容一样
-- 定义 data 文件(建议prj.data)
-例如：
-```
-classes= 2
-train = 工程全路径/train.txt              # 训练集。内容是每行一个jpg文件的全路径名
-valid = 工程全路径/valid.txt              # 标签集。内容是每行一个jpg文件的全路径名
-names = 工程全路径/prj.names
-backup = 工程全路径/weights               # 生成模型weights文件的目录，必须是绝对路径
-```
-train.txt和valid.txt使用[仓库](https://gitee.com/hyren/hrdarknet)中 ``hr_train_tools.py`` 自动生成。
+  ```ini
+  max_batches=classes*2000                  # 最小6000（极限不能小于4000）
+  steps=max_batches*0.8, max_batches*0.9   
+  classes=分类数                            # 修改3个[yolo]层中的classes为自己数据的分类数，如 classes=3
+  filters=(classes+5)*3                     # 修改每一个[yolo]层之前的[convolutional]层中的filters。只需要修改[yolo]层之前的最后一个[convolutional]层，即一共只修改3个（整个文件中共有110个）
+                                            # 当使用 [Gaussian_yolo]层时：
+                                            #   修改每一个 [Gaussian_yolo] 层之前 [convolutional] 层中的 filter=(classes + 9)*3，共有3个[Gaussian_yolo] 层。如三分类： filter=36
+  ```
+- 定义 names 文件(建议prj.names)。每行是一个被检测目标的名字（与标注时使用的pre_defined_class_file.txt文件内容一样即可）
+- 定义 data 文件(建议prj.data)。例如：
+  ```
+  classes= 2
+  train = 工程全路径/train.txt              # 训练集。内容是每行一个jpg文件的全路径名
+  valid = 工程全路径/valid.txt              # 标签集。内容是每行一个jpg文件的全路径名
+  names = 工程全路径/prj.names
+  backup = 工程全路径/weights               # 生成模型weights文件的目录，必须是绝对路径
+  ```
+- 生成train.txt和valid.txt
+  * 每行一个标注文件的全路径（包括负样本图片：有0字节同名txt文件的图片）。使用[仓库](https://gitee.com/hyren/hrdarknet)中 ``hr_train_tools.py`` 自动生成。
 
 
 #### (2) 训练
+
 ```shell
 # 如果终端启动，要加上参数：-dont_show
 ./darknet detector train <data文件位置> <自己定义的custom.cfg文件位置> <yolov4.conv.137文件>
