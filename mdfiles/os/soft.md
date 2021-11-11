@@ -47,15 +47,6 @@ http --offline httpbin.org/post hello=offline
 http -a USERNAME POST https://api.github.com/repos/jakubroztocil/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
 
-<<<<<<< HEAD
-=======
-## Starship
-* 根据仓库中增改文件等情况，用相应的符号表示 git 仓库的状态
-* 根据所在的 Python 项目目录，展示 Python 的版本号（也适用Go/Rust/Node等）
-* 显示上个命令的执行时间
-* 如果上个命令失败，显示错误提示符
-
->>>>>>> dbfbedcad4764a7369a4c517424bb5da877c89e2
 # Trash-cli
 代替 rm
 ```

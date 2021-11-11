@@ -45,6 +45,7 @@ ip=192.168.137.100 console=seria10,115200 console=tty1 ......
 pi/raspberry 登陆机器
 
 ### 设置键盘
+因为都是用ssh连接操作设备，所以本步骤可以不做。除非需要使用键盘直连操作。
 ```shell
 sudo raspi-config
 ```
@@ -63,7 +64,7 @@ sudo reboot
 
 ### 设置设备编号
 ```shell
-HRE_CODE=400
+HRE_CODE=设备编号，例如：400
 ```
 
 ### 设置主机名
@@ -98,7 +99,7 @@ sudo echo "pi:Hre2188" | sudo chpasswd
 sudo mkdir /data
 sudo chown -R pi /data
 sudo chown -R pi /opt
-ls -l / | grep pi  # check
+ls -l / | grep pi  # show tow line, and 'data/opt' is pi
 
 # vi .bashrc
 # 46行： 把 force_color_prompt=yes 注释掉。以便从颜色上，让 pi 用户区别于其他用户。注意：如果用vscode连接上，这个颜色依然会有。
@@ -106,6 +107,7 @@ ls -l / | grep pi  # check
 #sed -i "/force_color_prompt=yes/c #force_color_prompt=yes" .bashrc
 sed -i '46c #force_color_prompt=yes' .bashrc
 sed -i "91c alias ll='ls -lhF'" .bashrc
+sed -n '46p;91p' .bashrc  # check modify result
 source .bashrc
 # 应该不再有颜色了，且 ll 可用
 ```
@@ -136,6 +138,14 @@ sudo chmod -R g+w /hyren && ls -la /hyren
 # 验证hyren用户的环境
 su - hyren
 # 登陆后，看命令行颜色是不是上面修改后的。执行：ll看权限 , pwd看主目录位置
+ll
+pwd
+
+# 配置开发机的免密登录
+mkdir ~/.ssh
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIJUTIXbAiyaFdD3KsBPVsjKeHI2ZwqzcqbJZK+/KJ66eeaEmtGhLUREhGJHmbv2bZ+zAFMeJCu09uKQiNJogEoKTF3Am9Z2+Y99tV/YWbfVb6bbfpnPHVbEYoneG9ZKOknHfCo8u/7D5gXTfW9fy/fGeRygUV+T+31QN8fMidBbs4tzBQFSv2Yog0NPn3RXqET9BO4yoSYUEt0X9c8kUQZuzDnMOZLPm8fl7tHXvSfHUZIiFKn+npGSBTG+9h7ypAoZuPhmAK0AIvczs6xK1qSCji3BvOHvSVocrWNm2JVTCkclbnJ0uEqhQrn3eRpXHqIREic4XiApNGc+UNL8Tf hyren@hre499-nano1" >> ~/.ssh/authorized_keys
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPz53qsyUrTXm39sf5RefqeEIa5pqoLm1y4iqHNAxh2AdYBc8EPRFkhaHrI5UF28dUyj+1FSHiOOGjL4QSX74Tk0hfkP4Yj8TSmNAJWXKTj+jjQBCyAq1Vf9/xeuQrKGLIDDUb3t0DssIZHsJCwZJvRpn03Awg7/3g/2Ah4A5yG18jFgXQVRs8pCaClULLzl8h+5hdSDaNOKGM2igxapSyEOAIULqKMLwsaOzXEIwkQg8+PH/keuHcji2wiC8iIlcPUkjj1ygPPSvJZbzKvI3+1H0Qh0uMELxJjyPagmrHODzxd09Lzix9aViDg3y3oNSIC1alvkCPLF1pQIg0/Mf1 fd@fdubt18" >> ~/.ssh/authorized_keys
+
 exit  # back to pi
 ```
 
@@ -159,7 +169,7 @@ apt upgrade -y
 ```shell
 cp /etc/ssh/sshd_config ~/sshd_config.bak
 
-# StrictModes no
+# set: StrictModes no
 sed -i "s/#StrictModes yes/StrictModes no/" /etc/ssh/sshd_config
 grep -C 2 StrictModes /etc/ssh/sshd_config
 
@@ -180,7 +190,12 @@ date  # show : CST time and equal yours time
 ## 1.3 系统软件安装
 ### java
 ```shell
+# ! ! ! ! ! do this on comp1660 ! ! ! ! !
+EdgeIPDot4=当前安装的pi主机的ip最后1段
+scp /data3/HyrenEdge/pi/soft/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz hyren@172.168.0.${EdgeIPDot4}:/hyren
+
 mkdir /usr/java
+tar -xf /hyren/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz -C /usr/java
 # /home/pi/mount 1
 # tar -xf /mnt/usb1/hre/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz -C /usr/java
 #ssh root@172.168.0.100 "cat /data1/HyrenEdge/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz" | tar -zxf - -C /usr/java  # 5t6y0524A!
@@ -195,10 +210,6 @@ echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile
 # 验证java
 su - hyren
 java -version
-
-# 配置开发机的免密登录
-mkdir ~/.ssh
-echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIJUTIXbAiyaFdD3KsBPVsjKeHI2ZwqzcqbJZK+/KJ66eeaEmtGhLUREhGJHmbv2bZ+zAFMeJCu09uKQiNJogEoKTF3Am9Z2+Y99tV/YWbfVb6bbfpnPHVbEYoneG9ZKOknHfCo8u/7D5gXTfW9fy/fGeRygUV+T+31QN8fMidBbs4tzBQFSv2Yog0NPn3RXqET9BO4yoSYUEt0X9c8kUQZuzDnMOZLPm8fl7tHXvSfHUZIiFKn+npGSBTG+9h7ypAoZuPhmAK0AIvczs6xK1qSCji3BvOHvSVocrWNm2JVTCkclbnJ0uEqhQrn3eRpXHqIREic4XiApNGc+UNL8Tf hyren@hre499-nano1" >> ~/.ssh/authorized_keys
 exit
 ```
 

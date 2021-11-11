@@ -40,7 +40,20 @@ tail -f log/running.log
 ```shell
 su -
 
-# 1. 定义环境
+# 1. 获取软件
+# ***方式一 *** 
+# ！! do this on comp1660 ! ! ! ! !
+EdgeIPDot4=当前安装的pi主机的ip最后1段
+
+scp /data3/HyrenEdge/pi/soft/frp_0.34.3_linux_arm.tar.gz hyren@172.168.0.${EdgeIPDot4}:/hyren/frp.tar.gz   # For pi
+# OR:
+scp /data3/HyrenEdge/nano/frp_0.34.3_linux_arm64.tar.gz hyren@172.168.0.${EdgeIPDot4}:/hyren/frp.tar.gz    # For Nano
+
+# 回到 pi或nano 上执行以下2条命令(解压并清理安装包)
+tar -xf /hyren/frp.tar.gz -C /opt && ls /opt
+rm /hyren/frp.tar.gz && ls /hyren
+
+# ***方式二 ***
 # Pi
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/pi/frp_0.34.3_linux_arm.tar.gz
 FRP_DIST_PATH=pi
@@ -49,18 +62,16 @@ FRP_DIST_NAME=frp_0.34.3_linux_arm
 # 华为云上也可以下载软件：sftp root@139.9.126.19 get /data/hre/nano/frp_0.34.3_linux_arm64.tar.gz
 FRP_DIST_PATH=nano
 FRP_DIST_NAME=frp_0.34.3_linux_arm64
-
-# 2. 安装 Frpc
 #ssh root@172.168.0.100 "cat /data1/HyrenEdge/${FRP_DIST_PATH}/${FRP_DIST_NAME}.tar.gz" | tar -zxf - -C /opt  # 5t6y0524A!
 curl -s ftp://ftp:@172.168.0.100/${FRP_DIST_PATH}/${FRP_DIST_NAME}.tar.gz | tar -zxf - -C /opt
 #tar -zxf ${FRP_DIST_NAME}.tar.gz  -C /opt && rm -f ${FRP_DIST_NAME}.tar.gz
 
-mv /opt/${FRP_DIST_NAME}/ /opt/HRETNC/
+# 2. 开始安装
+mv /opt/frp_*/ /opt/HRETNC/ && ls /opt
 chown -R root:root /opt/HRETNC/ && ls -l /opt/HRETNC/
 
 cd /opt/HRETNC/
-rm -rf frps* && ls
-rm -rf *.ini LICENSE systemd && ls
+rm -rf frps* *.ini LICENSE systemd && ls # only left frpc
 mv frpc HRETNC && ls -l
 
 # 3. 设置server端的端口
@@ -156,15 +167,16 @@ systemctl enable HRETNC-ssh
 
 # 重启主机并验证
 # LOCAL_WIFI_IP=$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}')
-echo "$(ifconfig wlan0 | grep inet | grep -v inet6 | awk '{print $2}') $(date +'%Y-%m-%d %H:%M:%S')" > ~/.hretnc.done && cat ~/.hretnc.done
+echo "$(ifconfig eth0 | grep inet | grep -v inet6 | awk '{print $2}') $(date +'%Y-%m-%d %H:%M:%S')" > /hyren/.hretnc.done && cat /hyren/.hretnc.done
 reboot
 # 自己笔记本上验证可以ssh上去（hyren 登陆）
 ssh hyren@139.9.126.19 -oPort=上面设置的端口（例如：40100）
-cat /root/.hretnc.done
+cat .hretnc.done
 exit
 
 # 再次登陆到新安装的设备上(pi/nano)
-# 查看服务是否启动了，所属用户应该是：nobody
+# 查看服务是否启动了。应该显示类似以下信息：
+# nobody     574     1  0 12:20 ?        00:00:00 /opt/HRETNC/HRETNC -c /opt/HRETNC/ssh.ini
 sudo ps -ef|grep HRE
 # 查看开发服务的启动日志是否有错误。应该没有任何输出
 sudo journalctl | grep HRE
