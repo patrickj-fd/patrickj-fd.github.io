@@ -75,12 +75,17 @@ sudo apt install -y python3-venv
 ```shell
 mkdir -p /data/protobuf/src && cd /data/protobuf/src
 # 内网机器上：
-# scp fd@172.168.0.216:/data3/HyrenEdge/protobuf-python-3.8.0.zip .
-# scp fd@172.168.0.216:/data3/HyrenEdge/protoc-3.8.0-linux-aarch_64.zip .
+scp fd@172.168.0.216:/data3/HyrenEdge/protobuf-python-3.8.0.zip .
+scp fd@172.168.0.216:/data3/HyrenEdge/protoc-3.8.0-linux-aarch_64.zip .
 #scp root@172.168.0.100:/data1/HyrenEdge/protobuf-python-3.8.0.zip .  # 5t6y0524A!
 #scp root@172.168.0.100:/data1/HyrenEdge/protoc-3.8.0-linux-aarch_64.zip .  # 5t6y0524A!
-curl -s -O ftp://ftp:@172.168.0.100/protobuf-python-3.8.0.zip && unzip protobuf-python-3.8.0.zip
-curl -s -O ftp://ftp:@172.168.0.100/protoc-3.8.0-linux-aarch_64.zip && unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0
+# OR:
+curl -s -O ftp://ftp:@172.168.0.100/protobuf-python-3.8.0.zip
+curl -s -O ftp://ftp:@172.168.0.100/protoc-3.8.0-linux-aarch_64.zip
+
+# 解压
+ls
+unzip protobuf-python-3.8.0.zip && unzip protoc-3.8.0-linux-aarch_64.zip -d protoc-3.8.0
 ls
 
 sudo cp protoc-3.8.0/bin/protoc /usr/local/bin/protoc
@@ -96,16 +101,20 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
 # 可不做，一般不会有问题，以后有问题了再做。
 # make check
 
-# 方式 2 : 解压安装
+# 方式 2 : 解压安装 -- 开始
 # cp /mnt/usb1/hre/nano/protobuf-3.8.0.make.tar.gz .
 # tar xf protobuf-3.8.0.make.tar.gz
-#scp root@172.168.0.100:/data1/HyrenEdge/nano/protobuf-3.8.0.make.tar.gz .  # 5t6y0524A!
+# scp root@172.168.0.100:/data1/HyrenEdge/nano/protobuf-3.8.0.make.tar.gz .  # 5t6y0524A!
+scp fd@172.168.0.216:/data3/HyrenEdge/nano/protobuf-3.8.0.make.tar.gz .
+# OR:
 curl -s -O ftp://ftp:@172.168.0.100/nano/protobuf-3.8.0.make.tar.gz
-tar xf protobuf-3.8.0.make.tar.gz
 
+tar xf protobuf-3.8.0.make.tar.gz
 cd protobuf-3.8.0/
 # make check  # 检查解压包里面make编译结果
+# 方式 2 : 解压安装  -- 结束
 
+# 安装
 nohup sudo make install &
 tail -f /data/protobuf/src/protobuf-3.8.0/nohup.out
 sudo ldconfig
@@ -176,11 +185,11 @@ sudo apt install -y libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip lib
 ## 4.2 创建虚拟环境
 ### 构建环境
 ```shell
-# 内网机器上：
-# scp fd@172.168.0.216:/data3/HyrenEdge/nano/nano-pyvenv.tar.gz /data
-# cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /data
-#scp root@172.168.0.100:/data1/HyrenEdge/nano/nano-pyvenv.tar.gz /data  # 5t6y0524A!
 cd /data
+# 内网机器上：
+scp fd@172.168.0.216:/data3/HyrenEdge/nano/nano-pyvenv.tar.gz .
+# cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /data
+#scp root@172.168.0.100:/data1/HyrenEdge/nano/nano-pyvenv.tar.gz .  # 5t6y0524A!
 curl -s -O ftp://ftp:@172.168.0.100/nano/nano-pyvenv.tar.gz
 
 su - hyren

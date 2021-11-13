@@ -70,7 +70,7 @@ sudo swapon --show
 sudo /usr/sbin/nvpmodel -q  # show : MAXN
 
 # 查看处理器状态，各个值应该符合下面表格中 10W 这一列的数值
-sudo jetson_clocks --show
+# sudo jetson_clocks --show
 sudo jetson_clocks --show|grep 1479
 sudo jetson_clocks --show|grep 921
 ```
@@ -109,9 +109,11 @@ sudo apt update
 # 解决办法： clean一下，再重新update：
 # sudo apt clean
 # sudo apt update
+apt list --upgradable > upgradable.list  # backup
 
 sudo apt upgrade -y
-# 更新过程中，会要求选择X，随便选gdm3即可，后面会关闭X的。
+# 4.4版本：更新过程中，会要求选择X，随便选gdm3即可，后面会关闭X的。
+# 4.6版本：没有上面的选择X，但是有了Docker，出现询问是否自动重启Docker Deamon时选 <No>
 ```
 
 ## 1.3 初始化工作环境
@@ -135,7 +137,7 @@ sudo useradd -d /hyren -s /bin/bash hyren
 # sudo userdel -r hyren  # 包括主目录一起删除
 sudo echo "hyren:hre118" | sudo chpasswd
 
-# 给 hyren 用户赋予免密sudo的权限
+# 给 hyren 用户赋予免密sudo的权限 Hre1088
 su -
 echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
 
@@ -209,6 +211,7 @@ systemctl restart ssh
 ```shell
 mkdir /hyren/.ssh
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIJUTIXbAiyaFdD3KsBPVsjKeHI2ZwqzcqbJZK+/KJ66eeaEmtGhLUREhGJHmbv2bZ+zAFMeJCu09uKQiNJogEoKTF3Am9Z2+Y99tV/YWbfVb6bbfpnPHVbEYoneG9ZKOknHfCo8u/7D5gXTfW9fy/fGeRygUV+T+31QN8fMidBbs4tzBQFSv2Yog0NPn3RXqET9BO4yoSYUEt0X9c8kUQZuzDnMOZLPm8fl7tHXvSfHUZIiFKn+npGSBTG+9h7ypAoZuPhmAK0AIvczs6xK1qSCji3BvOHvSVocrWNm2JVTCkclbnJ0uEqhQrn3eRpXHqIREic4XiApNGc+UNL8Tf hyren@hre499-nano1" >> /hyren/.ssh/authorized_keys
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPz53qsyUrTXm39sf5RefqeEIa5pqoLm1y4iqHNAxh2AdYBc8EPRFkhaHrI5UF28dUyj+1FSHiOOGjL4QSX74Tk0hfkP4Yj8TSmNAJWXKTj+jjQBCyAq1Vf9/xeuQrKGLIDDUb3t0DssIZHsJCwZJvRpn03Awg7/3g/2Ah4A5yG18jFgXQVRs8pCaClULLzl8h+5hdSDaNOKGM2igxapSyEOAIULqKMLwsaOzXEIwkQg8+PH/keuHcji2wiC8iIlcPUkjj1ygPPSvJZbzKvI3+1H0Qh0uMELxJjyPagmrHODzxd09Lzix9aViDg3y3oNSIC1alvkCPLF1pQIg0/Mf1 fd@fdubt18" >> /hyren/.ssh/authorized_keys
 chown -R hyren:hyren /hyren/.ssh
 ```
 
@@ -280,7 +283,7 @@ lshw    # 查看硬件
 2. [安装项目运行环境](60-app-nano-c)
 
 3. 压力测试
-
+comp1660本机上执行压力测试脚本（可不做）
 ```shell
 nanoip_tail=
 ping 172.168.0.${nanoip_tail}

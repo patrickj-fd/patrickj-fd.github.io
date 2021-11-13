@@ -39,13 +39,18 @@ mkdir ${TEMP_DIR}/nongan/pred-result-images
 # 取基础 shell 库 feedwork-shell
 cd ${PROJECT_ROOT}/dist
 git clone http://139.9.126.19:38111/FdcoreHyren/feedwork-shell.git
+
 sudo ln -s ${PROJECT_ROOT}/dist/feedwork-shell/fd_utils.sh /usr/local/bin/fd_utils.sh && ls -l /usr/local/bin/fd*
 
 # =====》【安装应用】- 方式1:解压安装
 cd ~
-#scp fd@172.168.0.216:/data1/project-repos/nongan/ProductHostBackup/dist-c.* .
+# 获取介质
+scp fd@172.168.0.216:/data1/project-repos/nongan/ProductHostBackup/dist-c.* .
+# OR:
 curl -s -O ftp://ftp:@172.168.0.100/nano/dist-c.tar.gz
 curl -s -O ftp://ftp:@172.168.0.100/nano/dist-c.tar.gz.sha256
+
+# 验证介质并解压，即完成安装了
 sha256sum -c dist-c.tar.gz.sha256  # show : dist-c.tar.gz: OK
 tar xf dist-c.tar.gz -C hrsapp/dist/
 
@@ -68,6 +73,8 @@ cd ..
 [ -n "${PROJECT_ROOT}" ] && rm -f prj.data || echo "Missing PROJECT_ROOT"
 chmod u+x *.sh && ls -l
 mv hrdarknet-gdb.bin .hrdarknet-gdb.bin && ls -l
+# =====》【安装应用】- 方式2 -- 结束
+
 ```
 
 - 安装 python 环境
@@ -113,9 +120,17 @@ curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-5.jpg
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=no-6.jpg
 curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=you-1.jpg&upid=100&force_save_result=1'
 curl http://localhost:38010/behavior_detect -X POST -d imgfile=you-2.jpg
+
 # 使用网络图片做预测（这种方式不需要-s -p参数，可以无参启动： sudo ./hr-predict.sh）
 curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/2787a56824e199f315d88c444294d4c3.jpg'
 curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/validpic/6654baf19df9498d985c274f63ba7efe.jpg'
+
+curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/test/cai-000035.jpg'  # class: caizhai
+curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/test/cai-null-000245.jpg'  # class: people
+curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/test/nong-000075.jpg'  # class: nongyao
+curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/test/null-20211103104402.jpg'  # class: people
+
+curl http://localhost:38010/behavior_detect -X POST -d 'imgfile=http://139.9.126.19:39080/nongan/test/cai-1.jpg'
 
 # 通过浏览器看到预测结果图片：
 cd ${TEST_ROOT}/pic
@@ -129,7 +144,7 @@ http://172.168.0.xxx:49926
 ### 启动服务的工具脚本
 ```shell
 cd ~
-echo PROJECT_ROOT=${PROJECT_ROOT}  # should be /hyren/hrsapp
+echo PROJECT_ROOT=${PROJECT_ROOT}  # should be : PROJECT_ROOT=/hyren/hrsapp
 
 touch ${PROJECT_ROOT}/bin/zhna-ai.sh
 chmod u+x ${PROJECT_ROOT}/bin/zhna-ai.sh && ls -l ${PROJECT_ROOT}/bin
@@ -138,7 +153,7 @@ vi ${PROJECT_ROOT}/bin/zhna-ai.sh
 ```
 
 #### [ zhna-ai.sh ]
-**除非必要，zhna-ai.sh永远不用直接执行，应该通过systemctl进行启停**
+拷贝以下内容进 zhna-ai.sh:
 ```shell
 #!/bin/bash
 set -e
@@ -161,7 +176,7 @@ sudo /hyren/hrsapp/dist/c/nongan/hr-predict.sh -p /hyren/temp/nongan/pred-result
 
 **如果希望保存预测结果的画框图片，需要加上参数 '-s'，并重启服务**
 
-**再次重申：**
+**注意**
 1. 这个脚本仅仅适用开机启动执行。
 2. 如果要启停服务，应该使用systemctl命令。
 3. 如果日常运行中需要单独启动应用，应以nohup方式启动到后台去！（见下面的命令）

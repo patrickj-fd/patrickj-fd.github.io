@@ -42,14 +42,10 @@ su -
 
 # 1. 获取软件
 # ***方式一 *** 
-# ！! do this on comp1660 ! ! ! ! !
-EdgeIPDot4=当前安装的pi主机的ip最后1段
-
-scp /data3/HyrenEdge/pi/soft/frp_0.34.3_linux_arm.tar.gz hyren@172.168.0.${EdgeIPDot4}:/hyren/frp.tar.gz   # For pi
+scp fd@172.168.0.216:/data3/HyrenEdge/pi/soft/frp_0.34.3_linux_arm.tar.gz /hyren/frp.tar.gz   # For pi
 # OR:
-scp /data3/HyrenEdge/nano/frp_0.34.3_linux_arm64.tar.gz hyren@172.168.0.${EdgeIPDot4}:/hyren/frp.tar.gz    # For Nano
+scp fd@172.168.0.216:/data3/HyrenEdge/nano/frp_0.34.3_linux_arm64.tar.gz /hyren/frp.tar.gz   # For Nano
 
-# 回到 pi或nano 上执行以下2条命令(解压并清理安装包)
 tar -xf /hyren/frp.tar.gz -C /opt && ls /opt
 rm /hyren/frp.tar.gz && ls /hyren
 
@@ -70,8 +66,7 @@ curl -s ftp://ftp:@172.168.0.100/${FRP_DIST_PATH}/${FRP_DIST_NAME}.tar.gz | tar 
 mv /opt/frp_*/ /opt/HRETNC/ && ls /opt
 chown -R root:root /opt/HRETNC/ && ls -l /opt/HRETNC/
 
-cd /opt/HRETNC/
-rm -rf frps* *.ini LICENSE systemd && ls # only left frpc
+cd /opt/HRETNC/ && rm -rf frps* *.ini LICENSE systemd && ls # only left frpc
 mv frpc HRETNC && ls -l
 
 # 3. 设置server端的端口
@@ -116,6 +111,7 @@ local_port = 22
 remote_port = ${HRE_ORG_NO}${PortSuffix}
 EOF
 cat ssh.ini
+cat ssh.ini | grep ${HRE_ORG_NO}  # show tow line with HRE_ORG_NO
 ```
 
 #### 临时启动验证是否可用
@@ -178,7 +174,7 @@ exit
 # 查看服务是否启动了。应该显示类似以下信息：
 # nobody     574     1  0 12:20 ?        00:00:00 /opt/HRETNC/HRETNC -c /opt/HRETNC/ssh.ini
 sudo ps -ef|grep HRE
-# 查看开发服务的启动日志是否有错误。应该没有任何输出
+# 查看开发服务的启动日志是否有错误。pi应该没有任何输出, nano有错误输出，显示的是服务restart，可以忽略
 sudo journalctl | grep HRE
 
 # 查看启动日志。最后一行应该类似 :
