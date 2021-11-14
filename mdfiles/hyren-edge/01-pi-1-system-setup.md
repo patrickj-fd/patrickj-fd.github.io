@@ -71,10 +71,10 @@ HRE_CODE=设备编号，例如：400
 ```shell
 sudo hostnamectl set-hostname hre${HRE_CODE}-pi
 cp /etc/hosts ./hosts.bak # backup
-# 把里面的raspberrypi修改为：hre400-pi (127.0.1.1 开头的一行)
+# 把里面的raspberrypi修改为：hre400-pi (127.0.1.1 开头的一行)。执行后忽略报错：sudo: unable to resolve host hre415-pi: Name or service not known
 [ -n "$HRE_CODE" ] && sudo sed -i "s/127\.0\.1\.1\t\traspberrypi/127\.0\.1\.1\t\thre${HRE_CODE}-pi/g" /etc/hosts
 cat /etc/hosts
-sudo reboot
+sudo reboot  # raspberry
 hostname  # show : hre400-pi
 # 再次确认 hosts 中 127.0.1.1 开头的一行是否已经修改为 hre400-pi
 cat /etc/hosts
@@ -190,15 +190,11 @@ date  # show : CST time and equal yours time
 ## 1.3 系统软件安装
 ### java
 ```shell
-# ! ! ! ! ! do this on comp1660 ! ! ! ! !
-EdgeIPDot4=当前安装的pi主机的ip最后1段
-scp /data3/HyrenEdge/pi/soft/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz hyren@172.168.0.${EdgeIPDot4}:/hyren
-
 mkdir /usr/java
-tar -xf /hyren/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz -C /usr/java
-# /home/pi/mount 1
-# tar -xf /mnt/usb1/hre/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz -C /usr/java
-#ssh root@172.168.0.100 "cat /data1/HyrenEdge/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz" | tar -zxf - -C /usr/java  # 5t6y0524A!
+
+scp fd@172.168.0.216:/data3/HyrenEdge/pi/soft/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz .
+tar -xf OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz -C /usr/java
+# OR:
 curl -s ftp://ftp:@172.168.0.100/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz | tar -zxf - -C /usr/java
 # curl -O ftp://ftp:@172.168.0.100/pi/OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz
 # tar -zxf OpenJDK8U-jdk_arm_linux_hotspot_8u275b01.tar.gz  -C /usr/java
