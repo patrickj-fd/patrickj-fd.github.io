@@ -52,7 +52,7 @@ git config user.name "Your Name"
 git config user.email "email@example.com"
 ```
 
-# 配置文件
+# 配置文件 .git/config
 ```ini
 [core]
 	repositoryformatversion = 0
@@ -70,6 +70,40 @@ git config user.email "email@example.com"
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master
+
+[diff]
+    tool = meld
+[difftool]
+    prompt = false					阻止git提示您是否要启动meld
+[difftool "meld"]
+    cmd = meld "$LOCAL" "$REMOTE"	$LOCAL和$REMOTE用来控制左右两个窗口显示本地还是远程顺序
+[merge]
+    tool = meld
+	conflictstyle = diff3
+[mergetool "meld"]
+    cmd = meld "$LOCAL" "$BASE" "$REMOTE" --output="$MERGED" --auto-merge
+	# 或者。二选一
+	cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output="$MERGED"
+```
+
+最后这5段设置，是为了把meld集成进来，方便进行文件比较。[注：这些设置不会改变将继续正常工作的git diff的行为]
+集成后，可以使用如下命令比较差异：
+```shell
+# 本地文件和远程的差异
+git difftool file_name
+# 其他诸如：
+git difftool <COMMIT_HASH> file_name
+git difftool <BRANCH_NAME> file_name
+git difftool <COMMIT_HASH_1> <COMMIT_HASH_2> file_name
+
+# 合并时使用原始命令
+git merge branch_name
+# 但是，如果出现了冲突，为了直观看到，可使用meld
+git mergetool
+# $LOCAL是当前分支(如master)中的文件。
+# $REMOTE是要合并的分支中的文件(例如分支名称)。
+# $MERGED是包含合并冲突信息的部分合并文件。
+# $BASE是$LOCAL和$REMOTE的共享提交祖先，这就是说，包含$REMOTE的分支最初创建时的文
 ```
 
 # 忽略文件的通用规则

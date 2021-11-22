@@ -11,9 +11,22 @@
 # Testing
 #batch=1
 #subdivisions=1
+
 # Training
+# 在darknet代码中，会将batch/subdivisions命名为batch。
+# - 4GB RAM
+#   * Leaky-416:  batch=64, subdivisions=64
+# - 6GB RAM
+#   * Leaky-416:  batch=64, subdivisions=32
+#   * Mish-416:   batch=64, subdivisions=64
+# - 8GB RAM
+#   * Mish-416:   batch=64, subdivisions=32
+# - 11GB RAM (1080ti, 2080ti)
+#   * Leaky-416:  batch=64, subdivisions=16
+#   * Mish-416:   batch=64, subdivisions=16
 batch=64
-subdivisions=16         # 在darknet代码中，会将batch/subdivisions命名为batch。
+subdivisions=16         
+
 width=608
 height=608
 channels=3              # 图像通道数
@@ -26,9 +39,9 @@ hue=.1                  # 数据增强：调整色调
 
 learning_rate=0.001     # 初始学习率
 burn_in=1000            # 
-max_batches = 500500    # 训练达到max_batches后停止学习。= class x 2, 且不要小于4000
+max_batches = 500500    # 训练达到max_batches后停止学习。= class x 2, 且不要小于6000(实在要小点，也不能小于4000)
 policy=steps
-steps=400000,450000     # max_batches x 0.8, max_batches x 0.9 调整学习率？
+steps=400000,450000     # max_batches x 0.8, max_batches x 0.9
 scales=.1,.1            # 学习率变化的比例，累计相乘。
 
 #cutmix=1

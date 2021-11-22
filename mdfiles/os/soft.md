@@ -3,19 +3,43 @@
 ---
 
 # 必备工具软件
-- Terminator ： 最好用的终端
-- tmux ： 
-- htop 和 glances
-- bat ： 代替cat。github.com/sharkdp/bat
-  * [下载](https://github.com/sharkdp/bat/releases/download/v0.15.4/bat_0.15.4_amd64.deb)
-- Starship ： 为shell扩展出很多优秀的能力。https://starship.rs
-- ripgrep ： 代替grep。github.com/BurntSushi/ripgrep
-- fd : 代替find。github.com/sharkdp/fd
-- httpie ： 终端下适用，完美代替curl。https://httpie.org/
-- lazydocker ： github.com/jesseduffield/lazydocker
-- Aria2 ： 多线程下载，支持磁力/BT/HTTPS/FTP/Metalink等等
+```shell
+# Terminator
+
+# htop
+sudo apt install htop
+
+# Meld 文件比较工具。可集成进 git 使用
+# 官网下载源码安装： http://meldmerge.org/
+sudo apt-get install intltool itstool gir1.2-gtksource-3.0 libxml2-utils
+wget -O /tmp/meld-3.20.4.tar.xz https://download.gnome.org/sources/meld/3.20/meld-3.20.4.tar.xz
+tar xf meld-3.20.4.tar.xz
+cd meld-3.20.4/
+sudo python3 setup.py install
+meld --version
+
+
+# bat/fd 代替cat/find
+wget -O /tmp/bat_0.18.3_amd64.deb https://github.com/sharkdp/bat/releases/download/v0.18.3/bat_0.18.3_amd64.deb
+sudo dpkg -i /tmp/bat_0.18.3_amd64.deb
+wget -O /tmp/fd_8.2.1_amd64.deb https://github.com/sharkdp/fd/releases/download/v8.2.1/fd_8.2.1_amd64.deb
+sudo dpkg -i /tmp/fd_8.2.1_amd64.deb
+
+# Aria2
+
+
+# SimpleScreenRecorder 免费而轻量级的屏幕录制工具
+$ sudo add-apt-repository ppa:marten-baert/simplescreenrecorder
+$ sudo apt-get update
+$ sudo apt-get install simplescreenrecorder
+
+```
+
+# 其他软件
+
 - asciinema ： 终端会话录制。https://asciinema.org
 - litecli 和 pgcli ： 分别用于sqlite和pgsql的cli优秀工具
+- ripgrep ： 代替grep。github.com/BurntSushi/ripgrep
 
 ## httpie
 ```shell
@@ -75,14 +99,6 @@ trash-list 回收站文件列表
 
 # Shutter  
 截屏软件，捕获、编辑和轻松的共享截屏。支持修改图片，也算是一个图片的管理器
-
-# SimpleScreenRecorder  
-免费而轻量级的屏幕录制工具
-```
-$ sudo add-apt-repository ppa:marten-baert/simplescreenrecorder
-$ sudo apt-get update
-$ sudo apt-get install simplescreenrecorder
-```
 
 # Etcher USB 镜像写入器  
 Etcher 是一个由 http://resin.io 开发的 USB 镜像写入器。它是一个跨平台的应用，可以帮助你将 ZIP、ISO、IMG 格式的镜像文件写入到 USB 存储中。如果你经常尝试新的操作系统，那么 Ethcher 是你必有的简单可靠的工具。

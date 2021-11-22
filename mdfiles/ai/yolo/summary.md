@@ -3,6 +3,9 @@
 ---
 
 # 参考
+**对各种参数的疑问先看**： https://blog.csdn.net/qq_37662375/article/details/107774183
+
+
 Freeze Keras model and convert into TensorRT model
 > https://www.dlology.com/blog/how-to-run-keras-model-on-jetson-nano/
 
