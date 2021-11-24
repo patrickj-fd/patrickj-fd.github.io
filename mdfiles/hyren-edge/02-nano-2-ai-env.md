@@ -105,9 +105,10 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
 # cp /mnt/usb1/hre/nano/protobuf-3.8.0.make.tar.gz .
 # tar xf protobuf-3.8.0.make.tar.gz
 # scp root@172.168.0.100:/data1/HyrenEdge/nano/protobuf-3.8.0.make.tar.gz .  # 5t6y0524A!
-scp fd@172.168.0.216:/data3/HyrenEdge/nano/protobuf-3.8.0.make.tar.gz .
+# scp fd@172.168.0.216:/data3/HyrenEdge/nano/protobuf-3.8.0.make.tar.gz .
 # OR:
-curl -s -O ftp://ftp:@172.168.0.100/nano/protobuf-3.8.0.make.tar.gz
+curl -O ftp://ftpgets:hre118@172.168.0.216:10021/nano/protobuf-3.8.0.make.tar.gz
+#curl -s -O ftp://ftp:@172.168.0.100/nano/protobuf-3.8.0.make.tar.gz
 
 tar xf protobuf-3.8.0.make.tar.gz
 cd protobuf-3.8.0/
@@ -187,10 +188,10 @@ sudo apt install -y libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip lib
 ```shell
 cd /data
 # 内网机器上：
-scp fd@172.168.0.216:/data3/HyrenEdge/nano/nano-pyvenv.tar.gz .
+#scp fd@172.168.0.216:/data3/HyrenEdge/nano/nano-pyvenv.tar.gz .
 # cp /mnt/usb1/hre/nano/nano-pyvenv.tar.gz /data
 #scp root@172.168.0.100:/data1/HyrenEdge/nano/nano-pyvenv.tar.gz .  # 5t6y0524A!
-curl -s -O ftp://ftp:@172.168.0.100/nano/nano-pyvenv.tar.gz
+curl -O ftp://ftpgets:hre118@172.168.0.216:10021/nano/nano-pyvenv.tar.gz
 
 su - hyren
 
