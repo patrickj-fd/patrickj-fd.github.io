@@ -68,8 +68,8 @@ echo "================================================================"
 # 启动容器
 ```shell
 CAR_NAME="hrs-mysql"
-DATA_DIR="/tmp/mysql/data"
-LOGS_DIR="/tmp/mysql/logs"
+DATA_DIR="/data2/DockerUserWorkEnv/UserWorkfolder/mysql/data"
+LOGS_DIR="/data2/DockerUserWorkEnv/UserWorkfolder/mysql/logs"
 sudo docker container run -d -p 33306:3306 --name $CAR_NAME \
      -v $PWD/my.cnf.sample:/etc/mysql/conf.d/my.cnf -v $DATA_DIR:/var/lib/mysql \
      -v $LOGS_DIR:/logs \

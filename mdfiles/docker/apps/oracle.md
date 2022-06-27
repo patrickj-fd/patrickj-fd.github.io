@@ -108,7 +108,7 @@ quit
 
 sqlplus test/oracle
 
-create or replace directory SQLDR as '/home/oracle/testDR';
+create or replace directory SQLDR as '/home/oracle/test-DR1';
 
 drop table user_test_gbk;
 create table user_test_gbk(
@@ -124,19 +124,44 @@ organization external(
   (
         RECORDS DELIMITED BY NEWLINE
         CHARACTERSET ZHS16GBK
+        FIELDS TERMINATED BY ","
+        missing field values are null
         BADFILE 'SQLDR':'rst-badfile.dat'
         DISCARDFILE 'SQLDR':'rst-disfile.dat'
         LOGFILE 'rst-murex_gl_temp.log'
         READSIZE 1048576
-        FIELDS TERMINATED BY ","
   )
   location (SQLDR:'user-gbk.txt')
 )
 reject limit UNLIMITED;
 
+
 select * from user_test_gbk;
 ```
 
+```sql
+create or replace directory TESTDR1 as '/home/oracle/test-DR1';
+drop table user_test_gbk11;
+create table user_test_gbk11(
+  duid   VARCHAR2(5),
+  name   VARCHAR2(8),
+  info   VARCHAR2(20),
+  cs     VARCHAR2(3)
+)
+organization external(
+  type ORACLE_LOADER
+  default directory TESTDR1
+  access parameters 
+  (
+        RECORDS DELIMITED BY NEWLINE
+        CHARACTERSET ZHS16GBK
+        FIELDS TERMINATED BY ","
+        missing field values are null
+  )
+  location ('user-gbk.txt')
+)
+reject limit UNLIMITED;
+```
 
 ---
 

@@ -5,7 +5,63 @@
 > https://github.com/jlevy/the-art-of-command-line/blob/master/README-zh.md
 
 # 一、系统命令
-## 常用命令
+
+## 1.1 初始化相关
+
+### 添加新用户
+#### Ubuntu
+```shell
+USER_NAME=用户名
+PASSWORD=密码
+HOME_DIR=用户主目录全路径
+
+sudo mkdir $HOME_DIR
+sudo useradd -d $HOME_DIR -s /bin/bash $USER_NAME
+# sudo userdel -r hyren  # 包括主目录一起删除
+sudo echo "$USER_NAME:$PASSWORD" | sudo chpasswd
+
+cp /home/fd/.bashrc $HOME_DIR
+cp /home/fd/.profile $HOME_DIR && ls -la $HOME_DIR
+
+chown -R $USER_NAME:sudo $HOME_DIR
+chmod -R g+w $HOME_DIR && ls -la $HOME_DIR
+```
+
+- 给用户赋予免密sudo的权限
+```shell
+su -
+echo "hyren ALL=(ALL:ALL)  NOPASSWD:ALL" >> /etc/sudoers
+```
+
+### 开机启动
+```shell
+# 设置服务名
+SERVICE_NAME=服务名
+cat > /etc/systemd/system/${SERVICE_NAME}.service << EOF
+[Unit]
+Description=服务描述
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=执行程序
+ExecReload=执行程序
+Restart=on-failure
+RestartSec=5s
+User=nobody
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl start ${SERVICE_NAME} && systemctl status ${SERVICE_NAME}  # check : Active: active (running)
+
+systemctl enable ${SERVICE_NAME}
+```
+
+
+## 1.2 常用命令
+
 ### grep 和 egrep
 参数：  
 * -i : 不区分大小写
@@ -70,7 +126,7 @@ find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
   * d$ -- 删除以当前字符开始的一行字符
 
 
-## 查看系统信息
+## 1.3 查看系统信息
 ### 目录占用
 ```shell
 du -sh                 # 当前目录总大小
@@ -96,7 +152,7 @@ echo
 # cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
 ```
 
-## lsof
+### lsof
 他是一个列出当前系统打开文件的工具，也就可以用来查看端口占用情况。
 ```
 lsof -i:8080：查看8080端口占用

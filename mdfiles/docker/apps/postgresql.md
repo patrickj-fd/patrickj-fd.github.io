@@ -32,11 +32,9 @@ RUN  set -x && \\
 # 修改监听IP
      sed -i "s/^[[:space:]]*#[[:space:]]*listen_addresses.*/listen_addresses='*'/" \$PG_CNF_FILE ; \\
      sed -i "s/^[[:space:]]*listen_addresses.*/listen_addresses='*'/" \$PG_CNF_FILE ; \\
-
 # 修改最大连接数 原则：max_connections > ( max_wal_senders + superuser_reserved_connections )
      sed -i "s/^[[:space:]]*#[[:space:]]*max_connections.*/max_connections=20/" \$PG_CNF_FILE ; \\
      sed -i "s/^[[:space:]]*max_connections.*/max_connections=20/" \$PG_CNF_FILE ; \\
-
 # 修改共享内存
      sed -i "s/^[[:space:]]*#[[:space:]]*shared_buffers.*/shared_buffers=32MB/" \$PG_CNF_FILE ; \\
      sed -i "s/^[[:space:]]*shared_buffers.*/shared_buffers=32MB/" \$PG_CNF_FILE
@@ -58,7 +56,7 @@ echo "================================================================"
 # 启动容器
 ```shell
 CAR_NAME="hrs-pgsql"
-DATA_DIR="/tmp/pgsql/pgdata" && mkdir -p $DATA_DIR
+DATA_DIR="/data2/DockerUserWorkEnv/UserWorkfolder/hrs-pssql/PGDATA" && mkdir -p $DATA_DIR
 sudo docker container run -d -p 35432:5432 --name $CAR_NAME \
      -v $DATA_DIR:/var/lib/postgresql/data \
      -e POSTGRES_PASSWORD=123456 \
@@ -69,7 +67,7 @@ sudo docker container run -d -p 35432:5432 --name $CAR_NAME \
 
 # 用容器执行psql执行
 ```shell
-sudo docker container run --rm -it hrs-postgresql:11.7 psql -U postgres -h 容器的IP
+sudo docker container run --rm -it hrs-postgresql:11.7 psql -U postgres -h 容器的IP  # docker inspect hrs-pgsql|grep IPAddress
 # 执行以上命令进入psql交互环境，看看配置是否生效了
 show max_connections;
 show shared_buffers;
