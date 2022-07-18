@@ -11,6 +11,10 @@ BINDIR="$(cd "$(dirname "$0")" && pwd)"
 
 # 防止变量为空！尤其是执行rm时！ 保证变量存在且非空，则返回它的值，否则打印出“变量名:默认值”。 SC2086 https://github.com/koalaman/shellcheck/wiki/SC2086
 rm -rf "${SomePath:?}/"*    # 为了让这行有效果，脚本的第一行要设置成： set -e
+
+# 获取 PID
+PID=$(ps -ef|grep "查找串"|grep -v grep|awk '{print $2}'); echo "PID: $PID"
+
 ```
 
 # 1. 变量
