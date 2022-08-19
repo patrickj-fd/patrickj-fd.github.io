@@ -25,8 +25,8 @@ java -version
 
 PRJ_ROOT="$BINDIR"
 
-LIBS="$(find $PRJ_ROOT/*/build/libs -name "*.jar" | sed 's@^@@g' | paste -s -d ":")"
-LIBS=$LIBS:"$(find /data3/java/libs -name "*.jar" | sed 's@^@@g' | paste -s -d ":")"
+LIBS="$(find $PRJ_ROOT/*/build/libs ! -type d -name "*.jar" | sed 's@^@@g' | paste -s -d ":")"
+LIBS=$LIBS:"$(find /data3/java/libs ! -type d -name "*.jar" | sed 's@^@@g' | paste -s -d ":")"
 echo LIBS=$LIBS
 
 CLASSES_DIR=/tmp/classes/fdcore

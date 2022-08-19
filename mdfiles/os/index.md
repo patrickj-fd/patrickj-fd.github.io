@@ -22,6 +22,7 @@
 - [安装FTP及下载](ftp)
 - [WPS安装](wps)
 - [VS Code](vscode)
+- [安装远程桌面](remote-desktop)
 
 - [arm](arm/index)
 

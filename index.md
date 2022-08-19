@@ -2,8 +2,10 @@
 # 分类
 
 - [ai](https://patrickj-fd.github.io/mdfiles/ai/index)
+- [android](https://patrickj-fd.github.io/mdfiles/android/index)
 - [docker](https://patrickj-fd.github.io/mdfiles/docker/index)
 - [git](https://patrickj-fd.github.io/mdfiles/git/index)
+- [java](https://patrickj-fd.github.io/mdfiles/java/index)
 - [net](https://patrickj-fd.github.io/mdfiles/net/index)
 - [os](https://patrickj-fd.github.io/mdfiles/os/index)
 - [python](https://patrickj-fd.github.io/mdfiles/python/index)
