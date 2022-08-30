@@ -32,6 +32,19 @@ main(){
 main $*
 ```
 
+# 获取指定范围内的随机数
+```shell
+#!/bin/bash  
+function rand(){ 
+  local -r min=$1 
+  local -r max=$(($2-$min+1)) 
+  local -r num=$(($RANDOM+1000000000)) #增加一个10位的数再求余 
+  echo $(($num%$max+$min)) 
+} 
+
+# 测试：获取100~950之间的随机数
+echo$(rand 100 950)
+```
 
 ---
 
