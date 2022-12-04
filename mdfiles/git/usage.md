@@ -294,8 +294,8 @@ git status -s  # 显示简短信息
 
 ### 9.1.2 查看日志获得信息（如：commitid）
 ```shell
-# 只看上2次提交的信息，也同时看到版本号，以便决定是否使用新的版本号。
-git log -2 --pretty=oneline
+# 只看上5次提交的信息，也同时看到版本号，以便决定是否使用新的版本号。
+git log --pretty=oneline -5
 
 # 查看每一次提交的文件名
 git log --name-status
