@@ -38,6 +38,12 @@ git push -u origin master
 git fetch --all 
 git reset --hard origin/master 
 git pull
+
+# 强制覆盖本地分支
+git fetch --all
+git reset --hard origin/远程分支名字
+git pull origin 分支名字
+
 ```
 ### 2) 保留本地的前提下，取远程仓库
 ```
