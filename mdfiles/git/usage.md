@@ -42,8 +42,15 @@ git pull
 # 强制覆盖本地分支
 git fetch --all
 git reset --hard origin/远程分支名字
-git pull origin 分支名字
+git pull origin 远程分支名字
 
+# 命令含义：
+# 比如，取回origin主机的next分支，与本地的master分支合并，需要写成下面这样
+git pull origin next:master
+# 如果远程分支是与当前分支合并，则冒号后面的部分可以省略。
+# 实质上，这等同于先做git fetch，再做git merge
+git fetch origin
+git merge origin/next
 ```
 ### 2) 保留本地的前提下，取远程仓库
 ```
