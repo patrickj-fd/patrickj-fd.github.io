@@ -32,9 +32,20 @@ git push -u origin master
 
 # 2. 拉取和提交相关
 
+## 拉取和提交原理
+```shell
+git pull origin <远程分支名>:<本地分支名>    # 将远程指定分支拉取到本地【指定分支】
+git pull origin <远程分支名>               # 将远程指定分支拉取到本地【当前分支】
+git pull                                 # 将与本地当前分支同名的远程分支拉取到本地当前分支
+
+# git push 同理
+```
+
+**在克隆远程项目的时候，本地分支会自动与远程仓库建立追踪关系，可以使用默认的origin来替代远程仓库名**
+
 ## 2.1 强制覆盖
 ### 1) 强制覆盖本地 - 与远程仓库保持一致
-```
+```shell
 git fetch --all 
 git reset --hard origin/master 
 git pull
