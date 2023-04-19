@@ -112,11 +112,12 @@ git checkout remote_branch_name
 
 ## 2.4 删除服务器文件,但保留本地
 ```
+git rm --cached file 本地要保留的文件(支持通配符*)
 git rm --cached -r 本地要保留的目录
-git rm --cached file 本地要保留的文件
 git commit -m "del xxx"
 git push -u origin master
 ```
+
 如果要保留很多本地文件，可以利用gitigore，将不需要的文件过滤掉
 ```
 git rm -r --cached .
@@ -305,6 +306,15 @@ doc/*.txt
 
 忽略doc文件夹中所有 .txt文件
 doc/**/*.txt
+```
+
+## 已经推送（push）过的文件，想在以后的提交时忽略此文件（即使本地已经修改过），但是，不删除远程库中相应文件
+```shell
+git update-index --assume-unchanged 文件名
+
+# 如果要忽略一个目录：
+cd 目标目录
+git update-index --assume-unchanged $(git ls-files | tr '\n' ' ') 
 ```
 
 # 9. 其他
