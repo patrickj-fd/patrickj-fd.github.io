@@ -5,6 +5,7 @@
 # 安装
 - [嵌入版安装](embed.md)
 - [源码编译安装](install-bysrc)
+- [创建虚拟环境](venv)
 
 # 通用
 - [安装自己的程序到系统中](deploy-myapp)
