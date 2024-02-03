@@ -178,6 +178,18 @@ The stash entry is kept in case you need it again.
 
 解决完成之后，就可以正常的提交了。
 
+## 拉取本地不存在的远程分支
+```shell
+git checkout -t origin/远程分支名
+
+# 如果报错：fatal: ‘origin/XXX‘ is not a commit and a branch ‘XXX‘ cannot be created from it
+# 查看本地缓存的所有远程分支
+git branch -r
+
+# 应该是看不到远程分支的，需要先fetch过来，然后再执行上面的git checkout命令
+git fetch origin
+```
+
 
 # 3. 分支
 
