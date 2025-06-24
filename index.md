@@ -17,3 +17,32 @@
 [GitHub Markdown 概要](https://guides.github.com/features/mastering-markdown/)
 
 [GitHub Markdown 详细](https://help.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax)
+
+# config
+```ini
+[core]
+    repositoryformatversion = 0
+    filemode = true
+    bare = false
+    logallrefupdates = true
+    ignorecase = true
+    precomposeunicode = true
+[remote "origin"]
+    # same as: git remote add origin git@github:patrickj-fd/patrickj-fd.github.io.git
+    url = git@github:patrickj-fd/patrickj-fd.github.io.git
+    fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "main"]
+    # Modify local default branch from master to main
+    # same as: git branch --set-upstream-to=origin/main main
+    remote = origin
+    merge = refs/heads/main
+```
+
+- 本仓库是静态资源，可做如下优化
+```ini
+[core]
+  # 禁用文件模式变更检测（静态文件无需执行权限）
+  filemode = false
+  # 关闭自动垃圾回收
+  gc.auto = 0
+```

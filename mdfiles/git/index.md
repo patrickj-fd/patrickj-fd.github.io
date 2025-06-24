@@ -7,6 +7,8 @@
 - [同步fork项目](fork-sync)
 - [配置多个远程仓库](multi-remote)
 
+- [常用脚本](shell)
+
 ---
 
 [首 页](https://patrickj-fd.github.io)
