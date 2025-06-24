@@ -36,6 +36,9 @@
     # same as: git branch --set-upstream-to=origin/main main
     remote = origin
     merge = refs/heads/main
+[user]
+    email = macNew
+    name = fd
 ```
 
 - 本仓库是静态资源，可做如下优化
