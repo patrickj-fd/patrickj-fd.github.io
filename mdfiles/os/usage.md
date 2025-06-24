@@ -125,6 +125,10 @@ find . -mindepth 2 -name “*.txt” | xargs -I file mv file ./
   * ndd  --  光标所在行以下的n行
   * d$ -- 删除以当前字符开始的一行字符
 
+### 复制目录-可指定忽略规则
+```shell
+rsync -a --exclude='somedir/.git' --exclude-from="somedir/.gitignore" somedir/ somedir_copy
+```
 
 ## 1.3 查看系统信息
 ### 目录占用
