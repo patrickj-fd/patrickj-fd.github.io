@@ -1,62 +1,102 @@
 
 # 拉取和推送
-## PowerShell
+## Windows PowerShell
 ### 拉取
-```shell
+```PowerShell
 Param(
-    [string]$v,  # -v version number or 'm'[means master]
-    [switch]$w,  # -w not value
+    [string]$b,  # -b <branch name> or 'm'[means master]
+    [switch]$f,  # -f overwrite
     [switch]$help
 )
-Write-Host "version=$v, overwrite=$w"
-if($help -or !$v){  #  $v -eq '', [string]::IsNullOrEmpty($v)
-    Write-Host """
-    Usage:
-    -v <branch version. eg. 1.4>
-    -w [pull and overwrite local]
-"""
+Write-Host "pullBranch=$b, overwrite=$f"
+
+$currentBranch = git branch --show-current
+$pullBranch = $currentBranch
+if($b){
+    $pullBranch = $b
+}
+
+function confirm {
+    param(
+        [string]$msg
+    )
+    Write-Host ""
+    Write-Warning "Current   branch: '$currentBranch'"
+    Write-Warning "Pull from branch: '$pullBranch'"
+    Write-Host ""
+    if(!$msg) { $msg="确认以上信息是否正确！[y] 继续 ...... " }
+    Write-Host $msg -NoNewline
+    $userInput = Read-Host
+    if($userInput -ne 'y') {exit 0}
+}
+
+if($help){  #  $v -eq '', [string]::IsNullOrEmpty($v)
+    Write-Host @"
+Usage:
+    -b <branch name. eg. 1.4>
+    -f [pull and overwrite local]
+"@
     exit 0
 }
 
+confirm
+
 if($w){
     git fetch --all
-    git reset --hard origin/${v}
+    git reset --hard origin/${pullBranch}
 }
 
-if($v -eq 'm'){
-    git pull
-} else {
-    git pull origin ${v}:${v}
-}
+git pull origin ${pullBranch}:${pullBranch}
 ```
 
 ### 推送
-```shell
+```PowerShell
 Param(
     [string]$f,  # push files or '.'[means all file]
     [string]$m,  # commit message
     [string]$v,  # -v version number or 'm'[means master]
     [switch]$help
 )
-# Write-Host "files=$f, message=$m, version=$v"
-# exit 0
-if($help -or !$f -or !$m -or !$v){
-    Write-Host """
-    Usage:
+
+$currentBranch = git branch --show-current
+$pushBranch = $currentBranch
+if($v){
+    $pushBranch = $v
+}
+
+function confirm {
+    param(
+        [string]$msg
+    )
+    Write-Host ""
+    Write-Warning "Current branch: '$currentBranch'"
+    Write-Warning "Push to branch: '$pushBranch'"
+    Write-Host ""
+    Write-Host "files=$f, message=$m"
+    Write-Host ""
+    if(!$msg) { $msg="确认以上信息是否正确！[y] 继续 ...... " }
+    Write-Host $msg -NoNewline
+    $userInput = Read-Host
+    if($userInput -ne 'y') {exit 0}
+}
+
+if($help -or !$f -or !$m){
+    Write-Host @"
+Usage:
     -f <push files or '.'[means all file]>
     -m <commit message>
-    -v <branch version. eg. 1.4>
-"""
+    -v [branch version. eg. 1.4]
+"@
     exit 0
 }
 
+confirm
+# Write-Host "files=$f, message=$m, version=$v"
+# exit 0
+
 git add "${f}"
 git commit -m "${m}"
-if($v -eq 'm'){
-    git push
-} else {
-    git push origin ${v}:${v}
-}
+git push origin ${pushBranch}:${pushBranch}
 
 Write-Host ""
 Write-Host "======================================="
@@ -66,34 +106,48 @@ git status
 ## Linux
 ### 推送
 ```shell
+#!/bin/bash
 set -e
 
-PushFiles=${1}
-if [ "x$PushFiles" == "x" ]; then
-    git status
-    echo
-    echo "======================================="
-    echo "需要指定要提交的文件。 '.'：提交全部"; 
-    echo
-    exit 1
-fi
-
+PushFiles=${1:?"Missing push files!"}
 CommitMsg=${2:?"Missing commit message!"}
 
-VersionInfo=${3:?"Missing version <m/version info>! (eg: 'm' means current branch, Or 1.3)"}
-# echo VersionInfo="${VersionInfo}"; exit 1
+branch=$(git rev-parse --abbrev-ref HEAD)
 
-git add "${PushFiles}"
-git commit -m "${CommitMsg}"
-if [ "x$VersionInfo" == "xm" ]; then
-    git push
-else
-    git push origin ${VersionInfo}:${VersionInfo}
+echo
+echo "now branch        : $branch"
+echo
+echo "commit message    : $CommitMsg"
+echo
+# git branch --show-current
+# echo
+# exit 1
+
+read -p "请确认 (y/n): " user_input
+
+if [[ "$user_input" =~ ^[yY]$ ]]; then
+    # echo "提交 ......"
+    git add "${PushFiles}"
+    git commit -m "${CommitMsg}"
+    git push origin $branch:$branch
 fi
+```
+
+### 拉取
+```shell
+#!/bin/bash
+set -e
+
+branch=$(git rev-parse --abbrev-ref HEAD)
 
 echo
-echo "======================================="
-echo "提交完成，本地仓库现在的状况："
+echo "now branch        : $branch"
 echo
-git status
+
+read -p "请确认 (y/n): " user_input
+if [[ "$user_input" =~ ^[yY]$ ]]; then
+    echo "start pull ......"
+    # dev/hangqing-zhutui
+    git pull origin $branch:$branch
+fi
 ```
