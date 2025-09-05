@@ -11,6 +11,7 @@
 # 通用
 - [安装自己的程序到系统中](deploy-myapp)
 - [Jupyter](jupyter)
+- [虚拟环境-创建和配置](venv)
 
 # 开发
 - [pandas](pandas)
