@@ -134,6 +134,12 @@ fi
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     die "当前目录不是 git 仓库"
 fi
+# 检查仓库是否有需要提交的东西
+if [[ -z "$(git status --porcelain)" ]]; then
+    echo ""; echo "✅ 当前工作区没有任何变更，无需提交"; echo ""
+    git status
+    exit 0
+fi
 
 # ========== 1. 参数解析 ==========
 CommitMsg="$1"
@@ -252,9 +258,9 @@ else
 fi
 
 # 5.3 正式推送前：推送情况确认
-echo "🌿 分支    : $branch"
-echo "📝 提交信息 : $COMMIT_MSG_PREVIEW"
-echo "📦 文件    : ${FILES:-所有文件}"
+echo "🌿 提交分支   : $branch"
+echo "📝 提交信息   : $COMMIT_MSG_PREVIEW"
+echo "📦 提交文件   : ${FILES:-所有文件}"
 echo ""
 read -r -p "🚀 确认提交并推送? (y/n): " user_input
 [[ "$user_input" =~ ^[Yy]$ ]] || die "已取消操作。"
@@ -294,21 +300,47 @@ echo ""; echo "✅ 提交完成. 以下是提交后，仓库当前的状态：";
 git status
 ```
 
-### 拉取
+### 拉取 `gitdown.sh`
 ```shell
 #!/bin/bash
 set -e
 
+# 检查是否在 git 仓库内
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "❌ 不是 git 仓库"; exit 1; }
+
 branch=$(git rev-parse --abbrev-ref HEAD)
 
-echo
-echo "now branch        : $branch"
-echo
+echo ""
+echo "当前分支 : $branch"
+echo ""
 
-read -p "请确认 (y/n): " user_input
-if [[ "$user_input" =~ ^[yY]$ ]]; then
-    echo "start pull ......"
-    # dev/hangqing-zhutui
-    git pull origin $branch:$branch
+read -r -p "确认拉取? (y/n): " user_input
+if [[ ! "$user_input" =~ ^[yY]$ ]]; then
+    echo "已取消。"
+    exit 0
 fi
+
+echo "start pull ......"
+
+# -f 模式：硬重置到远程
+if [ "$1" = "-f" ]; then
+    read -r -p "⚠️  -f 将丢弃所有本地修改，确认? (y/n): " force_confirm
+    if [[ "$force_confirm" =~ ^[yY]$ ]]; then
+        git fetch origin "$branch"
+        git reset --hard "origin/$branch"
+    else
+        echo "已取消。"
+        exit 0
+    fi
+fi
+
+git pull origin "$branch"
+
+echo ""; echo "----- 最新的5次提交信息 -----"
+git log -n 5 --pretty=format:"%C(yellow)%h%Creset %C(green)%ad%Creset %<(6,trunc)%ae  %s" --date=format:"%m-%d %H:%M"
+echo ""
+
+echo ""; echo "----- 最新一次提交的文件清单 -----"
+git show --name-only
+echo ""
 ```
