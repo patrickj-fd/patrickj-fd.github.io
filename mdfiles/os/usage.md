@@ -62,20 +62,17 @@ systemctl enable ${SERVICE_NAME}
 
 ## 1.2 常用命令
 
-### grep 和 egrep
+### 查找文件内字符串
+```shell
+grep "字符串" xxx/yyy/*.py
+
+# 等价于：
+find xxx/yyy/zzz -maxdepth 1 -name "*.py" -exec grep "BILU_LABEL_A_XIANYIREN" {} +
+find xxx/yyy/zzz -maxdepth 1 -name "*.py" -print0 | xargs -0 grep -H "BILU_LABEL_A_XIANYIREN"
+```
+
 参数：  
 * -i : 不区分大小写
-* -w : 全字符精确匹配
-
-两者区别：  
-使用egrep，能够用更加丰富的正则表达式。例如：
-```shell
-egrep -w '[a-z]{5,6}' test.txt
-```
-* [a-z] 配合着前面的'-w'，把所有小写英文字符组成的字符串找到
-* {5,6} 配合着前面的'-w'，代表只取>=5位，<=6位的字符串
-
-而grep不支持{5,6}这种正则语法
 
 ### find 查找文件
 - 按文件时间查找
