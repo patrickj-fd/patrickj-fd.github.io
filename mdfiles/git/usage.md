@@ -407,6 +407,24 @@ git push -f    # 提交到远程仓库
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 ```
 
+## 临时屏蔽文件不提交
+解决：git库中有一些文件，比如toml配置文件，本地会频繁修改，如果不想每次commit的时候都提交这个文件，但是，当出现较大改动时也需要提交。
+```bash
+# 1. 让 git 假装看不见这个文件的本地改动
+git update-index --skip-worktree config.toml
+
+# 2. 确认生效（输出里面没有"config.toml" 即： 改动已被隐藏）
+git status --short
+
+# 3. 查看当前哪些文件被隐藏了（S = skip-worktree，h = assume-unchanged）
+git ls-files -v | grep -E '^[Sh]'
+
+# ====  遇到大改动要提交时  ====
+git update-index --no-skip-worktree config.toml   # 摘掉标记，改动重新可见
+```
+
+嫌每次敲太长，配成 alias： `git config --global alias.hide   'update-index --skip-worktree'`
+
 # 10. 账户密码
 解决 git push 时需要输入用户名密码的问题  
 - 方式一
