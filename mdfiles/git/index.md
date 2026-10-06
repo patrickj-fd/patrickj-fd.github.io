@@ -8,6 +8,7 @@
 - [配置多个远程仓库](multi-remote)
 
 - [常用脚本](shell)
+- [发版-使用tag发布版本](version)
 
 ---
 
