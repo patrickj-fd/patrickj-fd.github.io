@@ -42,25 +42,33 @@ main/master：重构主战场。
 
 # 操作命令
 ```bash
-# 1. 确认当前就在 master，且工作区干净（没有未提交的改动）
-git status
+# 1. 找到要发版(打tag)的位置：commit id(hash)
+# 如果是对当前最新的提交发版，就不需要执行本步骤了
+#    但是，保险起见，应该执行`git status`，确认当前工作区是干净的（没有未提交的改动）
+git log --oneline -5
 
-# 2. 打基线 tag
-git tag -a v1.0.0 -m "投产基线：核心功能完成并测试通过"
+# - tag名
+export TAG_NAME="v1.0.0"; echo $TAG_NAME
+# - 分支名：因为以后这个分支可能会修bug导致出现多个小版本，所以分支名字应该是一个概括性名字，比如： "release/1.0" , "v0911"。
+export BRANCH_NAME="release/1.0"; echo $BRANCH_NAME
+
+# 2. 打基线 tag。如果是对当前最新的一次提交打tag，后面的commitid就不需要了
+git tag -a ${TAG_NAME:?NullTagName} -m "投产基线：核心功能完成并测试通过" [commit id]
 
 # 3. 从 tag 拉出维护分支
-git branch release/1.0 v1.0.0
+git branch ${BRANCH_NAME:?NullBranchName} ${TAG_NAME:?NullTagName}
+git branch
 
-# 4. 推上去
+# 4. 推到远程仓库
 # 因为 git push 不会自动带上 tag，而且分支和 tag 在 Git 里是两套不同的命名空间。所以要push两次
-git push origin v1.0.0                   # 推的是 tag
-git push -u origin release/1.0       # 推的是分支
+git push origin ${TAG_NAME:?NullTagName}              # 推: tag
+git push -u origin ${BRANCH_NAME:?NullBranchName}     # 推: 分支
 
 
 # 5. 结果核验
 git tag -n                 # 列出所有 tag 及说明
-git show v1.0.0 --stat     # 确认这个 tag 指向的提交确实是你验证过的那份
-git log --oneline -1 release/1.0   # 确认维护分支起点正确
+git show ${TAG_NAME:?NullTagName} --stat     # 确认这个 tag 指向的提交确实是你验证过的那份
+git log --oneline -1 ${BRANCH_NAME:?NullBranchName}   # 确认维护分支起点正确
 
 git ls-remote --tags origin        # 远端确实有 tag
 git ls-remote --heads origin       # 远端确实有 分支
