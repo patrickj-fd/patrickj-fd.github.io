@@ -8,6 +8,7 @@
 - [配置多个远程仓库](multi-remote)
 
 - [常用脚本](shell)
+- [设置文件比较工具](diff-merge)
 - [发版-使用tag发布版本](version)
 
 ---

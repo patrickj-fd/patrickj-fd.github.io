@@ -15,32 +15,33 @@
 是新建一个仓库，还是打一个分支，还是打一个tag？
 ```
 
-# 解决方案
+# 一、解决方案
 - 绝对不要新建仓库
 - 正确的组合：「Tag 打基线 + 分支做维护 + 仓库先别动」
 
-## 为什么光打 Tag 不够
+## 1.1 为什么要tag和branch一起做
+### - 光打 Tag 不够
 
 tag 是你「完整获取这个版本」的唯一可靠锚点。分支会移动，tag 不会。给实施团队的交付依据永远是 tag，不是分支。
 
 但只有 tag 会卡住一个现实问题：版本投产后，现场一定会发现 bug。你不能在没有分支的 tag 上改代码——那就是在移动历史。所以你需要一条分支来承载这些 hotfix。
 
-## 为什么光开分支不够
+### - 为什么光开分支不够
 
 分支是可变指针。今天 release/1.0 指向 A，明天有人合了个 hotfix 就指向 B了。你跟实施方说「拉 release/1.0」，一个月后拉到的就不是你验证过的那份代码了。
 
 所以：tag 负责"可复现地获取"，branch 负责"可持续地维护"。两个都要。
 
-## 在主分支上重构
+## 1.2 在主分支上重构
 main/master：重构主战场。
 直接在主线上重构，而不是开一条长生命周期的 refactor 分支——长期分支最怕的就是和主线漂移，最后合并变成一场灾难。重构本来就是接下来唯一的主线工作，没必要再分叉。
 
-## 版本号的走向
+## 1.3 版本号的走向
 - v1.0.0 — 当前投产基线
 - v1.0.x — 投产后的补丁
 - v2.0.0 — 架构重构完成后的版本（major 号跳一级，明确告诉所有人：内部契约变了，升级需要评估）
 
-# 操作命令
+# 二、操作命令
 ```bash
 # 1. 找到要发版(打tag)的位置：commit id(hash)
 # 如果是对当前最新的提交发版，就不需要执行本步骤了
@@ -77,10 +78,34 @@ git ls-remote --heads origin       # 远端确实有 分支
 确认无误后，剩下的就是去代码平台上给 v1.0.0 加 tag 保护、给 release/1.0 加分支保护（禁止 force push）。
 这一步在网页端做，Git 命令行管不了。
 
-## GitHub（Settings → Rulesets，比老的 Branch protection 更推荐）
+### 2.2 GitHub（Settings → Rulesets，比老的 Branch protection 更推荐）
 - Tag 保护：Settings → Tags​ → New tag ruleset，target 填 v1.0.0（或 v1.* 覆盖后续补丁），勾选 Restrict deletions、Block force pushes
 - 分支保护：Settings → Branches​ → Add branch ruleset，target 填 release/1.0，同样勾 Restrict deletions、Block force pushes，再按需加 Require a pull request
 
-## Gitee / 腾讯工蜂 / 阿里云 Codeup / Gitea
+### 2.3 Gitee / 腾讯工蜂 / 阿里云 Codeup / Gitea
 一般在「仓库设置 → 分支保护 / 标签保护」里，找 禁止强制推送、禁止删除​ 这两个开关。
 
+
+# 三、如何维护分支的版本
+## 3.1 切换到维护分支
+```bash
+git switch 分支名
+```
+⚠️ 注意：不要在 master 上修 bug。所有针对 `分支` 基线的修复都只在这个分支上提交。
+
+## 3.2 修复 bug 并提交
+```bash
+git add .
+git commit -m ...
+```
+
+## 3.3 修复完成、测试通过后，打补丁版本 tag（版本号递增）
+```bash
+export TAG_NAME="v1.0.1"
+git tag -a ${TAG_NAME} -m "补丁版本：修复XX问题，投产基线 v1.0.1"
+git push origin ${TAG_NAME}       # 推送新 tag
+git push origin 分支名             # 推送分支（带上的新提交）
+```
+
+> 📌 规律：每修一批 bug、每次投产，就打一个新 tag。
+> 分支上会累积多个 tag：v1.0.0 → v1.0.1 → v1.0.2…
