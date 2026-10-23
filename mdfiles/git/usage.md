@@ -2,6 +2,35 @@
 
 ---
 
+## 强制覆盖本地
+```shell
+# 假设当前所在的本地分支名是： develop/v12188
+git fetch origin
+git reset --hard origin/develop/v12188
+```
+
+## 忽略本地文件改动（不提交仓库和远程）
+使用 `git update-index --skip-worktree <文件>` 标记要忽略的文件。
+这个命令不支持通配符，如果要忽略很多不同规则的文件，最简单的方式是把`.gitignore`标志上
+```shell
+# # 让 Git 忽略 .gitignore 的本地改动。之后，在 .gitignore 里随便改，git status 都不显示，commit/push 都不会带上
+git update-index --skip-worktree .gitignore
+
+# 验证是否生效：输出 S .gitignore   ← S 表示 skip-worktree 已生效
+git ls-files -v .gitignore
+```
+
+⚠️ 注意：如果远程有人也改了 .gitignore，你 git pull 时会报错。报错后处理流程：
+```shell
+git update-index --no-skip-worktree .gitignore    # 1. 取消标记
+git stash                                         # 2. 暂存本地规则
+git pull                                          # 3. 正常拉取
+git stash pop                                     # 4. 恢复规则（有冲突手动合并）
+git update-index --skip-worktree .gitignore       # 5. 重新打上标记
+```
+
+---
+
 # 使用git的第一原则
 **要使用分支！！！！！**  
 开始修改程序前，正确的工作方式：
