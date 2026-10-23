@@ -1,4 +1,11 @@
 
+# gitme.sh
+```shell
+Nums=${1:-5}
+
+git log -n $Nums --pretty=format:"%C(yellow)%h%Creset %C(green)%ad%Creset %<(6,trunc)%ae  %s" --date=format:"%m-%d %H:%M"
+```
+
 # 拉取和推送
 ## Windows PowerShell
 ### 拉取
