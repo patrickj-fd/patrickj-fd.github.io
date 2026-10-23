@@ -70,6 +70,7 @@ git difftool HEAD~1 -- src/main/java/Foo.java
 ```
 
 3. 比较 工作区（未commit的修改） vs HEAD(最新的一次提交)
+
 ```shell
 # 全部改动，弹出 WinMerge 目录对比
 git difftool -d HEAD
