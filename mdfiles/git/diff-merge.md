@@ -54,7 +54,8 @@ git config --global difftool.prompt false
 # 二、文件比较命令参考
 
 1. 对比两个提交（最常用，等价于"两个目录"）
-```bash
+
+```shell
 # 对比两个分支
 git difftool -d main feature/x
 
@@ -63,12 +64,13 @@ git difftool -d HEAD~1 HEAD -- src/main/java/xxx/yyy/zzz
 ```
 
 2. 对比单个文件
-```bash
+
+```shell
 git difftool HEAD~1 -- src/main/java/Foo.java
 ```
 
 3. 比较 工作区（未commit的修改） vs HEAD(最新的一次提交)
-```bash
+```shell
 # 全部改动，弹出 WinMerge 目录对比
 git difftool -d HEAD
 
